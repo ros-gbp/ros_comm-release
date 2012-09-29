@@ -2,7 +2,7 @@ Source: ros-groovy-rosbag
 Section: misc
 Priority: extra
 Maintainer: Dirk Thomas <dthomas@willowgarage.com>
-Build-Depends: debhelper (>= 7.0.50~), libboost1.46-all-dev,ros-groovy-roscpp,ros-groovy-xmlrpcpp,ros-groovy-topic-tools,ros-groovy-roscpp-serialization,ros-groovy-rosconsole,ros-groovy-rosunit,python-imaging,ros-groovy-cpp-common,ros-groovy-catkin,libbz2-dev,ros-groovy-rostest,ros-groovy-rosgraph-msgs
+Build-Depends: debhelper (>= 7.0.50~), ros-groovy-roscpp,ros-groovy-xmlrpcpp,ros-groovy-topic-tools,libboost-all-dev,ros-groovy-roscpp-serialization,ros-groovy-rosconsole,ros-groovy-rosunit,python-imaging,ros-groovy-cpp-common,ros-groovy-catkin,libbz2-dev,ros-groovy-rostest,ros-groovy-rosgraph-msgs
 Homepage: 
 Standards-Version: 3.9.2
 
