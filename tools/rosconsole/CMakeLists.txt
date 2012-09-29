@@ -1,8 +1,12 @@
 project(rosconsole)
-catkin_project(rosconsole
+find_package(catkin REQUIRED COMPONENTS cpp_common rostime rosunit)
+catkin_package(
   LIBRARIES rosconsole
   INCLUDE_DIRS include
+  CFG_EXTRAS rosconsole-extras.cmake
   )
+
+include(cmake/rosconsole-extras.cmake.in)
 
 # See ticket: https://code.ros.org/trac/ros/ticket/3626
 # On mac use g++-4.2
@@ -15,13 +19,11 @@ IF(${CMAKE_SYSTEM} MATCHES "Darwin-11.*")
   ENDIF(EXISTS "/usr/bin/g++-4.2")
 ENDIF(${CMAKE_SYSTEM} MATCHES "Darwin-11.*")
 
-find_package(ROS COMPONENTS catkin cpp_common rostime rosunit)
-
-include_directories(${ROS_INCLUDE_DIRS})
+include_directories(${catkin_INCLUDE_DIRS})
 
 find_package(Boost COMPONENTS regex thread)
 
-include_directories(include)
+include_directories(include ${Boost_INCLUDE_DIR})
 
 add_library(rosconsole src/rosconsole/rosconsole.cpp)
 
@@ -34,24 +36,34 @@ if(NOT LOG4CXX_LIBRARIES)
   message(FATAL_ERROR "Couldn't find log4cxx library")
 endif()
 
-target_link_libraries(rosconsole ${ROS_LIBRARIES} ${LOG4CXX_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(rosconsole ${catkin_LIBRARIES} ${LOG4CXX_LIBRARIES} ${Boost_LIBRARIES})
+
+catkin_add_env_hooks(10.rosconsole SHELLS bat sh DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
 
 install(TARGETS rosconsole
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib)
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
+
+install(FILES config/rosconsole.config
+  DESTINATION ${CATKIN_GLOBAL_SHARE_DESTINATION}/ros/config)
 
 install(DIRECTORY include/
-        DESTINATION include
-        FILES_MATCHING PATTERN "*.h"
-        PATTERN ".svn" EXCLUDE)
+  DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h")
 
-add_gtest(${PROJECT_NAME}-utest test/utest.cpp)
-target_link_libraries(${PROJECT_NAME}-utest ${PROJECT_NAME})
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
-  add_gtest(${PROJECT_NAME}-assertion_test test/assertion_test.cpp)
-  target_link_libraries(${PROJECT_NAME}-assertion_test ${PROJECT_NAME})
+catkin_add_gtest(${PROJECT_NAME}-utest test/utest.cpp)
+if(TARGET ${PROJECT_NAME}-utest)
+  target_link_libraries(${PROJECT_NAME}-utest ${PROJECT_NAME})
 endif()
 
-add_gtest(${PROJECT_NAME}-thread_test test/thread_test.cpp)
-target_link_libraries(${PROJECT_NAME}-thread_test ${PROJECT_NAME})
+if(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
+  catkin_add_gtest(${PROJECT_NAME}-assertion_test test/assertion_test.cpp)
+  if(TARGET ${PROJECT_NAME}-assertion_test)
+    target_link_libraries(${PROJECT_NAME}-assertion_test ${PROJECT_NAME})
+  endif()
+endif()
+
+catkin_add_gtest(${PROJECT_NAME}-thread_test test/thread_test.cpp)
+if(TARGET ${PROJECT_NAME}-thread_test)
+  target_link_libraries(${PROJECT_NAME}-thread_test ${PROJECT_NAME})
+endif()

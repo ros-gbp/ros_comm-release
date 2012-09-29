@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(test_rospy)
-find_package(ROS COMPONENTS catkin test_ros rosunit rostest)
+find_package(catkin REQUIRED COMPONENTS genmsg test_ros rosunit rostest)
+catkin_project(${PROJECT_NAME})
 
 # messages are for integration testing only
 add_message_files(DIRECTORY msg
@@ -32,9 +33,7 @@ add_service_files(DIRECTORY srv
 
 generate_messages(DEPENDENCIES std_msgs test_ros)
 
-catkin_project(test_rospy)
-
-add_nosetests(test/unit)
+catkin_add_nosetests(test/unit)
 
 # integration tests
 # - accidentally wrote two integration tests for client param API. They are different enough that it's no harm in having both

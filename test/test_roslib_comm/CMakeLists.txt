@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(test_roslib_comm)
-find_package(catkin)
+find_package(catkin REQUIRED COMPONENTS genmsg)
+catkin_project(${PROJECT_NAME})
 
 add_message_files(DIRECTORY msg
   FILES
@@ -22,4 +23,4 @@ add_message_files(DIRECTORY msg
   )
 generate_messages(DEPENDENCIES std_msgs rosgraph_msgs)
 
-catkin_project(test_roslib_comm)
+catkin_add_nosetests(test)
