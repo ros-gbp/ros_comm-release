@@ -1,6 +1,6 @@
 <package>
   <name>topic_tools</name>
-  <version>1.9.15</version>
+  <version>1.9.16</version>
   <description>
     Tools for directing, throttling, selecting, and otherwise messing with
     ROS topics at a meta level. None of the programs in this package actually
@@ -23,4 +23,9 @@
   <build_depend>rostime</build_depend>
   <build_depend>rosunit</build_depend>
   <build_depend>xmlrpcpp</build_depend>
+
+  <run_depend>rosconsole</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>rostime</run_depend>
+  <run_depend>xmlrpcpp</run_depend>
 </package>
