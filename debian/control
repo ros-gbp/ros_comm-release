@@ -1,0 +1,13 @@
+Source: ros-groovy-ros-comm
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@willowgarage.com>
+Build-Depends: debhelper (>= 7.0.50~), 
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-groovy-ros-comm
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-groovy-rosparam,ros-groovy-message-filters,ros-groovy-roscpp,ros-groovy-xmlrpcpp,ros-groovy-topic-tools,ros-groovy-std-srvs,ros-groovy-rosservice,ros-groovy-rosgraph,ros-groovy-rosnode,ros-groovy-roslaunch,ros-groovy-rosconsole,ros-groovy-rospy,ros-groovy-rosmsg,ros-groovy-rosout,ros-groovy-rostest,ros-groovy-rosmaster,ros-groovy-rosbag,ros-groovy-roswtf,ros-groovy-rostopic,ros-groovy-rosgraph-msgs
+Description: ROS communications-related packages, including core client libraries (roscpp, rospy) and graph introspection tools (rostopic, rosnode, rosservice, rosparam).
+
