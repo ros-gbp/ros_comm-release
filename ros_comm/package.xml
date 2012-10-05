@@ -1,6 +1,6 @@
 <package>
   <name>ros_comm</name>
-  <version>1.9.18</version>
+  <version>1.9.23</version>
   <description>
     ROS communications-related packages, including core client libraries (roscpp, rospy) and graph introspection tools (rostopic, rosnode, rosservice, rosparam).
   </description>
@@ -27,6 +27,7 @@
   <run_depend>rosgraph_msgs</run_depend>
   <run_depend>std_srvs</run_depend>
 
+  <run_depend>ros</run_depend> <!-- Depend on ros for backwards compatability.  This will be removed in Hydro -->
   <run_depend>rosbag</run_depend>
   <run_depend>rosconsole</run_depend>
   <run_depend>rosgraph</run_depend>
