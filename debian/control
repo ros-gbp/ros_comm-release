@@ -1,0 +1,13 @@
+Source: ros-groovy-rosmaster
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@willowgarage.com>
+Build-Depends: debhelper (>= 7.0.50~), ros-groovy-catkin,ros-groovy-genmsg,ros-groovy-rostest,ros-groovy-rosgraph
+Homepage: http://ros.org/wiki/rosmaster
+Standards-Version: 3.9.2
+
+Package: ros-groovy-rosmaster
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, 
+Description: ROS Master implementation.
+
