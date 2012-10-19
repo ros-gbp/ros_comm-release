@@ -1,21 +1,19 @@
 <package>
-  <name>roswtf</name>
+  <name>test_roslaunch</name>
   <version>1.9.26</version>
   <description>
-     roswtf is a tool for diagnosing issues with a running ROS system. Think of it as a FAQ implemented in code.
+    Tests for roslaunch which depend on rostest.
   </description>
   <maintainer email="dthomas@willowgarage.com">Dirk Thomas</maintainer>
   <license>BSD</license>
 
-  <url>http://ros.org/wiki/roswtf</url>
+  <url>http://ros.org/wiki/roslaunch</url>
   <author>Ken Conley</author>
 
   <build_depend>catkin</build_depend>
   <build_depend>rostest</build_depend>
 
-  <run_depend>python-paramiko</run_depend>
-
-  <export>
-    <rosdoc config="rosdoc.yaml"/>
-  </export>
+  <test_depend>rosgraph</test_depend>
+  <test_depend>roslaunch</test_depend>
+  <test_depend>rospkg</test_depend>
 </package>
