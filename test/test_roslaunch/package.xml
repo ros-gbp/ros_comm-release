@@ -1,6 +1,6 @@
 <package>
   <name>test_roslaunch</name>
-  <version>1.9.27</version>
+  <version>1.9.28</version>
   <description>
     Tests for roslaunch which depend on rostest.
   </description>
@@ -13,7 +13,7 @@
   <build_depend>catkin</build_depend>
   <build_depend>rostest</build_depend>
 
+  <test_depend>python-rospkg</test_depend>
   <test_depend>rosgraph</test_depend>
   <test_depend>roslaunch</test_depend>
-  <test_depend>rospkg</test_depend>
 </package>
