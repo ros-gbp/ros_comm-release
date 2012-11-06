@@ -1,6 +1,6 @@
 <package>
   <name>roswtf</name>
-  <version>1.9.29</version>
+  <version>1.9.30</version>
   <description>
      roswtf is a tool for diagnosing issues with a running ROS system. Think of it as a FAQ implemented in code.
   </description>
@@ -14,6 +14,12 @@
   <build_depend>rostest</build_depend>
 
   <run_depend>python-paramiko</run_depend>
+  <run_depend>python-rospkg</run_depend>
+  <run_depend>rosgraph</run_depend>
+  <run_depend>roslaunch</run_depend>
+  <run_depend>roslib</run_depend>
+  <run_depend>rosnode</run_depend>
+  <run_depend>rosservice</run_depend>
 
   <export>
     <rosdoc config="rosdoc.yaml"/>
