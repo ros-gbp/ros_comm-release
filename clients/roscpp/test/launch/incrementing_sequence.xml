@@ -1,4 +1,0 @@
-<launch>
-  <test test-name="incrementing_sequence" pkg="roscpp" type="roscpp-incrementing_sequence"/>
-</launch>
-
