@@ -1,3 +1,0 @@
-<launch>
-  <test test-name="nonconst_subscriptions" pkg="roscpp" type="roscpp-nonconst_subscriptions"/>
-</launch>
