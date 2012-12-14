@@ -1,0 +1,12 @@
+Source: ros-groovy-topic-tools
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@willowgarage.com>
+Build-Depends: debhelper (>= 7.0.50~), ros-groovy-rosconsole,ros-groovy-catkin,ros-groovy-roscpp,ros-groovy-xmlrpcpp,ros-groovy-std-msgs,ros-groovy-rostime,ros-groovy-rostest,ros-groovy-rosunit,ros-groovy-message-generation,ros-groovy-cpp-common
+Homepage: http://ros.org/wiki/topic_tools
+Standards-Version: 3.9.2
+
+Package: ros-groovy-topic-tools
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-groovy-rosconsole,ros-groovy-roscpp,ros-groovy-xmlrpcpp,ros-groovy-std-msgs,ros-groovy-message-runtime,ros-groovy-rostime
+Description: Tools for directing, throttling, selecting, and otherwise messing with ROS topics at a meta level. None of the programs in this package actually know about the topics whose streams they are altering; instead, these tools deal with messages as generic binary blobs. This means they can be applied to any ROS topic.
