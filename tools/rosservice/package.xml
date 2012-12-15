@@ -1,6 +1,6 @@
 <package>
   <name>rosservice</name>
-  <version>1.9.36</version>
+  <version>1.9.37</version>
   <description>
     rosservice contains the rosservice command-line tool for listing
     and querying ROS <a
@@ -15,7 +15,7 @@
   <url>http://ros.org/wiki/rosservice</url>
   <author>Ken Conley</author>
 
-  <build_depend>catkin</build_depend>
+  <buildtool_depend>catkin</buildtool_depend>
 
   <run_depend>genpy</run_depend>
   <run_depend>rosgraph</run_depend>
