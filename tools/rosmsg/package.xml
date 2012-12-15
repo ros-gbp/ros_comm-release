@@ -1,6 +1,6 @@
 <package>
   <name>rosmsg</name>
-  <version>1.9.36</version>
+  <version>1.9.37</version>
   <description>
     rosmsg contains two command-line tools: <tt>rosmsg</tt> and
     <tt>rossrv</tt>. <tt>rosmsg</tt> is a command-line tool for
@@ -17,7 +17,7 @@
   <author>Ken Conley</author>
   <author>Tully Foote</author>
 
-  <build_depend>catkin</build_depend>
+  <buildtool_depend>catkin</buildtool_depend>
 
   <run_depend>genmsg</run_depend>
   <run_depend>python-rospkg</run_depend>
