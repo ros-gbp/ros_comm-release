@@ -1,0 +1,12 @@
+Source: ros-groovy-test-roslib-comm
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@willowgarage.com>
+Build-Depends: debhelper (>= 7.0.50~), ros-groovy-rosgraph-msgs,ros-groovy-std-msgs,ros-groovy-genmsg,ros-groovy-catkin
+Homepage: http://ros.org/wiki/roslib
+Standards-Version: 3.9.2
+
+Package: ros-groovy-test-roslib-comm
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, 
+Description: Unit tests verifying that roslib is operating as expected.
