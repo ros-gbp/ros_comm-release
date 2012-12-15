@@ -1,6 +1,6 @@
 <package>
   <name>test_roslib_comm</name>
-  <version>1.9.36</version>
+  <version>1.9.37</version>
   <description>
     Unit tests verifying that roslib is operating as expected.
   </description>
@@ -11,7 +11,8 @@
   <author>Jeremy Leibs</author>
   <author>Ken Conley</author>
 
-  <build_depend>catkin</build_depend>
+  <buildtool_depend>catkin</buildtool_depend>
+
   <build_depend>genmsg</build_depend>
   <build_depend>rosgraph_msgs</build_depend>
   <build_depend>std_msgs</build_depend>
