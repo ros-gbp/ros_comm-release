@@ -1,6 +1,6 @@
 <package>
   <name>test_rospy</name>
-  <version>1.9.36</version>
+  <version>1.9.37</version>
   <description>
     rospy unit and integration test framework.
   </description>
@@ -10,7 +10,8 @@
   <url>http://ros.org/wiki/rospy</url>
   <author>Ken Conley</author>
 
-  <build_depend>catkin</build_depend>
+  <buildtool_depend>catkin</buildtool_depend>
+
   <build_depend>genmsg</build_depend>
   <build_depend>rostest</build_depend>
   <build_depend>std_msgs</build_depend>
