@@ -1,6 +1,6 @@
 <package>
   <name>message_filters</name>
-  <version>1.9.36</version>
+  <version>1.9.37</version>
   <description>
     A set of message filters which take in messages and may output those messages at a later time, based on the conditions that filter needs met.
   </description>
@@ -12,8 +12,9 @@
   <author>Josh Faust</author>
   <author>Vijay Pradeep</author>
 
+  <buildtool_depend>catkin</buildtool_depend>
+
   <build_depend>boost</build_depend>
-  <build_depend>catkin</build_depend>
   <build_depend>rosconsole</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rostest</build_depend>
