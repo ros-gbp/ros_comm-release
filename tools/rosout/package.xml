@@ -1,6 +1,6 @@
 <package>
   <name>rosout</name>
-  <version>1.9.36</version>
+  <version>1.9.37</version>
   <description>
      System-wide logging mechanism for messages sent to the /rosout topic.
   </description>
@@ -10,6 +10,7 @@
   <url>http://ros.org/wiki/rosout</url>
   <author>Josh Faust</author>
 
-  <build_depend>catkin</build_depend>
+  <buildtool_depend>catkin</buildtool_depend>
+
   <build_depend>roscpp</build_depend>
 </package>
