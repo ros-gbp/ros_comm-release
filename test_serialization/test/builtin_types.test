@@ -1,3 +1,0 @@
-<launch>
-  <test test-name="builtin_types" pkg="roscpp" type="roscpp-builtin_types"/>
-</launch>
