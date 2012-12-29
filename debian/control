@@ -1,0 +1,12 @@
+Source: ros-groovy-test-rosservice
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@willowgarage.com>
+Build-Depends: debhelper (>= 7.0.50~), ros-groovy-genmsg,ros-groovy-rostest,ros-groovy-std-msgs,ros-groovy-catkin
+Homepage: http://ros.org/wiki/rosservice
+Standards-Version: 3.9.2
+
+Package: ros-groovy-test-rosservice
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, 
+Description: Tests for the rosservice tool.
