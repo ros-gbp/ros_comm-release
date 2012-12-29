@@ -1,6 +1,6 @@
 <package>
   <name>rosparam</name>
-  <version>1.9.38</version>
+  <version>1.9.39</version>
   <description>
     rosparam contains the rosparam command-line tool for getting and
     setting ROS Parameters on the <a
@@ -19,9 +19,8 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>rostest</build_depend>
-
   <run_depend>python-yaml</run_depend>
+  <run_depend>rosgraph</run_depend>
 
   <export>
     <rosdoc config="rosdoc.yaml"/>
