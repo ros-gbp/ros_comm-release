@@ -1,0 +1,12 @@
+Source: ros-groovy-rostest
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@willowgarage.com>
+Build-Depends: debhelper (>= 7.0.50~), libboost1.46-all-dev,ros-groovy-catkin,ros-groovy-rosunit
+Homepage: http://ros.org/wiki/rostest
+Standards-Version: 3.9.2
+
+Package: ros-groovy-rostest
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-groovy-roslaunch,libboost1.46-all-dev,ros-groovy-rospy,ros-groovy-rosunit
+Description: Integration test suite based on roslaunch that is compatible with xUnit frameworks.
