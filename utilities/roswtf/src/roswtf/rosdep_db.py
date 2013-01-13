@@ -1,7 +1,6 @@
-#!/usr/bin/env python
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2009, Willow Garage, Inc.
+# Copyright (c) 2012, Willow Garage, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,37 +30,33 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import print_function
+"""
+Checks if rosdep database has been initialized
+"""
+import os
 
-import rospy
-import rosbag
 
-def sortbags(inbag, outbag):
-    rebag = rosbag.Bag(outbag, 'w')
+def get_user_home_directory():
+    """Returns cross-platform user home directory """
+    return os.path.expanduser("~")
 
-    try:
-        schedule = [(t, i) for i, (topic, msg, t) in enumerate(rosbag.Bag(inbag).read_messages(raw=True))]
 
-        schedule = [i for (t, i) in sorted(schedule)]
-        print(schedule)
-    
-        stage = {}
-        for i, (topic, msg, t) in enumerate(rosbag.Bag(inbag).read_messages(raw=True)):
-            stage[i] = (topic, msg, t)
-            while (len(schedule) > 0) and (schedule[0] in stage):
-                (topic, msg, t) = stage[schedule[0]]
-                rebag.write(topic, msg, t, raw=True)
-                del stage[schedule[0]]
-                schedule = schedule[1:]
+def rosdep_database_initialized_check(ctx):
+    """Makes sure rosdep database is initialized"""
+    if not os.path.exists((os.path.join(get_user_home_directory(), '.ros', 'rosdep', 'sources.cache', 'index'))):
+        return "Please initialize rosdep database with sudo rosdep init."
 
-        assert schedule == []
-        assert stage == {}
-    finally:
-        rebag.close()
+warnings = []
 
-if __name__ == '__main__':
-    import sys
-    if len(sys.argv) == 3:
-        sortbags(sys.argv[1], sys.argv[2])
-    else:
-        print("usage: bagsort.py <inbag> <outbag>")
+errors = [(rosdep_database_initialized_check,
+           "ROS Dep database not initialized: "),
+         ]
+
+
+def wtf_check(ctx):
+    """Check implementation function for roswtf"""
+    from roswtf.rules import warning_rule, error_rule
+    for r in warnings:
+        warning_rule(r, r[0](ctx), ctx)
+    for r in errors:
+        error_rule(r, r[0](ctx), ctx)
