@@ -1,0 +1,12 @@
+Source: ros-groovy-rosconsole
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@willowgarage.com>
+Build-Depends: debhelper (>= 7.0.50~), ros-groovy-catkin,libapr1-dev,libaprutil1-dev,ros-groovy-rostime,ros-groovy-rosunit,ros-groovy-cpp-common,libboost1.46-all-dev,liblog4cxx10-dev
+Homepage: http://www.ros.org/wiki/rosconsole
+Standards-Version: 3.9.2
+
+Package: ros-groovy-rosconsole
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libapr1-dev,libaprutil1-dev,ros-groovy-cpp-common,ros-groovy-rostime,liblog4cxx10-dev
+Description: ROS console output library.
