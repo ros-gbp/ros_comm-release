@@ -108,8 +108,10 @@ def record_cmd(argv):
         if not options.duration and not options.size:
             parser.error("Split specified without giving a maximum duration or size")
         cmd.extend(["--split"])
-    if options.duration:    cmd.extend(["--duration", options.duration])
-    if options.size:        cmd.extend(["--size", str(options.size)])
+        if options.duration:
+            cmd.extend(["--duration", options.duration])
+        if options.size:
+            cmd.extend(["--size", str(options.size)])
     if options.node:
         cmd.extend(["--node", options.node])
 
@@ -704,7 +706,8 @@ class RosbagCmds(UserDict):
         if cmd in self:
             self[cmd](['-h'])
         else:
-            print("Unknown command: '%s'" % cmd, file=sys.stderr)
+            sys.stderr.write("Unknown command: '%s'" % cmd)
+            sys.stderr.write()
             sys.stderr.write(self.get_valid_cmds())
 
 class ProgressMeter(object):

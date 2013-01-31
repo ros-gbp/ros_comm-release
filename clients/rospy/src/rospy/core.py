@@ -121,6 +121,12 @@ def parse_rosrpc_uri(uri):
 # rospy logger
 _rospy_logger = logging.getLogger("rospy.internal")
 
+_logdebug_handlers = []
+_loginfo_handlers = []
+_logwarn_handlers = []
+_logerr_handlers = []
+_logfatal_handlers = []
+
 # we keep a separate, non-rosout log file to contain stack traces and
 # other sorts of information that scare users but are essential for
 # debugging
@@ -138,17 +144,89 @@ def rospywarn(msg, *args):
     """Internal rospy client library warn logging"""
     _rospy_logger.warn(msg, *args)
     
-logdebug = logging.getLogger('rosout').debug
+def add_log_handler(level, h):
+    """
+    Add handler for specified level
+    @param level: log level (use constants from Log)
+    @type  level: int
+    @param h: log message handler
+    @type  h: fn
+    @raise ROSInternalException: if level is invalid
+    """
+    if level == Log.DEBUG:
+        _logdebug_handlers.append(h)
+    elif level == Log.INFO:
+        _loginfo_handlers.append(h)
+    elif level == Log.WARN:
+        _logwarn_handlers.append(h)
+    elif level == Log.ERROR:
+        _logerr_handlers.append(h)
+    elif level == Log.FATAL:
+        _logfatal_handlers.append(h)
+    else:
+        raise rospy.exceptions.ROSInternalException("invalid log level: %s"%level)
+    
+def logdebug(msg, *args):
+    """
+    Log a debug message to the /rosout topic
+    @param msg: message to log, may include formatting arguments
+    @type  msg: str
+    @param args: format-string arguments, if necessary
+    """    
+    if args:
+        msg = msg%args
+    for h in _logdebug_handlers:
+        h(msg)
 
-logwarn = logging.getLogger('rosout').warning
+def logwarn(msg, *args):
+    """
+    Log a warning message to the /rosout topic
+    @param msg: message to log, may include formatting arguments
+    @type  msg: str
+    @param args: format-string arguments, if necessary    
+    """    
+    if args:
+        msg = msg%args
+    for h in _logwarn_handlers:
+        h(msg)
 
-loginfo = logging.getLogger('rosout').info
+def loginfo(msg, *args):
+    """
+    Log an info message to the /rosout topic    
+    @param msg: message to log, may include formatting arguments
+    @type  msg: str
+    @param args: format-string arguments, if necessary
+    """    
+    if args:
+        msg = msg%args
+    for h in _loginfo_handlers:
+        h(msg)
 logout = loginfo # alias deprecated name
 
-logerr = logging.getLogger('rosout').error
+def logerr(msg, *args):
+    """
+    Log an error message to the /rosout topic
+    @param msg: message to log, may include formatting arguments
+    @type  msg: str
+    @param args: format-string arguments, if necessary
+    """
+    if args:
+        msg = msg%args
+    for h in _logerr_handlers:
+        h(msg)
 logerror = logerr # alias logerr
 
-logfatal = logging.getLogger('rosout').critical
+def logfatal(msg, *args):
+    """
+    Log an error message to the /rosout topic    
+    @param msg: message to log, may include formatting arguments
+    @type  msg: str
+    @param args: format-string arguments, if necessary
+    """        
+    if args:
+        msg = msg%args
+    for h in _logfatal_handlers:
+        h(msg)
 
 #########################################################
 # CONSTANTS
