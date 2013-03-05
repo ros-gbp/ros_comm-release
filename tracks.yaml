@@ -20,6 +20,24 @@ tracks:
     vcs_type: git
     vcs_uri: git@github.com:ros/ros_comm.git
     version: :{auto}
+  fuerte:
+    actions:
+    - bloom-export-upstream :{vcs_local_uri} :{vcs_type} --tag :{release_tag} --display-uri
+      :{vcs_uri} --name :{name} --output-dir :{archive_dir_path}
+    - git-bloom-import-upstream :{archive_path} :{patches} --release-version :{version}
+      --replace
+    - git-bloom-generate -y rosrelease :{ros_distro} --source upstream -i :{release_inc}
+    - git-bloom-generate -y rosdebian --prefix release/:{ros_distro} :{ros_distro}
+      -i :{release_inc}
+    devel_branch: fuerte-devel
+    name: ros_comm
+    patches: null
+    release_inc: -1
+    release_tag: :{version}
+    ros_distro: fuerte
+    vcs_type: git
+    vcs_uri: htpps://github.com/ros/ros_comm
+    version: :{auto}
   hydro:
     actions:
       generate_debians:
