@@ -36,7 +36,7 @@ tracks:
     release_tag: :{version}
     ros_distro: fuerte
     vcs_type: git
-    vcs_uri: htpps://github.com/ros/ros_comm
+    vcs_uri: https://github.com/ros/ros_comm
     version: :{auto}
   hydro:
     actions:
