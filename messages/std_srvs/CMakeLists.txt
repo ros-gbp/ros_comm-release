@@ -1,17 +1,11 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.3)
 project(std_srvs)
 
+find_package(catkin REQUIRED COMPONENTS message_generation)
+
 add_service_files(DIRECTORY srv
-  FILES Empty.srv
-  )
+  FILES Empty.srv)
 
-generate_messages(DEPENDENCIES std_msgs)
+generate_messages()
 
-catkin_project(std_srvs)
-
-install(DIRECTORY srv
-  DESTINATION share/std_srvs
-  PATTERN ".svn" EXCLUDE
-  )
-
-
+catkin_package(CATKIN_DEPENDS message_runtime)

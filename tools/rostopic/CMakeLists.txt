@@ -1,9 +1,11 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.3)
 project(rostopic)
-find_package(ROS COMPONENTS catkin rostest)
+find_package(catkin REQUIRED COMPONENTS rostest)
+catkin_package()
+
+catkin_python_setup()
 
 add_rostest(test/rostopic.test)
 
 install(PROGRAMS scripts/rostopic
-  DESTINATION share/rostopic/scripts
-  )
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

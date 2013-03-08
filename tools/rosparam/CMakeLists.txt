@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.3)
 project(rosparam)
-find_package(ROS COMPONENTS catkin rostest)
+find_package(catkin REQUIRED)
+catkin_package()
 
-add_rostest(test/rosparam.test)
+catkin_python_setup()

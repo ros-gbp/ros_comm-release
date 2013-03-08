@@ -108,10 +108,8 @@ def record_cmd(argv):
         if not options.duration and not options.size:
             parser.error("Split specified without giving a maximum duration or size")
         cmd.extend(["--split"])
-        if options.duration:
-            cmd.extend(["--duration", options.duration])
-        if options.size:
-            cmd.extend(["--size", str(options.size)])
+    if options.duration:    cmd.extend(["--duration", options.duration])
+    if options.size:        cmd.extend(["--size", str(options.size)])
     if options.node:
         cmd.extend(["--node", options.node])
 
@@ -256,6 +254,10 @@ The following variables are available:
         sys.stderr.write('Cannot locate input bag file [%s]' % inbag_filename)
         sys.exit(2)
 
+    if os.path.realpath(inbag_filename) == os.path.realpath(outbag_filename):
+        sys.stderr.write('Cannot use same file as input and output [%s]' % inbag_filename)
+        sys.exit(3)
+
     filter_fn = expr_eval(expr)
 
     outbag = Bag(outbag_filename, 'w')
@@ -263,7 +265,7 @@ The following variables are available:
     try:
         inbag = Bag(inbag_filename)
     except ROSBagUnindexedException as ex:
-        sys.stderr.write('ERROR bag unindexed: %s.  Run rosbag reindex.' % arg)
+        sys.stderr.write('ERROR bag unindexed: %s.  Run rosbag reindex.' % inbag_filename)
         return
 
     try:
@@ -706,8 +708,7 @@ class RosbagCmds(UserDict):
         if cmd in self:
             self[cmd](['-h'])
         else:
-            sys.stderr.write("Unknown command: '%s'" % cmd)
-            sys.stderr.write()
+            print("Unknown command: '%s'" % cmd, file=sys.stderr)
             sys.stderr.write(self.get_valid_cmds())
 
 class ProgressMeter(object):
