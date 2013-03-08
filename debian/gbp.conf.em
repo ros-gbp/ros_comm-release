@@ -1,3 +1,3 @@
 [git-buildpackage]
-upstream-branch=release/rosgraph/1.9.41
+upstream-branch=@(release_tag)
 upstream-tree=branch
