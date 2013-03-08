@@ -1,3 +1,3 @@
 [git-buildpackage]
-upstream-branch=release/ros_comm/1.9.41
+upstream-branch=@(release_tag)
 upstream-tree=branch
