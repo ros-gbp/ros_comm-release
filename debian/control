@@ -1,0 +1,12 @@
+Source: ros-hydro-test-rosgraph
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 7.0.50~), ros-hydro-catkin, ros-hydro-rostest
+Homepage: http://ros.org/wiki/rosgraph
+Standards-Version: 3.9.2
+
+Package: ros-hydro-test-rosgraph
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, 
+Description: Tests for rosgraph which depend on rostest.
