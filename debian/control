@@ -1,0 +1,12 @@
+Source: ros-hydro-rosbag
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 7.0.50~), libboost-all-dev, libbz2-dev, python-imaging, ros-hydro-catkin, ros-hydro-cpp-common, ros-hydro-rosconsole, ros-hydro-roscpp, ros-hydro-roscpp-serialization, ros-hydro-topic-tools, ros-hydro-xmlrpcpp
+Homepage: http://ros.org/wiki/rosbag
+Standards-Version: 3.9.2
+
+Package: ros-hydro-rosbag
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-all-dev, libbz2-dev, python-rospkg, ros-hydro-genmsg, ros-hydro-genpy, ros-hydro-rosconsole, ros-hydro-roscpp, ros-hydro-roslib, ros-hydro-rospy, ros-hydro-topic-tools, ros-hydro-xmlrpcpp
+Description: This is a set of tools for recording from and playing back to ROS topics. It is intended to be high performance and avoids deserialization and reserialization of the messages.
