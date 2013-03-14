@@ -1,0 +1,12 @@
+Source: ros-hydro-rosgraph-msgs
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 7.0.50~), ros-hydro-catkin, ros-hydro-message-generation, ros-hydro-std-msgs
+Homepage: http://ros.org/wiki/rosgraph_msgs
+Standards-Version: 3.9.2
+
+Package: ros-hydro-rosgraph-msgs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-hydro-message-runtime, ros-hydro-std-msgs
+Description: Messages relating to the ROS Computation Graph. These are generally considered to be low-level messages that end users do not interact with.
