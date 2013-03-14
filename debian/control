@@ -1,0 +1,12 @@
+Source: ros-hydro-test-rospy
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 7.0.50~), ros-hydro-catkin, ros-hydro-genmsg, ros-hydro-rostest, ros-hydro-std-msgs, ros-hydro-test-rosmaster
+Homepage: http://ros.org/wiki/rospy
+Standards-Version: 3.9.2
+
+Package: ros-hydro-test-rospy
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, 
+Description: rospy unit and integration test framework.
