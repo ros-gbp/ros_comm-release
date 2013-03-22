@@ -1,0 +1,12 @@
+Source: ros-hydro-xmlrpcpp
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 7.0.50~), ros-hydro-catkin, ros-hydro-cpp-common
+Homepage: http://xmlrpcpp.sourceforge.net
+Standards-Version: 3.9.2
+
+Package: ros-hydro-xmlrpcpp
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-hydro-cpp-common
+Description: XmlRpc++ is a C++ implementation of the XML-RPC protocol. This version is heavily modified from the package available on SourceForge in order to support roscpp's threading model. As such, we are maintaining our own fork.
