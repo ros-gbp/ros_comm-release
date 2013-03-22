@@ -100,7 +100,7 @@ def ros_root_check(ctx, ros_root=None):
         path = ros_root
     else:
         path = ctx.ros_root
-    if not os.path.basename(path) == 'ros':
+    if os.path.basename(os.path.normpath(path)) not in ['ros', 'rosbuild']:
         return "ROS_ROOT [%s] must end in directory named 'ros'"%path      
     
 def _writable_dir_check(ctx, path, name):
@@ -155,7 +155,9 @@ def ros_master_uri_hostname(ctx):
         splits = p[1].split(':')
         if len(splits) != 2:
             return #caught by different rule
-        socket.gethostbyname(splits[0])
+        #TODO IPV6: only check for IPv6 when IPv6 is enabled
+        socket.getaddrinfo(splits[0], 0, 0, 0, socket.SOL_TCP)
+
     except socket.gaierror, e:
         return "Unknown host %s"%splits[0]
     
