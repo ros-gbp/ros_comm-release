@@ -181,14 +181,14 @@ def get_nodes_by_machine(machine):
     
     master = rosgraph.Master(ID)
     try:
-        machine_actual = socket.gethostbyname(machine)
+        machine_actual = [host[4][0] for host in socket.getaddrinfo(machine, 0, 0, 0, socket.SOL_TCP)]
     except:
         raise ROSNodeException("cannot resolve machine name [%s] to address"%machine)
 
     # get all the node names, lookup their uris, parse the hostname
     # from the uris, and then compare the resolved hostname against
     # the requested machine name.
-    matches = [machine, machine_actual]
+    matches = [machine] + machine_actual
     not_matches = [] # cache lookups
     node_names = get_node_names()
     retval = []
@@ -206,8 +206,8 @@ def get_nodes_by_machine(machine):
             elif h in not_matches:
                 continue
             else:
-                r = socket.gethostbyname(h)
-                if r == machine_actual:
+                r = [host[4][0] for host in socket.getaddrinfo(h, 0, 0, 0, socket.SOL_TCP)]
+                if set(r) & set(machine_actual):
                     matches.append(r)
                     retval.append(n)
                 else:
@@ -447,8 +447,9 @@ def rosnode_cleanup():
         master = rosgraph.Master(ID)
         print("Unable to contact the following nodes:")
         print('\n'.join(' * %s'%n for n in unpinged))
-        print("cleanup will purge all information about these nodes from the master")
-        print("Please type y or n to continue")
+        print("Warning: these might include alive and functioning nodes, e.g. in unstable networks.")
+        print("Cleanup will purge all information about these nodes from the master.")
+        print("Please type y or n to continue:")
         input = sys.stdin.readline()
         while not input.strip() in ['y', 'n']:
             input = sys.stdin.readline()
@@ -747,6 +748,7 @@ Commands:
 \trosnode info\tprint information about node
 \trosnode machine\tlist nodes running on a particular machine or list machines
 \trosnode kill\tkill a running node
+\trosnode cleanup\tpurge registration information of unreachable nodes
 
 Type rosnode <command> -h for more detailed usage, e.g. 'rosnode ping -h'
 """)
