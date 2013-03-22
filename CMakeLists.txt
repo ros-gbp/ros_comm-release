@@ -2,22 +2,57 @@ cmake_minimum_required(VERSION 2.8.3)
 project(roscpp)
 
 find_package(catkin REQUIRED COMPONENTS
-  genmsg
-  cpp_common rostime rosconsole roscpp_serialization
-  roscpp_traits std_msgs rosgraph_msgs xmlrpcpp rosunit
-  rostest
-  )
+  cpp_common message_generation rosconsole roscpp_serialization roscpp_traits rosgraph_msgs rostime std_msgs xmlrpcpp
+)
 
-catkin_package(
-  LIBRARIES roscpp
-  INCLUDE_DIRS include
-  DEPENDS cpp_common rostime rosconsole roscpp_serialization
-          roscpp_traits std_msgs rosgraph_msgs xmlrpcpp
-  )
+catkin_package_xml()
+# split version in parts and pass to extra file
+string(REPLACE "." ";" roscpp_VERSION_LIST "${roscpp_VERSION}")
+list(LENGTH roscpp_VERSION_LIST _count)
+if(NOT _count EQUAL 3)
+  message(FATAL_ERROR "roscpp version '${roscpp_VERSION}' does not match 'MAJOR.MINOR.PATCH' pattern")
+endif()
+list(GET roscpp_VERSION_LIST 0 roscpp_VERSION_MAJOR)
+list(GET roscpp_VERSION_LIST 1 roscpp_VERSION_MINOR)
+list(GET roscpp_VERSION_LIST 2 roscpp_VERSION_PATCH)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/ros/common.h.in ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/ros/common.h)
 
 find_package(Boost REQUIRED COMPONENTS signals filesystem system)
 
-include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
+include_directories(include ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/ros ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
+
+add_message_files(
+  DIRECTORY msg
+  FILES Logger.msg
+)
+
+add_service_files(
+  DIRECTORY srv
+  FILES Empty.srv GetLoggers.srv SetLoggerLevel.srv
+)
+
+generate_messages()
+
+set(PTHREAD_LIB "")
+find_package(Threads)
+if(CMAKE_THREAD_LIBS_INIT)
+  string(LENGTH ${CMAKE_THREAD_LIBS_INIT} _length)
+  if(_length GREATER 2)
+    string(SUBSTRING ${CMAKE_THREAD_LIBS_INIT} 0 2 _prefix)
+    if(${_prefix} STREQUAL "-l")
+      math(EXPR _rest_len "${_length} - 2")
+      string(SUBSTRING ${CMAKE_THREAD_LIBS_INIT} 2 ${_rest_len} PTHREAD_LIB)
+    endif()
+  endif()
+endif()
+
+catkin_package(
+  INCLUDE_DIRS include ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/ros
+  LIBRARIES roscpp ${PTHREAD_LIB}
+  CATKIN_DEPENDS cpp_common message_runtime rosconsole roscpp_serialization roscpp_traits rosgraph_msgs rostime std_msgs xmlrpcpp
+  DEPENDS Boost
+)
 
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
@@ -30,17 +65,6 @@ CHECK_FUNCTION_EXISTS(trunc HAVE_TRUNC)
 # Output test results to config.h
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/libros/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-# split version in parts and pass to preprocessor
-string(REPLACE "." ";" roscpp_VERSION_LIST "${roscpp_VERSION}")
-list(LENGTH roscpp_VERSION_LIST _count)
-if(NOT _count EQUAL 3)
-  message(FATAL_ERROR "roscpp version '${roscpp_VERSION}' does not match 'MAJOR.MINOR.PATCH' pattern")
-endif()
-list(GET roscpp_VERSION_LIST 0 roscpp_VERSION_MAJOR)
-list(GET roscpp_VERSION_LIST 1 roscpp_VERSION_MINOR)
-list(GET roscpp_VERSION_LIST 2 roscpp_VERSION_PATCH)
-add_definitions(-Droscpp_VERSION_MAJOR=${roscpp_VERSION_MAJOR} -Droscpp_VERSION_MINOR=${roscpp_VERSION_MINOR} -Droscpp_VERSION_PATCH=${roscpp_VERSION_PATCH})
 
 add_library(roscpp 
   src/libros/master.cpp
@@ -98,91 +122,16 @@ target_link_libraries(roscpp
   ${Boost_LIBRARIES}
   )
 
-add_message_files(
-  DIRECTORY msg
-  FILES Logger.msg
-)
-
-add_service_files(
-  DIRECTORY srv
-  FILES Empty.srv GetLoggers.srv SetLoggerLevel.srv
-)
-
-# Testing message and service files.  See comment below about subdirectory support.
-add_message_files(
-  NOINSTALL
-  DIRECTORY test/msg
-  FILES
-  TestArray.msg
-  TestEmpty.msg
-  TestStringInt.msg
-  TestWithHeader.msg
-)
-add_service_files(
-  NOINSTALL
-  DIRECTORY test/srv
-  FILES
-  BadTestStringString.srv
-  TestStringString.srv
-)
-
-# Serialization testing message files.
-add_message_files(
-  NOINSTALL
-  DIRECTORY test_serialization/msg
-  FILES
-  ArrayOfFixedLength.msg
-  ArrayOfVariableLength.msg
-  Constants.msg
-  CustomHeader.msg
-  EmbeddedExternal.msg
-  EmbeddedFixedLength.msg
-  EmbeddedVariableLength.msg
-  FixedLengthArrayOfExternal.msg
-  FixedLength.msg
-  FixedLengthStringArray.msg
-  HeaderNotFirstMember.msg
-  VariableLengthArrayOfExternal.msg
-  VariableLength.msg
-  VariableLengthStringArray.msg
-  WithDuration.msg
-  WithHeader.msg
-  WithMemberNamedHeaderThatIsNotAHeader.msg
-  WithTime.msg
-)
-
-# Performance testing message files.  add_message_files() does not
-# currently support being called from a subdirectory, so this is here
-# for now.
-add_message_files(
-  NOINSTALL
-  DIRECTORY perf/msg
-  FILES
-  LatencyMessage.msg
-  ThroughputMessage.msg
-)
-
-# Message files for testing the performance of serialization.
-add_message_files(
-  NOINSTALL
-  DIRECTORY perf_serialization/msg
-  FILES
-  ChannelFloat32.msg
-  Point32.msg
-  PointCloud.msg
-)
-
-# dependencies std_msgs and rosgraph_msgs are needed by tests, but not by roscpp otherwise.
-generate_messages(DEPENDENCIES std_msgs rosgraph_msgs)
-# generate_messages()
-
 #explicitly install library and includes
 install(TARGETS roscpp
+  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
 install(DIRECTORY include/
   DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}
   FILES_MATCHING PATTERN "*.h")
+install(FILES ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/ros/common.h
+  DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION}/ros)
 # install legacy infrastructure needed by rosbuild
 install(FILES rosbuild/roscpp.cmake
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rosbuild)
@@ -193,8 +142,3 @@ install(PROGRAMS
 install(FILES
   rosbuild/scripts/msg_gen.py
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rosbuild/scripts)
-
-add_subdirectory(test)
-add_subdirectory(perf)
-add_subdirectory(test_serialization)
-add_subdirectory(perf_serialization)

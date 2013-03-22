@@ -1,3 +1,0 @@
-<launch>
-  <test test-name="pre_deserialize" pkg="roscpp" type="roscpp-pre_deserialize"/>
-</launch>

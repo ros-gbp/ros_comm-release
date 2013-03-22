@@ -1,3 +1,0 @@
-<launch>
-  <test test-name="intraprocess_subscriptions" pkg="roscpp" type="roscpp-intraprocess_subscriptions"/>
-</launch>
