@@ -1,6 +1,6 @@
 <package>
   <name>roslaunch</name>
-  <version>1.9.26</version>
+  <version>1.9.44</version>
   <description>
     roslaunch is a tool for easily launching multiple ROS <a
     href="http://ros.org/wiki/Nodes">nodes</a> locally and remotely
@@ -12,19 +12,22 @@
     specify the parameters to set and nodes to launch, as well as the
     machines that they should be run on.
   </description>
-  <maintainer email="dthomas@willowgarage.com">Dirk Thomas</maintainer>
+  <maintainer email="dthomas@osrfoundation.org">Dirk Thomas</maintainer>
   <license>BSD</license>
 
   <url>http://ros.org/wiki/roslaunch</url>
   <author>Ken Conley</author>
 
-  <build_depend>catkin</build_depend>
-  <build_depend>rosgraph_msgs</build_depend>
+  <buildtool_depend>catkin</buildtool_depend>
 
   <run_depend>python-paramiko</run_depend>
   <run_depend>python-yaml</run_depend>
   <run_depend>rosclean</run_depend>
+  <run_depend>rosgraph_msgs</run_depend>
+  <run_depend>roslib</run_depend>
   <run_depend>rosmaster</run_depend>
+  <run_depend>rosout</run_depend>
+  <run_depend>rosparam</run_depend>
 
   <export>
     <rosdoc config="rosdoc.yaml"/>
