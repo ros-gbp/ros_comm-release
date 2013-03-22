@@ -20,16 +20,13 @@ tracks:
     version: :{auto}
   groovy:
     actions:
-      generate_debians:
-      - git-bloom-generate -y rosdebian --prefix release/:{ros_distro} :{ros_distro}
-        -i :{release_inc}
-      generate_release:
-      - git-bloom-generate -y rosrelease :{ros_distro} --source upstream -i :{release_inc}
-      import_upstream:
-      - bloom-export-upstream :{vcs_local_uri} :{vcs_type} --tag :{release_tag} --display-uri
-        :{vcs_uri} --name :{name} --output-dir :{archive_dir_path}
-      - git-bloom-import-upstream :{archive_path} :{patches} --release-version :{version}
-        --replace
+    - bloom-export-upstream :{vcs_local_uri} :{vcs_type} --tag :{release_tag} --display-uri
+      :{vcs_uri} --name :{name} --output-dir :{archive_dir_path}
+    - git-bloom-import-upstream :{archive_path} :{patches} --release-version :{version}
+      --replace
+    - git-bloom-generate -y rosrelease :{ros_distro} --source upstream -i :{release_inc}
+    - git-bloom-generate -y rosdebian --prefix release/:{ros_distro} :{ros_distro}
+      -i :{release_inc}
     devel_branch: groovy-devel
     last_version: 1.8.41
     name: ros_comm
