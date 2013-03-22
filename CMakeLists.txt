@@ -4,7 +4,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp xmlrpcpp rosconsole)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES message_filters
-  DEPENDS roscpp xmlrpcpp rosconsole
+  CATKIN_DEPENDS roscpp xmlrpcpp rosconsole
 )
 catkin_python_setup()
 
@@ -17,6 +17,7 @@ add_library(${PROJECT_NAME} src/connection.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
 
