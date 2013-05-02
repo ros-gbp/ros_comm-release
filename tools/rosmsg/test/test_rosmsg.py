@@ -53,8 +53,7 @@ class TestRosmsg(unittest.TestCase):
         pass
 
     def test_fullusage(self):
-        from rosmsg import MODE_MSG
-        text = rosmsg.fullusage(MODE_MSG)
+        text = rosmsg.fullusage('rosmsg')
         self.assert_("Commands" in text)
         cmds = ['show', 'md5', 'package', 'packages']
         for c in cmds:

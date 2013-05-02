@@ -40,15 +40,14 @@
 
 #include "rosbag/message_instance.h"
 #include "rosbag/query.h"
-#include "rosbag/macros.h"
 
 namespace rosbag {
 
-struct MessageRange;
-struct IndexEntry;
-struct ViewIterHelper;
+class MessageRange;
+class IndexEntry;
+class ViewIterHelper;
 
-class ROSBAG_DECL View
+class View
 {
     friend class Bag;
 

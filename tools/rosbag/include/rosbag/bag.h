@@ -35,7 +35,6 @@
 #ifndef ROSBAG_BAG_H
 #define ROSBAG_BAG_H
 
-#include "rosbag/macros.h"
 #include "rosbag/buffer.h"
 #include "rosbag/chunked_file.h"
 #include "rosbag/constants.h"
@@ -75,7 +74,7 @@ class MessageInstance;
 class View;
 class Query;
 
-class ROSBAG_DECL Bag
+class Bag
 {
     friend class MessageInstance;
     friend class View;

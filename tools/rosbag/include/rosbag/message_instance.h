@@ -40,7 +40,6 @@
 #include <ros/time.h>
 
 #include "rosbag/structures.h"
-#include "macros.h"
 
 namespace rosbag {
 
@@ -55,7 +54,7 @@ class Bag;
  *  It adheres to the necessary ros::message_traits to be directly
  *  serializable.
  */
-class ROSBAG_DECL MessageInstance
+class MessageInstance
 {
     friend class View;
   

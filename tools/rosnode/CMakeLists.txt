@@ -1,8 +1,5 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 2.8)
 project(rosnode)
-find_package(catkin REQUIRED COMPONENTS rostest)
-catkin_package()
-
-catkin_python_setup()
+find_package(ROS COMPONENTS catkin rostest)
 
 add_rostest(test/rosnode.test)

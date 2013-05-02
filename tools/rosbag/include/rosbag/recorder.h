@@ -36,11 +36,9 @@
 #define ROSBAG_RECORDER_H
 
 #include <sys/stat.h>
-#if !defined(_MSC_VER)
-  #include <termios.h>
-  #include <unistd.h>
-#endif
+#include <termios.h>
 #include <time.h>
+#include <unistd.h>
 
 #include <queue>
 #include <string>
@@ -58,11 +56,10 @@
 
 #include "rosbag/bag.h"
 #include "rosbag/stream.h"
-#include "rosbag/macros.h"
 
 namespace rosbag {
 
-class ROSBAG_DECL OutgoingMessage
+class OutgoingMessage
 {
 public:
     OutgoingMessage(std::string const& _topic, topic_tools::ShapeShifter::ConstPtr _msg, boost::shared_ptr<ros::M_string> _connection_header, ros::Time _time);
@@ -73,7 +70,7 @@ public:
     ros::Time                           time;
 };
 
-class ROSBAG_DECL OutgoingQueue
+class OutgoingQueue
 {
 public:
     OutgoingQueue(std::string const& _filename, std::queue<OutgoingMessage>* _queue, ros::Time _time);
@@ -83,7 +80,7 @@ public:
     ros::Time                    time;
 };
 
-struct ROSBAG_DECL RecorderOptions
+struct RecorderOptions
 {
     RecorderOptions();
 
@@ -109,7 +106,7 @@ struct ROSBAG_DECL RecorderOptions
     std::vector<std::string> topics;
 };
 
-class ROSBAG_DECL Recorder
+class Recorder
 {
 public:
     Recorder(RecorderOptions const& options);

@@ -36,11 +36,10 @@
 #define ROSBAG_BUFFER_H
 
 #include <stdint.h>
-#include "macros.h"
 
 namespace rosbag {
 
-class ROSBAG_DECL Buffer
+class Buffer
 {
 public:
     Buffer();

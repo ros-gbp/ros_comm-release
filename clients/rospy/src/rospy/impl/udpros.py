@@ -68,10 +68,7 @@ class UDPROSHandler(rospy.transport.ProtocolHandler):
         """
         if self.server is not None:
             return
-        if rosgraph.network.use_ipv6():
-            s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        else:
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.bind((rosgraph.network.get_bind_address(), self.port))
         if self.port == 0:
             self.port = s.getsockname()[1]

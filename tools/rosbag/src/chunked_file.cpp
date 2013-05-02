@@ -39,19 +39,6 @@
 #include <boost/format.hpp>
 
 #include <ros/ros.h>
-#ifdef _WIN32
-#    ifdef __MINGW32__
-#      define fseeko fseeko64
-#      define ftello ftello64
-//     not sure if we need a ftruncate here yet or not
-#    else
-#        include <io.h>
-#        define fseeko _fseeki64
-#        define ftello _ftelli64
-#        define fileno _fileno
-#        define ftruncate _chsize
-#    endif
-#endif
 
 using std::string;
 using boost::format;
@@ -65,9 +52,9 @@ ChunkedFile::ChunkedFile() :
     offset_(0),
     compressed_in_(0),
     unused_(NULL),
-    nUnused_(0)
+    nUnused_(0),
+    stream_factory_(new StreamFactory(this))
 {
-    stream_factory_ = boost::shared_ptr<StreamFactory>(new StreamFactory(this));
 }
 
 ChunkedFile::~ChunkedFile() {
@@ -86,32 +73,16 @@ void ChunkedFile::open(string const& filename, string const& mode) {
     // Open the file
     if (mode == "r+b") {
         // Read + write requires file to exists.  Create a new file if it doesn't exist.
-        #if defined(_MSC_VER) && (_MSC_VER >= 1400 )
-            fopen_s( &file_, filename.c_str(), "r" );
-        #else
-            file_ = fopen(filename.c_str(), "r");
-        #endif
+        file_ = fopen(filename.c_str(), "r");
         if (file_ == NULL)
-            #if defined(_MSC_VER) && (_MSC_VER >= 1400 )
-                fopen_s( &file_, filename.c_str(), "w+b" );
-            #else
-                file_ = fopen(filename.c_str(), "w+b");
-            #endif
+            file_ = fopen(filename.c_str(), "w+b");
         else {
             fclose(file_);
-            #if defined(_MSC_VER) && (_MSC_VER >= 1400 )
-                fopen_s( &file_, filename.c_str(), "w+b" );
-            #else
-                file_ = fopen(filename.c_str(), "r+b");
-            #endif
+            file_ = fopen(filename.c_str(), "r+b");
         }
     }
     else
-        #if defined(_MSC_VER) && (_MSC_VER >= 1400 )
-            fopen_s( &file_, filename.c_str(), mode.c_str() );
-        #else
-            file_ = fopen(filename.c_str(), mode.c_str());
-        #endif
+        file_ = fopen(filename.c_str(), mode.c_str());
 
     if (!file_)
         throw BagIOException((format("Error opening file: %1%") % filename.c_str()).str());

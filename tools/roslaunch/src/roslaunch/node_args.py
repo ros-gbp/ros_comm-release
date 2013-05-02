@@ -242,8 +242,5 @@ def create_local_process_args(node, machine, env=None):
         cmd = matches[0]
     if not cmd:
         raise NodeParamsException("Cannot locate node of type [%s] in package [%s]"%(node.type, node.package))
-    cmd = [cmd]
-    if sys.platform in ['win32']:
-        if os.path.splitext(cmd[0])[1] == '.py':
-            cmd = ['python'] + cmd
-    return _launch_prefix_args(node) + cmd + args
+    return _launch_prefix_args(node) + [cmd] + args        
+    

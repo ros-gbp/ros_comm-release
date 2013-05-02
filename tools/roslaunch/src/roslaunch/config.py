@@ -58,8 +58,6 @@ except:
 def namespaces_of(name):
     """
     utility to determine namespaces of a name
-    @raises ValueError
-    @raises TypeError
     """
     if name is None: 
         raise ValueError('name')
@@ -90,9 +88,6 @@ def load_roscore(loader, config, verbose=True):
     loader.load(f_roscore, config, core=True, verbose=verbose)    
         
 def calculate_env_loader(env=None):
-    """
-    @raise RLException
-    """
     if env is None:
         env = os.environ
     # guess the env loader based on distro name
@@ -254,7 +249,6 @@ class ROSLaunchConfig(object):
         Declare an exectuable to be run during the launch
         @param exe: Executable
         @type  exe: L{Executable}
-        @raises ValueError
         """
         if not exe:
             raise ValueError("exe is None")
@@ -303,7 +297,7 @@ class ROSLaunchConfig(object):
         @type  m: L{Machine}
         @return: True if new machine added, False if machine already specified.
         @rtype: bool
-        @raises RLException: if cannot add machine as specified
+        @raise RLException: if cannot add machine as specified
         """
         name = m.name
         # Fuerte: all machines must have an env loader. We can guess
@@ -338,7 +332,7 @@ class ROSLaunchConfig(object):
         @type  node: L{Node}
         @param core: if True, node is a ROS core node
         @type  core: bool
-        @raises RLException: if ROS core node is missing required name
+        @raise RLException: if ROS core node is missing required name
         """
         if node.name:
             # check for duplicates
@@ -372,7 +366,7 @@ class ROSLaunchConfig(object):
         @type  node: L{Node}
         @return: machine to run on
         @rtype: L{Machine}
-        @raises RLException: If machine state is improperly configured
+        @raise RLException: If machine state is improperly configured
         """
         machine = node.machine_name
         #Lookup machine
@@ -402,7 +396,6 @@ def load_config_default(roslaunch_files, port, roslaunch_strs=None, loader=None,
     @type  assign_machines: bool
     @return: initialized rosconfig instance
     @rytpe: L{ROSLaunchConfig} initialized rosconfig instance
-    @raises: RLException
     """
     logger = logging.getLogger('roslaunch.config')
     

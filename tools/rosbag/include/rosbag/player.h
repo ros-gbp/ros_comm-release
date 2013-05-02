@@ -36,11 +36,9 @@
 #define ROSBAG_PLAYER_H
 
 #include <sys/stat.h>
-#if !defined(_MSC_VER)
-  #include <termios.h>
-  #include <unistd.h>
-#endif
+#include <termios.h>
 #include <time.h>
+#include <unistd.h>
 
 #include <queue>
 #include <string>
@@ -51,11 +49,10 @@
 #include "rosbag/bag.h"
 
 #include "rosbag/time_translator.h"
-#include "macros.h"
 
 namespace rosbag {
 
-struct ROSBAG_DECL PlayerOptions
+struct PlayerOptions
 {
     PlayerOptions();
 
@@ -73,8 +70,6 @@ struct ROSBAG_DECL PlayerOptions
     bool     has_time;
     bool     loop;
     float    time;
-    bool     has_duration;
-    float    duration;
     bool     keep_alive;
     ros::Duration skip_empty;
 
@@ -84,7 +79,7 @@ struct ROSBAG_DECL PlayerOptions
 
 
 //! PRIVATE. A helper class to track relevant state for publishing time
-class ROSBAG_DECL TimePublisher {
+class TimePublisher {
 public:
     /*! Create a time publisher
      *  A publish_frequency of < 0 indicates that time shouldn't actually be published
@@ -145,7 +140,7 @@ private:
  *  This API is currently considered private, but will be released in the 
  * future after view.
  */
-class ROSBAG_DECL Player
+class Player
 {
 public:
     Player(PlayerOptions const& options);
@@ -180,13 +175,8 @@ private:
 
     // Terminal
     bool    terminal_modified_;
-#if defined(_MSC_VER)
-    HANDLE input_handle;
-    DWORD stdin_set;
-#else
     termios orig_flags_;
     fd_set  stdin_fdset_;
-#endif
     int     maxfd_;
 
     TimeTranslator time_translator_;

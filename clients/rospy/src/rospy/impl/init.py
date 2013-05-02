@@ -45,11 +45,11 @@ import time
 import traceback
 
 import rosgraph
-import rosgraph.roslogging
 import rosgraph.xmlrpc
 
 from ..names import _set_caller_id
 from ..core import is_shutdown, signal_shutdown, rospyerr
+from ..rostime import is_wallclock, get_time
 
 from .tcpros import init_tcpros
 from .masterslave import ROSHandler
@@ -104,6 +104,33 @@ def start_node(environ, resolved_name, master_uri=None, port=None):
     logging.getLogger("rospy.init").info("registered with master")
     return node
 
-class RosStreamHandler(rosgraph.roslogging.RosStreamHandler):
-    def __init__(self, colorize=True):
-        super(RosStreamHandler, self).__init__(colorize)
+_logging_to_rospy_names = {
+      'DEBUG':    'DEBUG',
+      'INFO':     'INFO',
+      'WARNING':  'WARN',
+      'ERROR':    'ERROR',
+      'CRITICAL': 'FATAL',
+      }
+
+class RosStreamHandler(logging.Handler):
+   def emit(self, record):
+      # TODO: (AJH) convert levelname CRITICAL to FATAL
+      level = _logging_to_rospy_names[record.levelname]
+      if is_wallclock():
+         msg = "[%s] [WallTime: %f] %s\n"%(level, time.time(),
+               record.getMessage())
+      else:
+         msg = "[%s] [WallTime: %f] [%f] %s\n"%(level, time.time(), get_time(),
+               record.getMessage())
+      if record.levelno < logging.WARNING:
+         sys.stdout.write(msg)
+      else:
+         sys.stderr.write(msg)
+
+_loggers_initialized = False
+def init_log_handlers():
+    global _loggers_initialized
+    if _loggers_initialized:
+        return
+
+    logging.getLogger('').addHandler(RosStreamHandler())

@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 2.8)
 project(test_roslib_comm)
-find_package(catkin REQUIRED COMPONENTS genmsg rosgraph_msgs std_msgs)
+find_package(catkin)
 
 add_message_files(DIRECTORY msg
   FILES
@@ -19,10 +19,7 @@ add_message_files(DIRECTORY msg
   TypeNameChangeArray2.msg
   TypeNameChangeComplex1.msg
   TypeNameChangeComplex2.msg
-  NOINSTALL
   )
-generate_messages(DEPENDENCIES rosgraph_msgs std_msgs)
+generate_messages(DEPENDENCIES std_msgs rosgraph_msgs)
 
-catkin_package()
-
-catkin_add_nosetests(test)
+catkin_project(test_roslib_comm)

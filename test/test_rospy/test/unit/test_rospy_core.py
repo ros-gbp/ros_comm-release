@@ -61,6 +61,21 @@ class TestRospyCore(unittest.TestCase):
                 parse_rosrpc_uri(i)
                 self.fail("%s was an invalid rosrpc uri"%i)
             except: pass
+        
+    def test_add_log_handler(self):
+        # tripwire test
+        import rospy.core
+        from rosgraph_msgs.msg import Log
+        for level in [Log.DEBUG, 
+                      Log.INFO,
+                      Log.WARN,
+                      Log.ERROR,
+                      Log.FATAL]:
+            rospy.core.add_log_handler(level, lambda x: x)
+        import rospy.exceptions
+        try:
+            rospy.core.add_log_handler(lambda x: x, -1)
+        except rospy.exceptions.ROSInternalException, e: pass
 
     def test_loggers(self):
         # trip wire tests
@@ -125,7 +140,7 @@ class TestRospyCore(unittest.TestCase):
         self.assertEquals(rr, rospy.core.get_ros_root(env={'ROS_ROOT': rr}, required=False))
         self.assertEquals(rr, rospy.core.get_ros_root(env={'ROS_ROOT': rr}, required=True))        
 
-        self.assertEquals(os.path.normpath(os.environ['ROS_ROOT']), rospy.core.get_ros_root(required=False))
+        self.assertEquals(os.environ['ROS_ROOT'], rospy.core.get_ros_root(required=False))
     def test_node_uri(self):
         uri = "http://localhost-%s:1234"%random.randint(1, 1000)
         self.assertEquals(None, rospy.core.get_node_uri())

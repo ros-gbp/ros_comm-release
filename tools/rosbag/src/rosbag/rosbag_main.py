@@ -92,10 +92,7 @@ def record_cmd(argv):
     if options.prefix is not None and options.name is not None:
         parser.error("Can't set both prefix and name.")
 
-    recordpath = roslib.packages.find_node('rosbag', 'record')
-    if not recordpath:
-        parser.error("Cannot find rosbag/record executable")
-    cmd = [recordpath[0]]
+    cmd = ['record']
 
     cmd.extend(['--buffsize', str(options.buffsize)])
 
@@ -111,16 +108,19 @@ def record_cmd(argv):
         if not options.duration and not options.size:
             parser.error("Split specified without giving a maximum duration or size")
         cmd.extend(["--split"])
-    if options.duration:    cmd.extend(["--duration", options.duration])
-    if options.size:        cmd.extend(["--size", str(options.size)])
+        if options.duration:
+            cmd.extend(["--duration", options.duration])
+        if options.size:
+            cmd.extend(["--size", str(options.size)])
     if options.node:
         cmd.extend(["--node", options.node])
 
     cmd.extend(args)
 
-    # Better way of handling it than os.execv
-    # This makes sure stdin handles are passed to the process.
-    subprocess.call(cmd)
+    recordpath = roslib.packages.find_node('rosbag', 'record')
+    if not recordpath:
+        parser.error("Cannot find rosbag/record executable")
+    os.execv(recordpath[0], cmd)
 
 def info_cmd(argv):
     parser = optparse.OptionParser(usage='rosbag info [options] BAGFILE1 [BAGFILE2 BAGFILE3 ...]',
@@ -194,10 +194,7 @@ def play_cmd(argv):
     if len(args) == 0:
         parser.error('You must specify at least 1 bag file to play back.')
 
-    playpath = roslib.packages.find_node('rosbag', 'play')
-    if not playpath:
-        parser.error("Cannot find rosbag/play executable")
-    cmd = [playpath[0]]
+    cmd = ['play']
 
     if options.quiet:      cmd.extend(["--quiet"])
     if options.pause:      cmd.extend(["--pause"])
@@ -220,9 +217,11 @@ def play_cmd(argv):
         cmd.extend(['--topics'] + options.topics + ['--bags'])
 
     cmd.extend(args)
-    # Better way of handling it than os.execv
-    # This makes sure stdin handles are passed to the process.
-    subprocess.call(cmd)
+
+    playpath = roslib.packages.find_node('rosbag', 'play')
+    if not playpath:
+        parser.error("Cannot find rosbag/play executable")
+    os.execv(playpath[0], cmd)
 
 def filter_cmd(argv):
     def expr_eval(expr):
@@ -257,10 +256,6 @@ The following variables are available:
         sys.stderr.write('Cannot locate input bag file [%s]' % inbag_filename)
         sys.exit(2)
 
-    if os.path.realpath(inbag_filename) == os.path.realpath(outbag_filename):
-        sys.stderr.write('Cannot use same file as input and output [%s]' % inbag_filename)
-        sys.exit(3)
-
     filter_fn = expr_eval(expr)
 
     outbag = Bag(outbag_filename, 'w')
@@ -268,7 +263,7 @@ The following variables are available:
     try:
         inbag = Bag(inbag_filename)
     except ROSBagUnindexedException as ex:
-        sys.stderr.write('ERROR bag unindexed: %s.  Run rosbag reindex.' % inbag_filename)
+        sys.stderr.write('ERROR bag unindexed: %s.  Run rosbag reindex.' % arg)
         return
 
     try:
@@ -711,7 +706,8 @@ class RosbagCmds(UserDict):
         if cmd in self:
             self[cmd](['-h'])
         else:
-            print("Unknown command: '%s'" % cmd, file=sys.stderr)
+            sys.stderr.write("Unknown command: '%s'" % cmd)
+            sys.stderr.write()
             sys.stderr.write(self.get_valid_cmds())
 
 class ProgressMeter(object):
@@ -787,7 +783,7 @@ class ProgressMeter(object):
             s     = struct.pack('HHHH', 0, 0, 0, 0)
             x     = fcntl.ioctl(1, termios.TIOCGWINSZ, s)
             width = struct.unpack('HHHH', x)[1]
-        except (IOError, ImportError):
+        except IOError:
             pass
         if width <= 0:
             try:
