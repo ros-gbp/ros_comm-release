@@ -9,10 +9,10 @@ tracks:
     - git-bloom-generate -y rosdebian --prefix release/:{ros_distro} :{ros_distro}
       -i :{release_inc}
     devel_branch: fuerte-devel
-    last_version: 1.8.16
+    last_version: !!python/unicode '1.8.16'
     name: ros_comm
     patches: null
-    release_inc: '0'
+    release_inc: '1'
     release_tag: :{version}
     ros_distro: fuerte
     vcs_type: git
