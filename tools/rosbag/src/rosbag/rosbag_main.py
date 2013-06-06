@@ -62,7 +62,7 @@ def print_trans(old, new, indent):
 def handle_split(option, opt_str, value, parser):
     parser.values.split = True
     if len(parser.rargs) > 0 and parser.rargs[0].isdigit():
-        sys.stderr.write("Use of \"--split <MAX_SIZE>\" has been deprecated.  Please use --split --size <MAX_SIZE> or --split --duration <MAX_DURATION>")
+        print("Use of \"--split <MAX_SIZE>\" has been deprecated.  Please use --split --size <MAX_SIZE> or --split --duration <MAX_DURATION>", file=sys.stderr)
         parser.values.size = int(parser.rargs.pop(0))
 
 def record_cmd(argv):
@@ -149,13 +149,12 @@ def info_cmd(argv):
                 print('---')
         
         except ROSBagUnindexedException as ex:
-            sys.stderr.write('ERROR bag unindexed: %s.  Run rosbag reindex.' % arg)
+            print('ERROR bag unindexed: %s.  Run rosbag reindex.' % arg,
+                  file=sys.stderr)
         except ROSBagException as ex:
-            sys.stderr.write('ERROR reading %s: %s' % (arg, str(ex)))
+            print('ERROR reading %s: %s' % (arg, str(ex)), file=sys.stderr)
         except IOError as ex:
-            sys.stderr.write('ERROR reading %s: %s' % (arg, str(ex)))
-            
-    print
+            print('ERROR reading %s: %s' % (arg, str(ex)), file=sys.stderr)
 
 
 def handle_topics(option, opt_str, value, parser):
@@ -182,12 +181,13 @@ def play_cmd(argv):
     parser.add_option("-d", "--delay",        dest="delay",      default=0.2,   type='float', action="store", help="sleep SEC seconds after every advertise call (to allow subscribers to connect)", metavar="SEC")
     parser.add_option("-r", "--rate",         dest="rate",       default=1.0,   type='float', action="store", help="multiply the publish rate by FACTOR", metavar="FACTOR")
     parser.add_option("-s", "--start",        dest="start",      default=0.0,   type='float', action="store", help="start SEC seconds into the bag files", metavar="SEC")
+    parser.add_option("-u", "--duration",     dest="duration",   default=None,  type='float', action="store", help="play only SEC seconds from the bag files", metavar="SEC")
     parser.add_option("--skip-empty",         dest="skip_empty", default=None,  type='float', action="store", help="skip regions in the bag with no messages for more than SEC seconds", metavar="SEC")
     parser.add_option("-l", "--loop",         dest="loop",       default=False, action="store_true", help="loop playback")
     parser.add_option("-k", "--keep-alive",   dest="keep_alive", default=False, action="store_true", help="keep alive past end of bag (useful for publishing latched topics)")
     parser.add_option("--try-future-version", dest="try_future", default=False, action="store_true", help="still try to open a bag file, even if the version number is not known to the player")
-    parser.add_option("--topics", dest="topics", default=[],  callback=handle_topics, action="callback", help="the list topics to play back")
-    parser.add_option("--bags",  help="the list bags to play back from")
+    parser.add_option("--topics", dest="topics", default=[],  callback=handle_topics, action="callback", help="topics to play back")
+    parser.add_option("--bags",  help="bags files to play back from")
 
     (options, args) = parser.parse_args(argv)
 
@@ -213,6 +213,8 @@ def play_cmd(argv):
     cmd.extend(['--rate', str(options.rate)])
     cmd.extend(['--delay', str(options.delay)])
     cmd.extend(['--start', str(options.start)])
+    if options.duration:
+        cmd.extend(['--duration', str(options.duration)])
     if options.skip_empty:
         cmd.extend(['--skip-empty', str(options.skip_empty)])
 
@@ -254,11 +256,11 @@ The following variables are available:
     inbag_filename, outbag_filename, expr = args
 
     if not os.path.isfile(inbag_filename):
-        sys.stderr.write('Cannot locate input bag file [%s]' % inbag_filename)
+        print('Cannot locate input bag file [%s]' % inbag_filename, file=sys.stderr)
         sys.exit(2)
 
     if os.path.realpath(inbag_filename) == os.path.realpath(outbag_filename):
-        sys.stderr.write('Cannot use same file as input and output [%s]' % inbag_filename)
+        print('Cannot use same file as input and output [%s]' % inbag_filename, file=sys.stderr)
         sys.exit(3)
 
     filter_fn = expr_eval(expr)
@@ -268,7 +270,7 @@ The following variables are available:
     try:
         inbag = Bag(inbag_filename)
     except ROSBagUnindexedException as ex:
-        sys.stderr.write('ERROR bag unindexed: %s.  Run rosbag reindex.' % inbag_filename)
+        print('ERROR bag unindexed: %s.  Run rosbag reindex.' % inbag_filename, file=sys.stderr)
         return
 
     try:
@@ -335,26 +337,26 @@ def fix_cmd(argv):
 
     if os.path.exists(outbag_filename):
         if not os.access(outbag_filename, os.W_OK):
-            sys.stderr.write('Don\'t have permissions to access %s' % outbag_filename)
+            print('Don\'t have permissions to access %s' % outbag_filename, file=sys.stderr)
             sys.exit(1)
     else:
         try:
             file = open(outbag_filename, 'w')
             file.close()
         except IOError as e:
-            sys.stderr.write('Cannot open %s for writing' % outbag_filename)
+            print('Cannot open %s for writing' % outbag_filename, file=sys.stderr)
             sys.exit(1)
 
     if os.path.exists(outname):
         if not os.access(outname, os.W_OK):
-            sys.stderr.write('Don\'t have permissions to access %s' % outname)
+            print('Don\'t have permissions to access %s' % outname, file=sys.stderr)
             sys.exit(1)
     else:
         try:
             file = open(outname, 'w')
             file.close()
         except IOError as e:
-            sys.stderr.write('Cannot open %s for writing' % outname)
+            print('Cannot open %s for writing' % outname, file=sys.stderr)
             sys.exit(1)
 
     if options.noplugins is None:
@@ -365,7 +367,8 @@ def fix_cmd(argv):
     try:
         migrations = fixbag2(migrator, inbag_filename, outname, options.force)
     except ROSBagUnindexedException as ex:
-        sys.stderr.write('ERROR bag unindexed: %s.  Run rosbag reindex.' % inbag_filename)
+        print('ERROR bag unindexed: %s.  Run rosbag reindex.' % inbag_filename,
+              file=sys.stderr)
         return
 
     if len(migrations) == 0:
@@ -411,7 +414,7 @@ def check_cmd(argv):
     try:
         Bag(args[0])
     except ROSBagUnindexedException as ex:
-        sys.stderr.write('ERROR bag unindexed: %s.  Run rosbag reindex.' % args[0])
+        print('ERROR bag unindexed: %s.  Run rosbag reindex.' % args[0], file=sys.stderr)
         return
 
     mm = MessageMigrator(args[1:] + append_rule, not options.noplugins)
@@ -530,10 +533,10 @@ def bag_op(inbag_filenames, allow_unindexed, copy_fn, op, output_dir=None, force
         try:
             inbag = Bag(inbag_filename, 'r', allow_unindexed=allow_unindexed)
         except ROSBagUnindexedException:
-            sys.stderr.write('ERROR bag unindexed: %s.  Run rosbag reindex.' % inbag_filename)
+            print('ERROR bag unindexed: %s.  Run rosbag reindex.' % inbag_filename, file=sys.stderr)
             continue
         except (ROSBagException, IOError) as ex:
-            sys.stderr.write('ERROR reading %s: %s' % (inbag_filename, str(ex)))
+            print('ERROR reading %s: %s' % (inbag_filename, str(ex)), file=sys.stderr)
             continue
 
         # Determine whether we should copy the bag    
@@ -554,7 +557,7 @@ def bag_op(inbag_filenames, allow_unindexed, copy_fn, op, output_dir=None, force
             
             if not force and os.path.exists(backup_filename):
                 if not quiet:
-                    sys.stderr.write('Skipping %s. Backup path %s already exists.' % (inbag_filename, backup_filename))
+                    print('Skipping %s. Backup path %s already exists.' % (inbag_filename, backup_filename), file=sys.stderr)
                 continue
             
             try:
@@ -563,7 +566,7 @@ def bag_op(inbag_filenames, allow_unindexed, copy_fn, op, output_dir=None, force
                 else:
                     os.rename(inbag_filename, backup_filename)
             except OSError as ex:
-                sys.stderr.write('ERROR %s %s to %s: %s' % ('copying' if copy else 'moving', inbag_filename, backup_filename, str(ex)))
+                print('ERROR %s %s to %s: %s' % ('copying' if copy else 'moving', inbag_filename, backup_filename, str(ex)), file=sys.stderr)
                 continue
             
             source_filename = backup_filename
@@ -584,7 +587,7 @@ def bag_op(inbag_filenames, allow_unindexed, copy_fn, op, output_dir=None, force
                 else:
                     outbag = Bag(outbag_filename, 'w')
             except (ROSBagException, IOError) as ex:
-                sys.stderr.write('ERROR writing to %s: %s' % (outbag_filename, str(ex)))
+                print('ERROR writing to %s: %s' % (outbag_filename, str(ex)), file=sys.stderr)
                 inbag.close()
                 continue
 
@@ -592,7 +595,7 @@ def bag_op(inbag_filenames, allow_unindexed, copy_fn, op, output_dir=None, force
             try:
                 op(inbag, outbag, quiet=quiet)
             except ROSBagException as ex:
-                sys.stderr.write('\nERROR operating on %s: %s' % (source_filename, str(ex)))
+                print('\nERROR operating on %s: %s' % (source_filename, str(ex)), file=sys.stderr)
                 inbag.close()
                 outbag.close()
                 continue
@@ -608,11 +611,11 @@ def bag_op(inbag_filenames, allow_unindexed, copy_fn, op, output_dir=None, force
                     else:
                         os.rename(backup_filename, inbag_filename)
                 except OSError as ex:
-                    sys.stderr.write('ERROR %s %s to %s: %s', ('removing' if copy else 'moving', backup_filename, inbag_filename, str(ex)))
+                    print('ERROR %s %s to %s: %s', ('removing' if copy else 'moving', backup_filename, inbag_filename, str(ex)), file=sys.stderr)
                     break
     
         except (ROSBagException, IOError) as ex:
-            sys.stderr.write('ERROR operating on %s: %s' % (inbag_filename, str(ex)))
+            print('ERROR operating on %s: %s' % (inbag_filename, str(ex)), file=sys.stderr)
 
 def change_compression_op(inbag, outbag, compression, quiet):
     outbag.compression = compression
@@ -699,12 +702,12 @@ class RosbagCmds(UserDict):
 
         if len(argv) == 0:
             print('Usage: rosbag <subcommand> [options] [args]')
-            print 
+            print()
             print("A bag is a file format in ROS for storing ROS message data. The rosbag command can record, replay and manipulate bags.")
-            print
+            print()
             print(self.get_valid_cmds())
             print('For additional information, see http://code.ros.org/wiki/rosbag/')
-            print
+            print()
             return
 
         cmd = argv[0]
@@ -712,7 +715,7 @@ class RosbagCmds(UserDict):
             self[cmd](['-h'])
         else:
             print("Unknown command: '%s'" % cmd, file=sys.stderr)
-            sys.stderr.write(self.get_valid_cmds())
+            print(self.get_valid_cmds(), file=sys.stderr)
 
 class ProgressMeter(object):
     def __init__(self, path, bytes_total, refresh_rate=1.0):
@@ -763,7 +766,8 @@ class ProgressMeter(object):
         else:
             progress = '%-*s 100%% %19s %02d:%02d    ' % (max_path_len, path, bytes_total_str, self.elapsed / 60, self.elapsed % 60)
 
-        print('\r', progress, sys.stdout.flush())
+        print('\r', progress, end='')
+        sys.stdout.flush()
         
     def _human_readable_size(self, size):
         multiple = 1024.0
@@ -776,7 +780,7 @@ class ProgressMeter(object):
 
     def finish(self):
         self.step(self.bytes_total, force_update=True)
-        print
+        print()
 
     @staticmethod
     def terminal_width():
