@@ -70,19 +70,6 @@ if platform.system() == 'FreeBSD':
     else:
         SIOCGIFCONF = 0xc0086924
 
-if 0:
-    # disabling netifaces as it accounts for 50% of startup latency
-    try:
-        import netifaces
-        _use_netifaces = True
-    except:
-        # NOTE: in rare cases, I've seen Python fail to extract the egg
-        # cache when launching multiple python nodes.  Thus, we do
-        # except-all instead of except ImportError (kwc).
-        _use_netifaces = False
-else:
-    _use_netifaces = False
-
 logger = logging.getLogger('rosgraph.network')
 
 def parse_http_host_and_port(url):
@@ -135,17 +122,43 @@ def get_address_override():
     # check ROS_HOSTNAME and ROS_IP environment variables, which are
     # aliases for each other
     if ROS_HOSTNAME in os.environ:
-        if os.environ[ROS_HOSTNAME] == '':
+        hostname = os.environ[ROS_HOSTNAME]
+        if hostname == '':
             msg = 'invalid ROS_HOSTNAME (an empty string)'
             sys.stderr.write(msg + '\n')
             logger.warn(msg)
-        return os.environ[ROS_HOSTNAME]
+        else:
+            parts = urlparse.urlparse(hostname)
+            if parts.scheme:
+                msg = 'invalid ROS_HOSTNAME (protocol ' + ('and port ' if parts.port else '') + 'should not be included)'
+                sys.stderr.write(msg + '\n')
+                logger.warn(msg)
+            elif hostname.find(':') != -1:
+                # this can not be checked with urlparse()
+                # since it does not extract the port for a hostname like "foo:1234"
+                msg = 'invalid ROS_HOSTNAME (port should not be included)'
+                sys.stderr.write(msg + '\n')
+                logger.warn(msg)
+        return hostname
     elif ROS_IP in os.environ:
-        if os.environ[ROS_IP] == '':
+        ip = os.environ[ROS_IP]
+        if ip == '':
             msg = 'invalid ROS_IP (an empty string)'
             sys.stderr.write(msg + '\n')
             logger.warn(msg)
-        return os.environ[ROS_IP]
+        elif ip.find('://') != -1:
+            msg = 'invalid ROS_IP (protocol should not be included)'
+            sys.stderr.write(msg + '\n')
+            logger.warn(msg)
+        elif ip.find('.') != -1 and ip.rfind(':') > ip.rfind('.'):
+            msg = 'invalid ROS_IP (port should not be included)'
+            sys.stderr.write(msg + '\n')
+            logger.warn(msg)
+        elif ip.find('.') == -1 and ip.find(':') == -1:
+            msg = 'invalid ROS_IP (must be a valid IPv4 or IPv6 address)'
+            sys.stderr.write(msg + '\n')
+            logger.warn(msg)
+        return ip
     return None
 
 def is_local_address(hostname):
@@ -195,26 +208,27 @@ def get_local_addresses():
         return _local_addrs
 
     local_addrs = None
-    if _use_netifaces:
-        # #552: netifaces is a more robust package for looking up
-        # #addresses on multiple platforms (OS X, Unix, Windows)
-        # TODO IPV6: test netifaces with ipv6
-        local_addrs = []
-        # see http://alastairs-place.net/netifaces/
-        for i in netifaces.interfaces():
-            try:
-                local_addrs.extend([d['addr'] for d in netifaces.ifaddresses(i)[netifaces.AF_INET]])
-            except KeyError: pass
-    elif _is_unix_like_platform():
+    if _is_unix_like_platform():
         # unix-only branch
+        v4addrs = []
+        v6addrs = []
         import netifaces
-        ifaces = netifaces.interfaces()
-        v4addrs = [addr['addr'] for iface in ifaces if socket.AF_INET in netifaces.ifaddresses(iface) for addr in netifaces.ifaddresses(iface)[socket.AF_INET]]
-        v6addrs = [addr['addr'] for iface in ifaces if socket.AF_INET6 in netifaces.ifaddresses(iface) for addr in netifaces.ifaddresses(iface)[socket.AF_INET6]]
+        for iface in netifaces.interfaces():
+            try:
+                ifaddrs = netifaces.ifaddresses(iface)
+            except ValueError:
+                # even if interfaces() returns an interface name
+                # ifaddresses() might raise a ValueError
+                # https://bugs.launchpad.net/ubuntu/+source/netifaces/+bug/753009
+                continue
+            if socket.AF_INET in ifaddrs:
+                v4addrs.extend([addr['addr'] for addr in ifaddrs[socket.AF_INET]])
+            if socket.AF_INET6 in ifaddrs:
+                v6addrs.extend([addr['addr'] for addr in ifaddrs[socket.AF_INET6]])
         if use_ipv6():
-            return v6addrs + v4addrs
+            local_addrs = v6addrs + v4addrs
         else:
-            return v4addrs
+            local_addrs = v4addrs
     else:
         # cross-platform branch, can only resolve one address
         if use_ipv6():
