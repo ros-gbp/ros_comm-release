@@ -37,6 +37,12 @@ import logging
 import sys
 import traceback
 
+# monkey-patch to suppress threading error message in Python 2.7.3
+# see http://stackoverflow.com/questions/13193278/understand-python-threading-bug
+if sys.version_info[:3] == (2, 7, 3):
+    import threading
+    threading._DummyThread._Thread__stop = lambda _dummy: None
+
 import rospkg
 
 from . import core as roslaunch_core
@@ -82,14 +88,16 @@ def configure_logging(uuid):
         
 def write_pid_file(options_pid_fn, options_core, port):
     if options_pid_fn or options_core:
+        # #2987
+        ros_home = rospkg.get_ros_home()
         if options_pid_fn:
-            pid_fn = options_pid_fn
+            pid_fn = os.path.expanduser(options_pid_fn)
+            if os.path.dirname(pid_fn) == ros_home and not os.path.exists(ros_home):
+                os.makedirs(ros_home)
         else:
             # NOTE: this assumption is not 100% valid until work on #3097 is complete
             if port is None:
                 port = DEFAULT_MASTER_PORT
-            # #2987
-            ros_home = rospkg.get_ros_home()
             pid_fn = os.path.join(ros_home, 'roscore-%s.pid'%(port))
             # #3828
             if not os.path.exists(ros_home):
@@ -150,6 +158,13 @@ def _get_optparse():
     parser.add_option("--dump-params", default=False, action="store_true",
                       dest="dump_params",
                       help="Dump parameters of all roslaunch files to stdout")
+    parser.add_option("--skip-log-check", default=False, action="store_true",
+                      dest="skip_log_check",
+                      help="skip check size of log folder")
+    parser.add_option("--ros-args", default=False, action="store_true",
+                      dest="ros_args",
+                      help="Display command-line arguments for this launch file")
+
     return parser
     
 def _validate_args(parser, options, args):
@@ -177,8 +192,8 @@ def _validate_args(parser, options, args):
     elif [f for f in args if not os.path.exists(f)]:
         parser.error("The following input files do not exist: %s"%f)
 
-    if len([x for x in [options.node_list, options.find_node, options.node_args] if x]) > 1:
-        parser.error("only one of [--nodes, --find-node, --args] may be specified")
+    if len([x for x in [options.node_list, options.find_node, options.node_args, options.ros_args] if x]) > 1:
+        parser.error("only one of [--nodes, --find-node, --args --ros-args] may be specified")
     
 def main(argv=sys.argv):
     options = None
@@ -191,7 +206,7 @@ def main(argv=sys.argv):
         _validate_args(parser, options, args)
 
         # node args doesn't require any roslaunch infrastructure, so process it first
-        if any([options.node_args, options.node_list, options.find_node, options.dump_params, options.file_list]):
+        if any([options.node_args, options.node_list, options.find_node, options.dump_params, options.file_list, options.ros_args]):
             if options.node_args and not args:
                 parser.error("please specify a launch file")
 
@@ -205,6 +220,9 @@ def main(argv=sys.argv):
                 roslaunch_param_dump.dump_params(args)
             elif options.file_list:
                 rlutil.print_file_list(args)
+            elif options.ros_args:
+                import arg_dump as roslaunch_arg_dump
+                roslaunch_arg_dump.dump_args(args)
             else:
                 node_args.print_node_list(args)
             return
@@ -223,7 +241,7 @@ def main(argv=sys.argv):
         configure_logging(uuid)
 
         # #3088: don't check disk usage on remote machines
-        if not options.child_name:
+        if not options.child_name and not options.skip_log_check:
             # #2761
             rlutil.check_log_disk_usage()
 

@@ -59,7 +59,7 @@ try:
 except ImportError:
     import urlparse
 
-from .rosenv import ROS_IP, ROS_HOSTNAME
+from .rosenv import ROS_IP, ROS_HOSTNAME, ROS_IPV6
 
 SIOCGIFCONF = 0x8912
 SIOCGIFADDR = 0x8915
@@ -69,19 +69,6 @@ if platform.system() == 'FreeBSD':
         SIOCGIFCONF = 0xc0106924
     else:
         SIOCGIFCONF = 0xc0086924
-
-if 0:
-    # disabling netifaces as it accounts for 50% of startup latency
-    try:
-        import netifaces
-        _use_netifaces = True
-    except:
-        # NOTE: in rare cases, I've seen Python fail to extract the egg
-        # cache when launching multiple python nodes.  Thus, we do
-        # except-all instead of except ImportError (kwc).
-        _use_netifaces = False
-else:
-    _use_netifaces = False
 
 logger = logging.getLogger('rosgraph.network')
 
@@ -123,6 +110,7 @@ def get_address_override():
     :raises: :exc:`ValueError` If ROS_IP/ROS_HOSTNAME/__ip/__hostname are invalidly specified
     """
     # #998: check for command-line remappings first
+    # TODO IPV6: check for compatibility
     for arg in sys.argv:
         if arg.startswith('__hostname:=') or arg.startswith('__ip:='):
             try:
@@ -134,17 +122,43 @@ def get_address_override():
     # check ROS_HOSTNAME and ROS_IP environment variables, which are
     # aliases for each other
     if ROS_HOSTNAME in os.environ:
-        if os.environ[ROS_HOSTNAME] == '':
+        hostname = os.environ[ROS_HOSTNAME]
+        if hostname == '':
             msg = 'invalid ROS_HOSTNAME (an empty string)'
             sys.stderr.write(msg + '\n')
             logger.warn(msg)
-        return os.environ[ROS_HOSTNAME]
+        else:
+            parts = urlparse.urlparse(hostname)
+            if parts.scheme:
+                msg = 'invalid ROS_HOSTNAME (protocol ' + ('and port ' if parts.port else '') + 'should not be included)'
+                sys.stderr.write(msg + '\n')
+                logger.warn(msg)
+            elif hostname.find(':') != -1:
+                # this can not be checked with urlparse()
+                # since it does not extract the port for a hostname like "foo:1234"
+                msg = 'invalid ROS_HOSTNAME (port should not be included)'
+                sys.stderr.write(msg + '\n')
+                logger.warn(msg)
+        return hostname
     elif ROS_IP in os.environ:
-        if os.environ[ROS_IP] == '':
+        ip = os.environ[ROS_IP]
+        if ip == '':
             msg = 'invalid ROS_IP (an empty string)'
             sys.stderr.write(msg + '\n')
             logger.warn(msg)
-        return os.environ[ROS_IP]
+        elif ip.find('://') != -1:
+            msg = 'invalid ROS_IP (protocol should not be included)'
+            sys.stderr.write(msg + '\n')
+            logger.warn(msg)
+        elif ip.find('.') != -1 and ip.rfind(':') > ip.rfind('.'):
+            msg = 'invalid ROS_IP (port should not be included)'
+            sys.stderr.write(msg + '\n')
+            logger.warn(msg)
+        elif ip.find('.') == -1 and ip.find(':') == -1:
+            msg = 'invalid ROS_IP (must be a valid IPv4 or IPv6 address)'
+            sys.stderr.write(msg + '\n')
+            logger.warn(msg)
+        return ip
     return None
 
 def is_local_address(hostname):
@@ -153,13 +167,14 @@ def is_local_address(hostname):
     :returns True: if hostname maps to a local address, False otherwise. False conditions include invalid hostnames.
     """
     try:
-        reverse_ip = socket.gethostbyname(hostname)
+        reverse_ips = [host[4][0] for host in socket.getaddrinfo(hostname, 0, 0, 0, socket.SOL_TCP)]
     except socket.error:
         return False
+    local_addresses = ['localhost'] + get_local_addresses()
     # 127. check is due to #1260
-    if reverse_ip not in get_local_addresses() and not reverse_ip.startswith('127.'):
-        return False
-    return True
+    if ([ip for ip in reverse_ips if (ip.startswith('127.') or ip == '::1')] != []) or (set(reverse_ips) & set(local_addresses) != set()):
+        return True
+    return False
     
 def get_local_address():
     """
@@ -173,10 +188,13 @@ def get_local_address():
         return addrs[0]
     for addr in addrs:
         # pick first non 127/8 address
-        if not addr.startswith('127.'):
+        if not addr.startswith('127.') and not addr == '::1':
             return addr
-    else: # loopback 
-        return '127.0.0.1'
+    else: # loopback
+        if use_ipv6():
+            return '::1'
+        else:
+            return '127.0.0.1'
 
 # cache for performance reasons
 _local_addrs = None
@@ -190,59 +208,38 @@ def get_local_addresses():
         return _local_addrs
 
     local_addrs = None
-    if _use_netifaces:
-        # #552: netifaces is a more robust package for looking up
-        # #addresses on multiple platforms (OS X, Unix, Windows)
-        local_addrs = []
-        # see http://alastairs-place.net/netifaces/
-        for i in netifaces.interfaces():
-            try:
-                local_addrs.extend([d['addr'] for d in netifaces.ifaddresses(i)[netifaces.AF_INET]])
-            except KeyError: pass
-    elif _is_unix_like_platform():
+    if _is_unix_like_platform():
         # unix-only branch
-        # adapted from code from Rosen Diankov (rdiankov@cs.cmu.edu)
-        # and from ActiveState recipe
-
-        import fcntl
-        import array
-
-        ifsize = 32
-        if platform.system() == 'Linux' and platform.architecture()[0] == '64bit':
-            ifsize = 40 # untested
-
-        # 32 interfaces allowed, far more than ROS can sanely deal with
-
-        max_bytes = 32 * ifsize
-        # according to http://docs.python.org/library/fcntl.html, the buffer limit is 1024 bytes
-        buff = array.array('B', '\0' * max_bytes)
-        # serialize the buffer length and address to ioctl
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)        
-        info = fcntl.ioctl(sock.fileno(), SIOCGIFCONF,
-                           struct.pack('iL', max_bytes, buff.buffer_info()[0]))
-        retbytes = struct.unpack('iL', info)[0]
-        buffstr = buff.tostring()
-        if platform.system() == 'Linux':
-            local_addrs = [socket.inet_ntoa(buffstr[i+20:i+24]) for i in range(0, retbytes, ifsize)]
+        v4addrs = []
+        v6addrs = []
+        import netifaces
+        for iface in netifaces.interfaces():
+            try:
+                ifaddrs = netifaces.ifaddresses(iface)
+            except ValueError:
+                # even if interfaces() returns an interface name
+                # ifaddresses() might raise a ValueError
+                # https://bugs.launchpad.net/ubuntu/+source/netifaces/+bug/753009
+                continue
+            if socket.AF_INET in ifaddrs:
+                v4addrs.extend([addr['addr'] for addr in ifaddrs[socket.AF_INET]])
+            if socket.AF_INET6 in ifaddrs:
+                v6addrs.extend([addr['addr'] for addr in ifaddrs[socket.AF_INET6]])
+        if use_ipv6():
+            local_addrs = v6addrs + v4addrs
         else:
-            # in FreeBSD, ifsize is variable: 16 + (16 or 28 or 56) bytes
-            # When ifsize is 32 bytes, it contains the interface name and address,
-            # else it contains the interface name and other information
-            # This means the buffer must be traversed in its entirety
-            local_addrs = []
-            bufpos = 0
-            while bufpos < retbytes:
-                bufpos += 16
-                ifreqsize = ord(buffstr[bufpos])
-                if ifreqsize == 16:
-                    local_addrs += [socket.inet_ntoa(buffstr[bufpos+4:bufpos+8])]
-                bufpos += ifreqsize
+            local_addrs = v4addrs
     else:
         # cross-platform branch, can only resolve one address
-        local_addrs = [socket.gethostbyname(socket.gethostname())]
+        if use_ipv6():
+            local_addrs = [host[4][0] for host in socket.getaddrinfo(socket.gethostname(), 0, 0, 0, socket.SOL_TCP)]
+        else:
+            local_addrs = [host[4][0] for host in socket.getaddrinfo(socket.gethostname(), 0, socket.AF_INET, 0, socket.SOL_TCP)]
     _local_addrs = local_addrs
     return local_addrs
 
+def use_ipv6():
+    return ROS_IPV6 in os.environ and os.environ[ROS_IPV6] == 'on'
 
 def get_bind_address(address=None):
     """
@@ -253,12 +250,17 @@ def get_bind_address(address=None):
     """
     if address is None:
         address = get_address_override()
-    if address and \
-           (address == 'localhost' or address.startswith('127.')):
+    if address and (address == 'localhost' or address.startswith('127.') or address == '::1' ):
         #localhost or 127/8
-        return '127.0.0.1' #loopback
+        if use_ipv6():
+            return '::1'
+        else:
+            return '127.0.0.1' #loopback
     else:
-        return '0.0.0.0'
+        if use_ipv6():
+            return '::'
+        else:
+            return '0.0.0.0'
 
 # #528: semi-complicated logic for determining XML-RPC URI
 def get_host_name():

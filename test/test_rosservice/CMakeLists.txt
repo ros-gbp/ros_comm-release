@@ -1,14 +1,16 @@
-cmake_minimum_required(VERSION 2.8)
-
+cmake_minimum_required(VERSION 2.8.3)
 project(test_rosservice)
-find_package(ROS COMPONENTS catkin rosunit rostest)
+find_package(catkin REQUIRED COMPONENTS genmsg rosunit rostest std_msgs)
 
 add_service_files(DIRECTORY srv
   FILES
   HeaderEcho.srv
+  NOINSTALL
   )
 generate_messages(DEPENDENCIES std_msgs)
 
-add_nosetests(test)
-add_rostest(test/rosservice.test)
+catkin_package()
 
+catkin_add_nosetests(test)
+
+add_rostest(test/rosservice.test)

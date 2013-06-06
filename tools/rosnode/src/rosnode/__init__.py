@@ -79,18 +79,20 @@ def _succeed(args):
     return val
 
 _caller_apis = {}
-def get_api_uri(master, caller_id):
+def get_api_uri(master, caller_id, skip_cache=False):
     """
     @param master: XMLRPC handle to ROS Master
     @type  master: rosgraph.Master
     @param caller_id: node name
     @type  caller_id: str
+    @param skip_cache: flag to skip cached data and force to lookup node from master
+    @type  skip_cache: bool
     @return: xmlrpc URI of caller_id
     @rtype: str
     @raise ROSNodeIOException: if unable to communicate with master
     """
     caller_api = _caller_apis.get(caller_id, None)
-    if not caller_api:
+    if not caller_api or skip_cache:
         try:
             caller_api = master.lookupNode(caller_id)
             _caller_apis[caller_id] = caller_api
@@ -181,14 +183,14 @@ def get_nodes_by_machine(machine):
     
     master = rosgraph.Master(ID)
     try:
-        machine_actual = socket.gethostbyname(machine)
+        machine_actual = [host[4][0] for host in socket.getaddrinfo(machine, 0, 0, 0, socket.SOL_TCP)]
     except:
         raise ROSNodeException("cannot resolve machine name [%s] to address"%machine)
 
     # get all the node names, lookup their uris, parse the hostname
     # from the uris, and then compare the resolved hostname against
     # the requested machine name.
-    matches = [machine, machine_actual]
+    matches = [machine] + machine_actual
     not_matches = [] # cache lookups
     node_names = get_node_names()
     retval = []
@@ -206,8 +208,8 @@ def get_nodes_by_machine(machine):
             elif h in not_matches:
                 continue
             else:
-                r = socket.gethostbyname(h)
-                if r == machine_actual:
+                r = [host[4][0] for host in socket.getaddrinfo(h, 0, 0, 0, socket.SOL_TCP)]
+                if set(r) & set(machine_actual):
                     matches.append(r)
                     retval.append(n)
                 else:
@@ -298,6 +300,7 @@ def rosnode_ping(node_name, max_count=None, verbose=False):
     @type  verbose: bool
     @return: True if node pinged
     @rtype: bool
+    @raise ROSNodeIOException: if unable to communicate with master
     """
     master = rosgraph.Master(ID)
     node_api = get_api_uri(master,node_name)
@@ -337,7 +340,14 @@ def rosnode_ping(node_name, max_count=None, verbose=False):
                         p = urlparse.urlparse(node_api)
                         print("ERROR: Unknown host [%s] for node [%s]"%(p.hostname, node_name), file=sys.stderr)
                     elif errnum == errno.ECONNREFUSED:
-                        p = urlparse.urlparse(node_api)
+                        # check if node url has changed
+                        new_node_api = get_api_uri(master,node_name, skip_cache=True)
+                        if new_node_api != node_api:
+                            if verbose:
+                                print("node url has changed from [%s] to [%s], retrying to ping"%(node_api, new_node_api))
+                            node_api = new_node_api
+                            node = xmlrpclib.ServerProxy(node_api)
+                            continue
                         print("ERROR: connection refused to [%s]"%(node_api), file=sys.stderr)
                     else:
                         print("connection to [%s] timed out"%node_name, file=sys.stderr)
@@ -447,8 +457,9 @@ def rosnode_cleanup():
         master = rosgraph.Master(ID)
         print("Unable to contact the following nodes:")
         print('\n'.join(' * %s'%n for n in unpinged))
-        print("cleanup will purge all information about these nodes from the master")
-        print("Please type y or n to continue")
+        print("Warning: these might include alive and functioning nodes, e.g. in unstable networks.")
+        print("Cleanup will purge all information about these nodes from the master.")
+        print("Please type y or n to continue:")
         input = sys.stdin.readline()
         while not input.strip() in ['y', 'n']:
             input = sys.stdin.readline()
@@ -747,6 +758,7 @@ Commands:
 \trosnode info\tprint information about node
 \trosnode machine\tlist nodes running on a particular machine or list machines
 \trosnode kill\tkill a running node
+\trosnode cleanup\tpurge registration information of unreachable nodes
 
 Type rosnode <command> -h for more detailed usage, e.g. 'rosnode ping -h'
 """)

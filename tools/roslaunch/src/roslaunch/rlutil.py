@@ -39,6 +39,7 @@ This API should not be considered stable.
 from __future__ import print_function
 
 import os
+import sys
 import time
 
 import roslib.packages
@@ -95,7 +96,7 @@ def resolve_launch_arguments(args):
             if len(resolved) == 1:
                 resolved = resolved[0]
             elif len(resolved) > 1:
-                raise roslaunch.core.RLException("multiple files named [%s] in package [%s].\nPlease specify full path instead"%(args[1], top))
+                raise roslaunch.core.RLException("multiple files named [%s] in package [%s]:%s\nPlease specify full path instead" % (args[1], top, ''.join(['\n- %s' % r for r in resolved])))
         except rospkg.ResourceNotFound as e:
             raise roslaunch.core.RLException("[%s] is not a package or launch file name"%top)
         if not resolved:
@@ -234,7 +235,7 @@ def print_file_list(roslaunch_files):
     from roslaunch.config import load_config_default, get_roscore_filename
     import roslaunch.xmlloader
     try:
-        loader = roslaunch.xmlloader.XmlLoader(resolve_anon=False)
+        loader = roslaunch.xmlloader.XmlLoader(resolve_anon=True)
         config = load_config_default(roslaunch_files, None, loader=loader, verbose=False, assign_machines=False)
         files = [os.path.abspath(x) for x in set(config.roslaunch_files) - set([get_roscore_filename()])]
         print('\n'.join(files))

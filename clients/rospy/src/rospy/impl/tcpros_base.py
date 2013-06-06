@@ -187,10 +187,15 @@ class TCPServer(object):
         binds the server socket. ROS_IP/ROS_HOSTNAME may restrict
         binding to loopback interface.
         """
-        server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if rosgraph.network.use_ipv6():
+            server_sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+        else:
+            server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        logdebug('binding to ' + str(rosgraph.network.get_bind_address()) + ' ' + str(self.port))
         server_sock.bind((rosgraph.network.get_bind_address(), self.port))
-        (self.addr, self.port) = server_sock.getsockname()
+        (self.addr, self.port) = server_sock.getsockname()[0:2]
+        logdebug('bound to ' + str(self.addr) + ' ' + str(self.port))
         server_sock.listen(5)
         return server_sock
 
@@ -205,11 +210,16 @@ class TCPServer(object):
 # the tcprosserver constructor. Constructor is called by init_tcpros()
 _tcpros_server = None
 
-def init_tcpros_server():
-    """starts the TCPROS server socket for inbound connections"""
+def init_tcpros_server(port=0):
+    """
+    starts the TCPROS server socket for inbound connections
+    @param port: listen on the provided port. If the port number is 0, the port will
+        be chosen randomly
+    @type  port: int
+    """
     global _tcpros_server
     if _tcpros_server is None:
-        _tcpros_server = TCPROSServer()
+        _tcpros_server = TCPROSServer(port=port)
         rospy.core.add_shutdown_hook(_tcpros_server.shutdown)
     return _tcpros_server
     
@@ -250,8 +260,13 @@ class TCPROSServer(object):
     called during init_publisher().
     """
     
-    def __init__(self):
-        """ctor."""
+    def __init__(self, port=0):
+        """
+        Constructur
+        @param port: port number to bind to (default 0/any)
+        @type  port: int
+        """
+        self.port = port
         self.tcp_ros_server = None #: server for receiving tcp conn
         self.lock = threading.Lock()
         # should be set to fn(sock, client_addr, header) for topic connections
@@ -259,18 +274,16 @@ class TCPROSServer(object):
         # should be set to fn(sock, client_addr, header) for service connections        
         self.service_connection_handler = _error_connection_handler
         
-    def start_server(self, port=0):
+    def start_server(self):
         """
         Starts the TCP socket server if one is not already running
-        @param port: port number to bind to (default 0/any)
-        @type  port: int
         """
         if self.tcp_ros_server:
             return
         with self.lock:
             try:
                 if not self.tcp_ros_server:
-                    self.tcp_ros_server = TCPServer(self._tcp_server_callback, port) 
+                    self.tcp_ros_server = TCPServer(self._tcp_server_callback, self.port) 
                     self.tcp_ros_server.start()
             except Exception as e:
                 self.tcp_ros_server = None
@@ -457,6 +470,13 @@ class TCPROSTransport(Transport):
         """
         return self._fileno
         
+    def set_endpoint_id(self, endpoint_id):
+        """
+        Set the endpoint_id of this transport.
+        Allows the endpoint_id to be set before the socket is initialized.
+        """
+        self.endpoint_id = endpoint_id
+
     def set_socket(self, sock, endpoint_id):
         """
         Set the socket for this transport
@@ -490,8 +510,10 @@ class TCPROSTransport(Transport):
         try:
             self.endpoint_id = endpoint_id
             self.dest_address = (dest_addr, dest_port)
-            
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            if rosgraph.network.use_ipv6():
+                s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+            else:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             if _is_use_tcp_keepalive():
                 # OSX (among others) does not define these options
                 if hasattr(socket, 'TCP_KEEPCNT') and \
@@ -508,6 +530,7 @@ class TCPROSTransport(Transport):
             if timeout is not None:
                 s.settimeout(timeout)
             self.socket = s
+            logdebug('connecting to ' + str(dest_addr)+ ' ' + str(dest_port))
             self.socket.connect((dest_addr, dest_port))
             self.write_header()
             self.read_header()
@@ -519,16 +542,7 @@ class TCPROSTransport(Transport):
             rospywarn("Unknown error initiating TCP/IP socket to %s:%s (%s): %s"%(dest_addr, dest_port, endpoint_id, traceback.format_exc()))            
 
             # FATAL: no reconnection as error is unknown
-            self.done = True
-            if self.socket:
-                try:
-                    self.socket.shutdown(socket.SHUT_RDWR)
-                except:
-                    pass
-                finally:
-                    self.socket.close()
-            self.socket = None
-            
+            self.close()
             raise TransportInitError(str(e)) #re-raise i/o error
                 
     def _validate_header(self, header):
