@@ -1,9 +1,10 @@
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package rosmsg
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package ros_comm
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1.9.46 (2013-06-18)
 -------------------
+* add dependency on roslisp (`#240 <https://github.com/ros/ros_comm/issues/240>`_)
 
 1.9.45 (2013-06-06)
 -------------------
@@ -22,7 +23,6 @@ Changelog for package rosmsg
 
 1.9.40 (2013-01-13)
 -------------------
-* fix output of 'rossrv --help' (`#3979 <https://code.ros.org/trac/ros/ticket/3979>`_)
 
 1.9.39 (2012-12-29)
 -------------------
