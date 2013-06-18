@@ -1,6 +1,6 @@
 <package>
   <name>ros_comm</name>
-  <version>1.9.45</version>
+  <version>1.9.46</version>
   <description>
     ROS communications-related packages, including core client libraries (roscpp, rospy) and graph introspection tools (rostopic, rosnode, rosservice, rosparam).
   </description>
@@ -34,6 +34,7 @@
   <run_depend>rosconsole</run_depend>
   <run_depend>rosgraph</run_depend>
   <run_depend>roslaunch</run_depend>
+  <run_depend>roslisp</run_depend> <!-- Depend on roslisp to enable lisp message generation in dry packages -->
   <run_depend>rosmaster</run_depend>
   <run_depend>rosmsg</run_depend>
   <run_depend>rosnode</run_depend>
