@@ -1,0 +1,12 @@
+Source: ros-groovy-rosmsg
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 7.0.50~), ros-groovy-catkin
+Homepage: http://ros.org/wiki/rosmsg
+Standards-Version: 3.9.2
+
+Package: ros-groovy-rosmsg
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-rospkg, ros-groovy-genmsg, ros-groovy-rosbag, ros-groovy-roslib
+Description: rosmsg contains two command-line tools: rosmsg and rossrv. rosmsg is a command-line tool for displaying information about ROS Message types. rossrv is a command-line tool for displaying information about ROS Service types.
