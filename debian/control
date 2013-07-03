@@ -1,0 +1,12 @@
+Source: ros-hydro-test-roslib-comm
+Section: misc
+Priority: extra
+Maintainer: "Dirk Thomas <dthomas@osrfoundation.org>"
+Build-Depends: debhelper (>= 7.0.50~), ros-hydro-catkin (>= 0.5.68), ros-hydro-genmsg, ros-hydro-rosgraph-msgs, ros-hydro-std-msgs
+Homepage: http://ros.org/wiki/roslib
+Standards-Version: 3.9.2
+
+Package: ros-hydro-test-roslib-comm
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, 
+Description: Unit tests verifying that roslib is operating as expected.
