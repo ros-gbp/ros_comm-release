@@ -2,6 +2,9 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.9.49 (2013-09-16)
+-------------------
+
 1.9.48 (2013-08-21)
 -------------------
 * search for exported rosbag migration rules based on new package rosbag_migration_rule
