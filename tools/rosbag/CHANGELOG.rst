@@ -2,6 +2,10 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.9.50 (2013-10-04)
+-------------------
+* add chunksize option to rosbag record
+
 1.9.49 (2013-09-16)
 -------------------
 
