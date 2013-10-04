@@ -1,0 +1,12 @@
+Source: ros-hydro-roswtf
+Section: misc
+Priority: extra
+Maintainer: Mirza A. Shah <mshah@willowgarage.com>
+Build-Depends: debhelper (>= 7.0.50~), ros-hydro-catkin (>= 0.5.68), ros-hydro-rostest
+Homepage: http://ros.org/wiki/roswtf
+Standards-Version: 3.9.2
+
+Package: ros-hydro-roswtf
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-paramiko, python-rospkg, ros-hydro-rosgraph, ros-hydro-roslaunch, ros-hydro-roslib, ros-hydro-rosnode, ros-hydro-rosservice
+Description: roswtf is a tool for diagnosing issues with a running ROS system. Think of it as a FAQ implemented in code.
