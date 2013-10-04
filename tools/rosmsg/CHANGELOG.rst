@@ -2,6 +2,9 @@
 Changelog for package rosmsg
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.9.50 (2013-10-04)
+-------------------
+
 1.9.49 (2013-09-16)
 -------------------
 * allow reusing rospack instance in rosmsg api
