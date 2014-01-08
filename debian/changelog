@@ -1,0 +1,7 @@
+ros-hydro-rosbag-storage (1.9.51-0quantal) quantal; urgency=high
+
+  * move several client library independent parts from ros_comm into roscpp_core, split rosbag storage specific stuff from client library usage (#299 <https://github.com/ros/ros_comm/issues/299>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 07 Jan 2014 08:00:00 -0000
+
+
