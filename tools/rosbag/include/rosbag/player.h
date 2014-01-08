@@ -51,9 +51,18 @@
 #include "rosbag/bag.h"
 
 #include "rosbag/time_translator.h"
-#include "macros.h"
+#include "rosbag/macros.h"
 
 namespace rosbag {
+
+//! Helper function to create AdvertiseOptions from a MessageInstance
+/*!
+ *  param msg         The Message instance for which to generate adveritse options
+ *  param queue_size  The size of the outgoing queue
+ */
+ros::AdvertiseOptions createAdvertiseOptions(MessageInstance const& msg, uint32_t queue_size);
+
+
 
 struct ROSBAG_DECL PlayerOptions
 {
@@ -154,7 +163,7 @@ public:
     void publish();
 
 private:
-    char readCharFromStdin();
+    int readCharFromStdin();
     void setupTerminal();
     void restoreTerminal();
 
