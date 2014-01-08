@@ -2,6 +2,10 @@
 Changelog for package roswtf
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.9.51 (2014-01-07)
+-------------------
+* do not warn about not existing stacks folder in a catkin workspace
+
 1.9.50 (2013-10-04)
 -------------------
 
