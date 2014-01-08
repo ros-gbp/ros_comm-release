@@ -1,4 +1,5 @@
 test_rosbag
+test_rosbag_storage
 test_roscpp
 test_rosgraph
 test_roslaunch
