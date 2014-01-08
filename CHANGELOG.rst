@@ -2,6 +2,9 @@
 Changelog for package rosout
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.9.52 (2014-01-08)
+-------------------
+
 1.9.51 (2014-01-07)
 -------------------
 * remove log4cxx dependency from rosout, implementing custom rolling log file
