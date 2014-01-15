@@ -1,0 +1,12 @@
+Source: ros-hydro-ros-comm
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 7.0.50~), ros-hydro-catkin
+Homepage: http://www.ros.org/wiki/ros_comm
+Standards-Version: 3.9.2
+
+Package: ros-hydro-ros-comm
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-hydro-message-filters, ros-hydro-ros, ros-hydro-rosbag, ros-hydro-rosconsole, ros-hydro-roscpp, ros-hydro-rosgraph, ros-hydro-rosgraph-msgs, ros-hydro-roslaunch, ros-hydro-roslisp, ros-hydro-rosmaster, ros-hydro-rosmsg, ros-hydro-rosnode, ros-hydro-rosout, ros-hydro-rosparam, ros-hydro-rospy, ros-hydro-rosservice, ros-hydro-rostest, ros-hydro-rostopic, ros-hydro-roswtf, ros-hydro-std-srvs, ros-hydro-topic-tools, ros-hydro-xmlrpcpp
+Description: ROS communications-related packages, including core client libraries (roscpp, rospy) and graph introspection tools (rostopic, rosnode, rosservice, rosparam).
