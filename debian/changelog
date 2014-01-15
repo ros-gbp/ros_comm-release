@@ -1,0 +1,109 @@
+ros-hydro-roscpp (1.9.53-0raring) raring; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 14 Jan 2014 04:00:00 -0000
+
+ros-hydro-roscpp (1.9.52-0raring) raring; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 08 Jan 2014 04:00:00 -0000
+
+ros-hydro-roscpp (1.9.51-0raring) raring; urgency=high
+
+  * move several client library independent parts from ros_comm into roscpp_core, split rosbag storage specific stuff from client library usage (#299 <https://github.com/ros/ros_comm/issues/299>)
+  * add missing version dependency on roscpp_core stuff (#299 <https://github.com/ros/ros_comm/issues/299>)
+  * remove log4cxx dependency from roscpp, using new agnostic interface from rosconsole
+  * fix compile problem with gcc 4.4 (#302 <https://github.com/ros/ros_comm/issues/302>)
+  * fix clang warnings
+  * fix usage of boost include directories
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 07 Jan 2014 04:00:00 -0000
+
+ros-hydro-roscpp (1.9.50-0raring) raring; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 04 Oct 2013 04:00:00 -0000
+
+ros-hydro-roscpp (1.9.49-0raring) raring; urgency=high
+
+  * add rosparam getter/setter for std::vector and std::map (#279 <https://github.com/ros/ros_comm/issues/279>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Sep 2013 04:00:00 -0000
+
+ros-hydro-roscpp (1.9.48-0raring) raring; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 Aug 2013 04:00:00 -0000
+
+ros-hydro-roscpp (1.9.47-0raring) raring; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 03 Jul 2013 04:00:00 -0000
+
+ros-hydro-roscpp (1.9.46-0raring) raring; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 18 Jun 2013 04:00:00 -0000
+
+ros-hydro-roscpp (1.9.45-0raring) raring; urgency=high
+
+  * improve handling of UDP transport, when fragmented packets are lost or arive out-of-order the connection is not dropped anymore, onle a single message is lost (#226 <https://github.com/ros/ros_comm/issues/226>)
+  * fix missing generation of constant definitions for services (ros/gencpp#2 <https://github.com/ros/gencpp/issues/2>)
+  * fix restoring thread context when callback throws an exception (#219 <https://github.com/ros/ros_comm/issues/219>)
+  * fix calling PollManager::shutdown() repeatedly (#217 <https://github.com/ros/ros_comm/issues/217>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 06 Jun 2013 04:00:00 -0000
+
+ros-hydro-roscpp (1.9.44-0raring) raring; urgency=high
+
+  * fix install destination for dll's under Windows
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 21 Mar 2013 04:00:00 -0000
+
+ros-hydro-roscpp (1.9.43-0raring) raring; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 13 Mar 2013 04:00:00 -0000
+
+ros-hydro-roscpp (1.9.42-0raring) raring; urgency=high
+
+  * improve speed of message generation in dry packages (#183 <https://github.com/ros/ros_comm/issues/183>)
+  * fix roscpp service call deadlock (#149 <https://github.com/ros/ros_comm/issues/149>)
+  * fix freezing service calls when returning false (#168 <https://github.com/ros/ros_comm/issues/168>)
+  * fix error message publishing wrong message type (#178 <https://github.com/ros/ros_comm/issues/178>)
+  * fix missing explicit dependency on pthread (#135 <https://github.com/ros/ros_comm/issues/135>)
+  * fix compiler warning about wrong comparison of message md5 hashes (#165 <https://github.com/ros/ros_comm/issues/165>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 08 Mar 2013 04:00:00 -0000
+
+ros-hydro-roscpp (1.9.41-0raring) raring; urgency=high
+
+  * allow sending data exceeding 2GB in chunks (#4049 <https://code.ros.org/trac/ros/ticket/4049>)
+  * update getParam() doc (#1460 <https://code.ros.org/trac/ros/ticket/1460>)
+  * add param::get(float) (#3754 <https://code.ros.org/trac/ros/ticket/3754>)
+  * update inactive assert when publishing message with md5sum *, update related tests (#3714 <https://code.ros.org/trac/ros/ticket/3714>)
+  * fix ros master retry timeout (#4024 <https://code.ros.org/trac/ros/ticket/4024>)
+  * fix inactive assert when publishing message with wrong type (#3714 <https://code.ros.org/trac/ros/ticket/3714>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 24 Jan 2013 04:00:00 -0000
+
+ros-hydro-roscpp (1.9.40-0raring) raring; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sun, 13 Jan 2013 04:00:00 -0000
+
+ros-hydro-roscpp (1.9.39-0raring) raring; urgency=high
+
+  * first public release for Groovy
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 29 Dec 2012 04:00:00 -0000
+
+
