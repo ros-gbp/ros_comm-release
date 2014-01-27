@@ -1,3 +1,56 @@
+## ros_comm - 1.9.54-0
+
+User `dthomas@drudge` released the packages in the `ros_comm` repository by running `/usr/bin/bloom-release -r hydro -t hydro ros_comm` on `Mon, 27 Jan 2014 21:40:06 -0000`
+
+These packages were released:
+- `message_filters`
+- `ros_comm`
+- `rosbag`
+- `rosbag_storage`
+- `rosconsole`
+- `roscpp`
+- `rosgraph`
+- `rosgraph_msgs`
+- `roslaunch`
+- `rosmaster`
+- `rosmsg`
+- `rosnode`
+- `rosout`
+- `rosparam`
+- `rospy`
+- `rosservice`
+- `rostest`
+- `rostopic`
+- `roswtf`
+- `std_srvs`
+- `topic_tools`
+- `xmlrpcpp`
+
+These packages were explicitly ignored:
+- `test_rosbag`
+- `test_rosbag_storage`
+- `test_roscpp`
+- `test_rosgraph`
+- `test_roslaunch`
+- `test_roslib_comm`
+- `test_rosmaster`
+- `test_rosparam`
+- `test_rospy`
+- `test_rosservice`
+
+Version of package(s) in repository `ros_comm`:
+- rosdistro version: `1.9.53-0`
+- old version: `1.9.53-0`
+- new version: `1.9.54-0`
+
+Versions of tools used:
+- bloom version: `0.4.7`
+- catkin_pkg version: `0.1.25`
+- rosdep version: `0.10.25`
+- rosdistro version: `0.3.0`
+- vcstools version: `0.1.33`
+
+
 ## ros_comm - 1.9.53-0
 
 User `dthomas@drudge` released the packages in the `ros_comm` repository by running `/usr/bin/bloom-release -r hydro -t hydro ros_comm` on `Wed, 15 Jan 2014 01:36:45 -0000`
