@@ -2,6 +2,11 @@
 Changelog for package roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.9.54 (2014-01-27)
+-------------------
+* fix return value of pubUpdate() (`#334 <https://github.com/ros/ros_comm/issues/334>`_)
+* fix handling optional third xml rpc response argument (`#335 <https://github.com/ros/ros_comm/issues/335>`_)
+
 1.9.53 (2014-01-14)
 -------------------
 
