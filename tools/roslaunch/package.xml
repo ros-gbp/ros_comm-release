@@ -1,6 +1,6 @@
 <package>
   <name>roslaunch</name>
-  <version>1.9.53</version>
+  <version>1.9.54</version>
   <description>
     roslaunch is a tool for easily launching multiple ROS <a
     href="http://ros.org/wiki/Nodes">nodes</a> locally and remotely
@@ -28,6 +28,8 @@
   <run_depend>rosmaster</run_depend>
   <run_depend>rosout</run_depend>
   <run_depend>rosparam</run_depend>
+
+  <test_depend>rosbuild</test_depend>
 
   <export>
     <rosdoc config="rosdoc.yaml"/>
