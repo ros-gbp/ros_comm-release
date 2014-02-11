@@ -2,6 +2,10 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.10.0 (2014-02-11)
+-------------------
+* remove use of __connection header
+
 1.9.54 (2014-01-27)
 -------------------
 * readd missing declaration of rosbag::createAdvertiseOptions (`#338 <https://github.com/ros/ros_comm/issues/338>`_)
