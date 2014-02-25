@@ -1,0 +1,12 @@
+Source: ros-hydro-rosparam
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 7.0.50~), ros-hydro-catkin
+Homepage: http://ros.org/wiki/rosparam
+Standards-Version: 3.9.2
+
+Package: ros-hydro-rosparam
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-yaml, ros-hydro-rosgraph
+Description: rosparam contains the rosparam command-line tool for getting and setting ROS Parameters on the Parameter Server using YAML-encoded files. It also contains an experimental library for using YAML with the Parameter Server. This library is intended for internal use only. rosparam can be invoked within a roslaunch file.
