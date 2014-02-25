@@ -2,6 +2,9 @@
 Changelog for package roswtf
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.10.1 (2014-02-25)
+-------------------
+
 1.9.54 (2014-01-27)
 -------------------
 * fix roswtf checks to not require release-only python packages to be installed
