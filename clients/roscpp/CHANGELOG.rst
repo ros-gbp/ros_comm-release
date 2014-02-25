@@ -2,6 +2,10 @@
 Changelog for package roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.9.55 (2014-02-25)
+-------------------
+* fix compile problem with gcc 4.4 (`#302 <https://github.com/ros/ros_comm/issues/302>`_)
+
 1.9.50 (2013-10-04)
 -------------------
 
