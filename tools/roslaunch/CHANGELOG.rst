@@ -2,6 +2,9 @@
 Changelog for package roslaunch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.9.55 (2014-02-25)
+-------------------
+
 1.9.50 (2013-10-04)
 -------------------
 * add option to disable terminal title setting
