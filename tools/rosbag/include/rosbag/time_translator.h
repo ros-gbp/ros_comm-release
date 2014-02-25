@@ -36,7 +36,7 @@
 #define ROSBAG_TIME_TRANSLATOR_H
 
 #include "ros/time.h"
-#include "rosbag/macros.h"
+#include "macros.h"
 
 namespace rosbag {
 

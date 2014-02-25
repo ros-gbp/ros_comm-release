@@ -49,6 +49,46 @@
 namespace ros
 {
 
+namespace serialization
+{
+// Additional serialization traits
+
+template<typename M>
+struct PreDeserializeParams
+{
+  boost::shared_ptr<M> message;
+  boost::shared_ptr<std::map<std::string, std::string> > connection_header;
+};
+
+/**
+ * \brief called by the SubscriptionCallbackHelper after a message is
+ * instantiated but before that message is deserialized
+ */
+template<typename M>
+struct PreDeserialize
+{
+  static void notify(const PreDeserializeParams<M>&) { }
+};
+
+}
+
+template<typename T>
+void
+assignSubscriptionConnectionHeader(T* t, const boost::shared_ptr<M_string>& connection_header,
+                                   typename boost::enable_if<ros::message_traits::IsMessage<T> >::type*_=0)
+{
+  (void)_; // warning stopper
+  t->__connection_header = connection_header;
+}
+
+template<typename T>
+void
+assignSubscriptionConnectionHeader(T* t, const boost::shared_ptr<M_string>& connection_header,
+                                   typename boost::disable_if<ros::message_traits::IsMessage<T> >::type*_=0)
+{ 
+  (void)_; // warning stopper
+}
+
 struct SubscriptionCallbackHelperDeserializeParams
 {
   uint8_t* buffer;
@@ -120,6 +160,8 @@ public:
       ROS_DEBUG("Allocation failed for message of type [%s]", getTypeInfo().name());
       return VoidConstPtr();
     }
+
+    assignSubscriptionConnectionHeader(msg.get(), params.connection_header);
 
     ser::PreDeserializeParams<NonConstType> predes_params;
     predes_params.message = msg;

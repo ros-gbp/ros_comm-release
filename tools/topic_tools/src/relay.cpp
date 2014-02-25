@@ -49,12 +49,7 @@ bool g_lazy;
 ros::TransportHints g_th;
 
 void conn_cb(const ros::SingleSubscriberPublisher&);
-void in_cb(const ros::MessageEvent<ShapeShifter>& msg_event);
-
-void subscribe()
-{
-  g_sub = new ros::Subscriber(g_node->subscribe(g_input_topic, 10, &in_cb, g_th));
-}
+void in_cb(const boost::shared_ptr<ShapeShifter const>& msg);
 
 void conn_cb(const ros::SingleSubscriberPublisher&)
 {
@@ -63,27 +58,21 @@ void conn_cb(const ros::SingleSubscriberPublisher&)
   if(g_lazy && !g_sub)
   {
     ROS_DEBUG("lazy mode; resubscribing");
-    subscribe();
+    g_sub = new ros::Subscriber(g_node->subscribe<ShapeShifter>(g_input_topic, 10, &in_cb, g_th));
   }
 }
 
-void in_cb(const ros::MessageEvent<ShapeShifter>& msg_event)
+void in_cb(const boost::shared_ptr<ShapeShifter const>& msg)
 {
-  boost::shared_ptr<ShapeShifter const> const &msg = msg_event.getConstMessage();
-  boost::shared_ptr<const ros::M_string> const& connection_header = msg_event.getConnectionHeaderPtr();
-
   if (!g_advertised)
   {
     // If the input topic is latched, make the output topic latched, #3385.
     bool latch = false;
-    if (connection_header)
+    ros::M_string::iterator it = msg->__connection_header->find("latching");
+    if((it != msg->__connection_header->end()) && (it->second == "1"))
     {
-      ros::M_string::const_iterator it = connection_header->find("latching");
-      if((it != connection_header->end()) && (it->second == "1"))
-      {
-        ROS_DEBUG("input topic is latched; latching output topic to match");
-        latch = true;
-      }
+      ROS_DEBUG("input topic is latched; latching output topic to match");
+      latch = true;
     }
     g_pub = msg->advertise(*g_node, g_output_topic, 10, latch, conn_cb);
     g_advertised = true;
@@ -128,7 +117,7 @@ int main(int argc, char **argv)
   if (unreliable)
     g_th.unreliable().reliable(); // Prefers unreliable, but will accept reliable.
 
-  subscribe();
+  g_sub = new ros::Subscriber(n.subscribe<ShapeShifter>(g_input_topic, 10, &in_cb, g_th));
   ros::spin();
   return 0;
 }

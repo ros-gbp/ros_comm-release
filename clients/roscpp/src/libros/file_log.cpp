@@ -29,6 +29,8 @@
 #include "ros/file_log.h"
 #include "ros/this_node.h"
 
+#include "log4cxx/rollingfileappender.h"
+#include "log4cxx/patternlayout.h"
 #include <ros/io.h>
 #include <ros/console.h>
 
@@ -51,6 +53,7 @@ namespace file_log
 {
 
 std::string g_log_directory;
+log4cxx::LoggerPtr g_file_only_logger;
 
 const std::string& getLogDirectory()
 {

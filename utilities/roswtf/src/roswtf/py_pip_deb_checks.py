@@ -44,17 +44,13 @@ import importlib
 import os
 
 #A dictionary of core ROS python packages and their corresponding .deb packages
-py_to_deb_core_packages = {
+py_to_deb_packages = {
+    'bloom': 'python-bloom',
     'catkin_pkg': 'python-catkin-pkg',
     'rospkg': 'python-rospkg',
     'rosinstall': 'python-rosinstall',
-    'rosdep2': 'python-rosdep',
-}
-
-#A dictionary of release ROS python packages and their corresponding .deb packages
-py_to_deb_release_packages = {
-    'bloom': 'python-bloom',
     'rosrelease': 'python-rosrelease',
+    'rosdep2': 'python-rosdep',
 }
 
 
@@ -109,7 +105,7 @@ def is_python_package_installed_via_pip_on_ubuntu(python_pkg):
 def python_module_install_check(ctx):
     """Make sure core Python modules are installed"""
     warn_str = ''
-    for py_pkg in py_to_deb_core_packages:
+    for py_pkg in py_to_deb_packages:
         if not is_python_package_installed(py_pkg):
             warn_str = warn_str + py_pkg + ' -- '
     if (warn_str != ''):
@@ -120,8 +116,8 @@ def deb_install_check_on_ubuntu(ctx):
     """Make sure on Debian python packages are installed"""
     if (is_host_os_ubuntu()):
         warn_str = ''
-        for py_pkg in py_to_deb_core_packages:
-            deb_pkg = py_to_deb_core_packages[py_pkg]
+        for py_pkg in py_to_deb_packages:
+            deb_pkg = py_to_deb_packages[py_pkg]
             if not is_debian_package_installed(deb_pkg):
                 warn_str = warn_str + py_pkg + ' (' + deb_pkg + ') -- '
         if (warn_str != ''):
@@ -132,7 +128,7 @@ def pip_install_check_on_ubuntu(ctx):
     """Make sure on Ubuntu, Python packages are install with apt and not pip"""
     if (is_host_os_ubuntu()):
         warn_str = ''
-        for py_pkg in dict(py_to_deb_core_packages.items() + py_to_deb_core_packages.items()):
+        for py_pkg in py_to_deb_packages:
             if is_python_package_installed_via_pip_on_ubuntu(py_pkg):
                 warn_str = warn_str + py_pkg + ' -- '
         if (warn_str != ''):

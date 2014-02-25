@@ -63,11 +63,10 @@ class Subscriber(SimpleFilter):
     from a ROS subscription through to the filters which have connected
     to it.
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args):
         SimpleFilter.__init__(self)
         self.topic = args[0]
-        kwargs['callback'] = self.callback
-        self.sub = rospy.Subscriber(*args, **kwargs)
+        self.sub = rospy.Subscriber(*args, **{"callback" : self.callback})
 
     def callback(self, msg):
         self.signalMessage(msg)

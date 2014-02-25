@@ -386,6 +386,5 @@ int XmlRpcSocket::get_port(int socket)
     case AF_INET6:
       return ntohs(sin6->sin6_port);
   }  
-  return 0;
 }
 
