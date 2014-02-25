@@ -1,3 +1,54 @@
+## ros_comm (groovy) - 1.9.55-0
+
+User `dthomas@drudge` released the packages in the `ros_comm` repository into the `groovy` distro by running `/usr/bin/bloom-release -r groovy -t groovy ros_comm` on `Tue, 25 Feb 2014 23:27:51 -0000`
+
+These packages were released:
+- `message_filters`
+- `ros_comm`
+- `rosbag`
+- `rosconsole`
+- `roscpp`
+- `rosgraph`
+- `rosgraph_msgs`
+- `roslaunch`
+- `rosmaster`
+- `rosmsg`
+- `rosnode`
+- `rosout`
+- `rosparam`
+- `rospy`
+- `rosservice`
+- `rostest`
+- `rostopic`
+- `roswtf`
+- `std_srvs`
+- `topic_tools`
+- `xmlrpcpp`
+
+These packages were explicitly ignored:
+- `test_rosbag`
+- `test_roscpp`
+- `test_rosgraph`
+- `test_roslaunch`
+- `test_roslib_comm`
+- `test_rosmaster`
+- `test_rosparam`
+- `test_rospy`
+- `test_rosservice`
+
+Version of package(s) in repository `ros_comm`:
+- rosdistro version: `1.9.50-0`
+- old version: `1.9.50-0`
+- new version: `1.9.55-0`
+
+Versions of tools used:
+- bloom version: `0.5.1`
+- catkin_pkg version: `0.1.26`
+- rosdep version: `0.10.25`
+- rosdistro version: `0.3.4`
+- vcstools version: `0.1.33`
+
+
 ## ros_comm - 1.10.0-0
 
 User `dthomas@drudge` released the packages in the `ros_comm` repository by running `/usr/bin/bloom-release -r indigo -t indigo ros_comm` on `Tue, 11 Feb 2014 19:12:59 -0000`
