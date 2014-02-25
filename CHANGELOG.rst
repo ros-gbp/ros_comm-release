@@ -2,6 +2,9 @@
 Changelog for package rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.9.55 (2014-02-25)
+-------------------
+
 1.9.50 (2013-10-04)
 -------------------
 * add support for python coverage tool to work in callbacks
