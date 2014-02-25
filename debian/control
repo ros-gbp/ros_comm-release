@@ -1,0 +1,12 @@
+Source: ros-groovy-rosgraph-msgs
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 7.0.50~), ros-groovy-catkin, ros-groovy-message-generation, ros-groovy-std-msgs
+Homepage: http://ros.org/wiki/rosgraph_msgs
+Standards-Version: 3.9.2
+
+Package: ros-groovy-rosgraph-msgs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-groovy-message-runtime, ros-groovy-std-msgs
+Description: Messages relating to the ROS Computation Graph. These are generally considered to be low-level messages that end users do not interact with.
