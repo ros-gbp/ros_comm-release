@@ -1,0 +1,12 @@
+Source: ros-groovy-rosout
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 7.0.50~), liblog4cxx10-dev, ros-groovy-catkin, ros-groovy-roscpp, ros-groovy-rosgraph-msgs
+Homepage: http://ros.org/wiki/rosout
+Standards-Version: 3.9.2
+
+Package: ros-groovy-rosout
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, liblog4cxx10-dev, ros-groovy-roscpp
+Description: System-wide logging mechanism for messages sent to the /rosout topic.
