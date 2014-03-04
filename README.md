@@ -1,3 +1,54 @@
+## ros_comm (indigo) - 1.11.0-0
+
+User `dthomas@drudge` released the packages in the `ros_comm` repository into the `indigo` distro by running `/usr/bin/bloom-release -r indigo -t indigo ros_comm` on `Tue, 04 Mar 2014 19:51:53 -0000`
+
+These packages were released:
+- `message_filters`
+- `ros_comm`
+- `rosbag`
+- `rosbag_storage`
+- `rosconsole`
+- `roscpp`
+- `rosgraph`
+- `roslaunch`
+- `rosmaster`
+- `rosmsg`
+- `rosnode`
+- `rosout`
+- `rosparam`
+- `rospy`
+- `rosservice`
+- `rostest`
+- `rostopic`
+- `roswtf`
+- `topic_tools`
+- `xmlrpcpp`
+
+These packages were explicitly ignored:
+- `test_rosbag`
+- `test_rosbag_storage`
+- `test_roscpp`
+- `test_rosgraph`
+- `test_roslaunch`
+- `test_roslib_comm`
+- `test_rosmaster`
+- `test_rosparam`
+- `test_rospy`
+- `test_rosservice`
+
+Version of package(s) in repository `ros_comm`:
+- rosdistro version: `1.10.0-0`
+- old version: `1.10.0-0`
+- new version: `1.11.0-0`
+
+Versions of tools used:
+- bloom version: `0.5.1`
+- catkin_pkg version: `0.1.26`
+- rosdep version: `0.10.25`
+- rosdistro version: `0.3.4`
+- vcstools version: `0.1.33`
+
+
 ## ros_comm (hydro) - 1.10.2-0
 
 User `dthomas@drudge` released the packages in the `ros_comm` repository into the `hydro` distro by running `/usr/bin/bloom-release -r hydro -t hydro ros_comm` on `Mon, 03 Mar 2014 23:05:31 -0000`
