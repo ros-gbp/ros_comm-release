@@ -2,11 +2,12 @@
 Changelog for package rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.10.2 (2014-03-03)
+1.11.0 (2014-03-04)
 -------------------
 * fix exception handling for queued connections (`#369 <https://github.com/ros/ros_comm/issues/369>`_)
+* use catkin_install_python() to install Python scripts (`#361 <https://github.com/ros/ros_comm/issues/361>`_)
 
-1.10.1 (2014-02-25)
+1.10.0 (2014-02-11)
 -------------------
 
 1.9.54 (2014-01-27)

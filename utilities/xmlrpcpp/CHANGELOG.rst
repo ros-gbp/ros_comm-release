@@ -2,11 +2,11 @@
 Changelog for package xmlrpcpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.10.2 (2014-03-03)
+1.11.0 (2014-03-04)
 -------------------
 * output error message when hostname lookup fails (`#364 <https://github.com/ros/ros_comm/issues/364>`_)
 
-1.10.1 (2014-02-25)
+1.10.0 (2014-02-11)
 -------------------
 
 1.9.54 (2014-01-27)

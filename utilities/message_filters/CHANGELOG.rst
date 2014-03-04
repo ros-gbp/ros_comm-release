@@ -2,10 +2,11 @@
 Changelog for package message_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.10.2 (2014-03-03)
+1.11.0 (2014-03-04)
 -------------------
+* suppress boost::signals deprecation warning (`#362 <https://github.com/ros/ros_comm/issues/362>`_)
 
-1.10.1 (2014-02-25)
+1.10.0 (2014-02-11)
 -------------------
 
 1.9.54 (2014-01-27)
