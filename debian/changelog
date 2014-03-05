@@ -1,0 +1,112 @@
+ros-indigo-rosconsole (1.11.0-1trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 04 Mar 2014 08:00:00 -0000
+
+ros-indigo-rosconsole (1.10.0-1trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 11 Feb 2014 08:00:00 -0000
+
+ros-indigo-rosconsole (1.9.54-1trusty) trusty; urgency=high
+
+  * fix rosconsole segfault when using ROSCONSOLE_FORMAT with  (#342 <https://github.com/ros/ros_comm/issues/342>)
+  * add missing run/test dependencies on rosbuild to get ROS_ROOT environment variable
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Jan 2014 08:00:00 -0000
+
+ros-indigo-rosconsole (1.9.53-1trusty) trusty; urgency=high
+
+  * readd g_level_lockup symbol for backward compatibility when log4cxx is being used
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 14 Jan 2014 08:00:00 -0000
+
+ros-indigo-rosconsole (1.9.52-1trusty) trusty; urgency=high
+
+  * fix missing export of rosconsole backend interface library
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 08 Jan 2014 08:00:00 -0000
+
+ros-indigo-rosconsole (1.9.51-1trusty) trusty; urgency=high
+
+  * refactor rosconsole to not expose log4cxx, implement empty and log4cxx backends
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 07 Jan 2014 08:00:00 -0000
+
+ros-indigo-rosconsole (1.9.50-1trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 04 Oct 2013 07:00:00 -0000
+
+ros-indigo-rosconsole (1.9.49-1trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Sep 2013 07:00:00 -0000
+
+ros-indigo-rosconsole (1.9.48-1trusty) trusty; urgency=high
+
+  * wrap condition in ROS_ASSERT_CMD in parenthesis (#271 <https://github.com/ros/ros_comm/issues/271>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 Aug 2013 07:00:00 -0000
+
+ros-indigo-rosconsole (1.9.47-1trusty) trusty; urgency=high
+
+  * force CMake policy before setting preprocessor definition to ensure correct escaping (#245 <https://github.com/ros/ros_comm/issues/245>)
+  * check for CATKIN_ENABLE_TESTING to enable configure without tests
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 03 Jul 2013 07:00:00 -0000
+
+ros-indigo-rosconsole (1.9.46-1trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 18 Jun 2013 07:00:00 -0000
+
+ros-indigo-rosconsole (1.9.45-1trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 06 Jun 2013 07:00:00 -0000
+
+ros-indigo-rosconsole (1.9.44-1trusty) trusty; urgency=high
+
+  * fix install destination for dll's under Windows
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 21 Mar 2013 07:00:00 -0000
+
+ros-indigo-rosconsole (1.9.43-1trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 13 Mar 2013 07:00:00 -0000
+
+ros-indigo-rosconsole (1.9.42-1trusty) trusty; urgency=high
+
+  * fix handling spaces in folder names (ros/catkin#375 <https://github.com/ros/catkin/issues/375>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 08 Mar 2013 08:00:00 -0000
+
+ros-indigo-rosconsole (1.9.41-1trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 24 Jan 2013 08:00:00 -0000
+
+ros-indigo-rosconsole (1.9.40-1trusty) trusty; urgency=high
+
+  * fix dependent packages by pass LOG4CXX include dirs and libraries along
+  * fix usage of variable arguments in vFormatToBuffer() function
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sun, 13 Jan 2013 08:00:00 -0000
+
+ros-indigo-rosconsole (1.9.39-1trusty) trusty; urgency=high
+
+  * first public release for Groovy
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 29 Dec 2012 08:00:00 -0000
+
+
