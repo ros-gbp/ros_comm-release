@@ -1,6 +1,6 @@
 <package>
   <name>rosbag_storage</name>
-  <version>1.11.0</version>
+  <version>1.11.1</version>
   <description>
     This is a set of tools for recording from and playing back ROS
     message without relying on the ROS client library.
@@ -17,6 +17,7 @@
   <build_depend>roscpp_serialization</build_depend>
   <build_depend version_gte="0.3.17">roscpp_traits</build_depend>
   <build_depend>rostime</build_depend>
+  <build_depend>roslz4</build_depend>
 
   <run_depend>boost</run_depend>
   <run_depend>bzip2</run_depend>
@@ -25,4 +26,9 @@
   <run_depend>roscpp_serialization</run_depend>
   <run_depend version_gte="0.3.17">roscpp_traits</run_depend>
   <run_depend>rostime</run_depend>
+  <run_depend>roslz4</run_depend>
+
+  <export>
+    <rosdoc config="${prefix}/rosdoc.yaml"/>
+  </export>
 </package>
