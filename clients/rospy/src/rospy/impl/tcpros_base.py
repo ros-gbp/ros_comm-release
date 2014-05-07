@@ -435,6 +435,7 @@ class TCPROSTransport(Transport):
 
         self.socket = None
         self.endpoint_id = 'unknown'
+        self.callerid_pub = 'unknown'
         self.dest_address = None # for reconnection
         
         if python3 == 0: # Python 2.x
@@ -460,7 +461,19 @@ class TCPROSTransport(Transport):
         # without knowing the actual field name
         self.md5sum = None
         self.type = None 
-            
+
+        # Endpoint Details (IP, Port)
+        self.local_endpoint = (None, None)
+        self.remote_endpoint = (None, None)
+
+    def get_transport_info(self):
+        """
+        Get detailed connection information.
+        Similar to getTransportInfo() in 'libros/transport/transport_tcp.cpp'
+        e.g. TCPROS connection on port 41374 to [127.0.0.1:40623 on socket 6]
+        """
+        return "%s connection on port %s to [%s:%s on socket %s]" % (self.transport_type, self.local_endpoint[1], self.remote_endpoint[0], self.remote_endpoint[1], self._fileno)
+
     def fileno(self):
         """
         Get descriptor for select
@@ -488,6 +501,7 @@ class TCPROSTransport(Transport):
         self.socket = sock
         self.endpoint_id = endpoint_id
         self._fileno = sock.fileno()
+        self.local_endpoint = self.socket.getsockname()
 
     def connect(self, dest_addr, dest_port, endpoint_id, timeout=None):
         """
@@ -531,6 +545,8 @@ class TCPROSTransport(Transport):
             self.socket.connect((dest_addr, dest_port))
             self.write_header()
             self.read_header()
+            self.local_endpoint = self.socket.getsockname()
+            self.remote_endpoint = (dest_addr, dest_port)
         except TransportInitError as tie:
             rospyerr("Unable to initiate TCP/IP socket to %s:%s (%s): %s"%(dest_addr, dest_port, endpoint_id, traceback.format_exc()))            
             raise
@@ -556,6 +572,7 @@ class TCPROSTransport(Transport):
             if not required in header:
                 raise TransportInitError("header missing required field [%s]"%required)
         self.md5sum = header['md5sum']
+        self.callerid_pub = header['callerid']
         self.type = header['type']
         if header.get('latching', '0') == '1':
             self.is_latched = True
@@ -587,6 +604,7 @@ class TCPROSTransport(Transport):
         if sock is None:
             return
         sock.setblocking(1)
+	# TODO: add bytes received to self.stat_bytes
         self._validate_header(read_ros_handshake_header(sock, self.read_buff, self.protocol.buff_size))
                 
     def send_message(self, msg, seq):
@@ -666,7 +684,7 @@ class TCPROSTransport(Transport):
                 if b.tell() >= 4:
                     p.read_messages(b, msg_queue, sock) 
                 if not msg_queue:
-                    recv_buff(sock, b, p.buff_size)
+                    self.stat_bytes += recv_buff(sock, b, p.buff_size)
             self.stat_num_msg += len(msg_queue) #STATS
             # set the _connection_header field
             for m in msg_queue:
@@ -728,7 +746,7 @@ class TCPROSTransport(Transport):
                     if self.socket is not None:
                         msgs = self.receive_once()
                         if not self.done and not is_shutdown():
-                            msgs_callback(msgs)
+                            msgs_callback(msgs, self)
                     else:
                         self._reconnect()
 
