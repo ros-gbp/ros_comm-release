@@ -2,6 +2,9 @@
 Changelog for package rosbag_storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.11.2 (2014-05-08)
+-------------------
+
 1.11.1 (2014-05-07)
 -------------------
 * add lz4 compression to rosbag (Python and C++) (`#356 <https://github.com/ros/ros_comm/issues/356>`_)
