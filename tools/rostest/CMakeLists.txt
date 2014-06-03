@@ -12,7 +12,7 @@ catkin_package(DEPENDS Boost
   )
 catkin_python_setup()
 
-catkin_install_python(PROGRAMS nodes/hztest
+install(PROGRAMS nodes/hztest
   DESTINATION  ${CATKIN_PACKAGE_SHARE_DESTINATION}/nodes/hztest)
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}

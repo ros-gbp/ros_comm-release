@@ -2,23 +2,14 @@
 Changelog for package rosbag_storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.11.3 (2014-05-21)
+1.10.3 (2014-06-02)
 -------------------
 
-1.11.2 (2014-05-08)
+1.10.2 (2014-03-03)
 -------------------
 
-1.11.1 (2014-05-07)
+1.10.1 (2014-02-25)
 -------------------
-* add lz4 compression to rosbag (Python and C++) (`#356 <https://github.com/ros/ros_comm/issues/356>`_)
-* move rosbag dox to rosbag_storage (`#389 <https://github.com/ros/ros_comm/issues/389>`_)
-
-1.11.0 (2014-03-04)
--------------------
-
-1.10.0 (2014-02-11)
--------------------
-* remove use of __connection header
 
 1.9.54 (2014-01-27)
 -------------------

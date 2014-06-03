@@ -61,7 +61,6 @@ import genpy.message
 
 import roslib.names # still needed for roslib.names.canonicalize_name()
 import rospy
-import roslz4
 
 class ROSBagException(Exception):
     """
@@ -93,7 +92,6 @@ class Compression:
     """
     NONE = 'none'
     BZ2  = 'bz2'
-    LZ4  = 'lz4'
 
 class Bag(object):
     """
@@ -136,7 +134,7 @@ class Bag(object):
         self._filename = None
         self._version  = None
 
-        allowed_compressions = [Compression.NONE, Compression.BZ2, Compression.LZ4]
+        allowed_compressions = [Compression.NONE, Compression.BZ2]
         if compression not in allowed_compressions:
             raise ValueError('compression must be one of: %s' % ', '.join(allowed_compressions))  
         self._compression = compression      
@@ -211,7 +209,7 @@ class Bag(object):
     
     def _set_compression(self, compression):
         """Set the compression method to use for writing."""
-        allowed_compressions = [Compression.NONE, Compression.BZ2, Compression.LZ4]
+        allowed_compressions = [Compression.NONE, Compression.BZ2]
         if compression not in allowed_compressions:
             raise ValueError('compression must be one of: %s' % ', '.join(allowed_compressions))        
         
@@ -1116,9 +1114,7 @@ class Bag(object):
         
         # Create the compressor
         if compression == Compression.BZ2:
-            self._output_file = _CompressorFileFacade(self._file, bz2.BZ2Compressor())
-        elif compression == Compression.LZ4:
-            self._output_file = _CompressorFileFacade(self._file, roslz4.LZ4Compressor())
+            self._output_file = _BZ2CompressorFileFacade(self._file)
         elif compression == Compression.NONE:
             self._output_file = self._file
         else:
@@ -1868,8 +1864,6 @@ class _BagReader200(_BagReader):
             # Decompress it
             if chunk_header.compression == Compression.BZ2:
                 self.decompressed_chunk = bz2.decompress(compressed_chunk)
-            elif chunk_header.compression == Compression.LZ4:
-                self.decompressed_chunk = roslz4.decompress(compressed_chunk)
             else:
                 raise ROSBagException('unsupported compression type: %s' % chunk_header.compression)
 
@@ -2171,8 +2165,6 @@ class _BagReader200(_BagReader):
 
                 if chunk_header.compression == Compression.BZ2:
                     self.decompressed_chunk = bz2.decompress(compressed_chunk)
-                elif chunk_header.compression == Compression.LZ4:
-                    self.decompressed_chunk = roslz4.decompress(compressed_chunk)
                 else:
                     raise ROSBagException('unsupported compression type: %s' % chunk_header.compression)
                 
@@ -2308,13 +2300,13 @@ def _mergesort(list_of_lists, key=None):
             except StopIteration:
                 heapq.heappop(heap)
 
-class _CompressorFileFacade(object):
+class _BZ2CompressorFileFacade(object):
     """
-    A file facade for sequential compressors (e.g., bz2.BZ2Compressor).
+    A file facade for the bz2.BZ2Compressor.
     """
-    def __init__(self, file, compressor):
+    def __init__(self, file):
         self.file                = file
-        self.compressor          = compressor
+        self.compressor          = bz2.BZ2Compressor()
         self.compressed_bytes_in = 0
     
     def write(self, data):

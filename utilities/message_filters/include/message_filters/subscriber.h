@@ -37,6 +37,7 @@
 
 #include <ros/ros.h>
 
+#include <boost/signals.hpp>
 #include <boost/thread/mutex.hpp>
 
 #include "connection.h"

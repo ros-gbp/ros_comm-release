@@ -55,7 +55,6 @@ public:
   void setPublisher(const IntraProcessSubscriberLinkPtr& publisher);
 
   virtual std::string getTransportType();
-  virtual std::string getTransportInfo();
   virtual void drop();
 
   /**

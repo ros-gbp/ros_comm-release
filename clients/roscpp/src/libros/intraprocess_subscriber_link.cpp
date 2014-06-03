@@ -88,12 +88,6 @@ std::string IntraProcessSubscriberLink::getTransportType()
   return std::string("INTRAPROCESS");
 }
 
-std::string IntraProcessSubscriberLink::getTransportInfo()
-{
-  // TODO: Check if we can dump more useful information here
-  return getTransportType();
-}
-
 void IntraProcessSubscriberLink::drop()
 {
   {
