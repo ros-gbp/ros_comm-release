@@ -2,6 +2,9 @@
 Changelog for package roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.10.10 (2014-06-16)
+--------------------
+
 1.10.3 (2014-06-02)
 -------------------
 * add AsyncSpinner::canStart() to check if a spinner can be started
