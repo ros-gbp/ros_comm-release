@@ -2,13 +2,25 @@
 Changelog for package message_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.10.3 (2014-06-02)
+1.11.4 (2014-06-16)
+-------------------
+* add approximate Python time synchronizer (used to be in camera_calibration) (`#424 <https://github.com/ros/ros_comm/issues/424>`_)
+
+1.11.3 (2014-05-21)
 -------------------
 
-1.10.2 (2014-03-03)
+1.11.2 (2014-05-08)
 -------------------
 
-1.10.1 (2014-02-25)
+1.11.1 (2014-05-07)
+-------------------
+* update API to use boost::signals2 (`#267 <https://github.com/ros/ros_comm/issues/267>`_)
+
+1.11.0 (2014-03-04)
+-------------------
+* suppress boost::signals deprecation warning (`#362 <https://github.com/ros/ros_comm/issues/362>`_)
+
+1.10.0 (2014-02-11)
 -------------------
 
 1.9.54 (2014-01-27)
