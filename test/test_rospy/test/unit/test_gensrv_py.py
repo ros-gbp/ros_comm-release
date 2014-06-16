@@ -35,10 +35,7 @@ import os
 import sys
 import struct
 import unittest
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
+from cStringIO import StringIO
 import time
 import random
 import math

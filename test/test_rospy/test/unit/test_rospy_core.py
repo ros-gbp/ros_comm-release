@@ -31,8 +31,6 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import print_function
-
 import os
 import sys
 import struct
@@ -178,7 +176,7 @@ class TestRospyCore(unittest.TestCase):
             try:
                 rospy.core.valid_name('p')(f, caller_id)
                 self.fail(f)
-            except rospy.core.ParameterInvalid:
+            except rospy.core.ParameterInvalid, e:
                 pass
     
     def test_is_topic(self):
@@ -201,7 +199,7 @@ class TestRospyCore(unittest.TestCase):
             try:
                 rospy.core.is_topic('p')(f, caller_id)
                 self.fail(f)
-            except rospy.core.ParameterInvalid:
+            except rospy.core.ParameterInvalid, e:
                 pass
             
     def test_configure_logging(self):
@@ -219,21 +217,18 @@ class TestRospyCore(unittest.TestCase):
         self.assert_(rospy.core.xmlrpcapi('http://') is None)
         api = rospy.core.xmlrpcapi('http://localhost:1234')
         self.assert_(api is not None)
-        try:
-            from xmlrpc.client import ServerProxy
-        except ImportError:
-            from xmlrpclib import ServerProxy
-        self.assert_(isinstance(api, ServerProxy))
+        import xmlrpclib
+        self.assert_(isinstance(api, xmlrpclib.ServerProxy))
     
 called = None
 called2 = None
 def shutdown_hook1(reason):
     global called
-    print("HOOK", reason)
+    print "HOOK", reason
     called = reason
 def shutdown_hook2(reason):
     global called2
-    print("HOOK2", reason)
+    print "HOOK2", reason
     called2 = reason
 def shutdown_hook_exception(reason):
     raise Exception("gotcha")

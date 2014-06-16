@@ -2,35 +2,19 @@
 Changelog for package rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.11.4 (2014-06-16)
--------------------
-* Python 3 compatibility (`#426 <https://github.com/ros/ros_comm/issues/426>`_)
+1.10.10 (2014-06-16)
+--------------------
 
-1.11.3 (2014-05-21)
--------------------
-* allow shutdown hooks to be any callable object (`#410 <https://github.com/ros/ros_comm/issues/410>`_)
-* add demux program and related scripts (`#407 <https://github.com/ros/ros_comm/issues/407>`_)
-* add publisher queue_size to rostopic
-
-1.11.2 (2014-05-08)
--------------------
-* use publisher queue_size for statistics (`#398 <https://github.com/ros/ros_comm/issues/398>`_)
-
-1.11.1 (2014-05-07)
+1.10.3 (2014-06-02)
 -------------------
 * improve asynchonous publishing performance (`#373 <https://github.com/ros/ros_comm/issues/373>`_)
-* add warning when queue_size is omitted for rospy publisher (`#346 <https://github.com/ros/ros_comm/issues/346>`_)
-* add optional topic/connection statistics (`#398 <https://github.com/ros/ros_comm/issues/398>`_)
-* add transport information in SlaveAPI::getBusInfo() for roscpp & rospy (`#328 <https://github.com/ros/ros_comm/issues/328>`_)
 * allow custom error handlers for services (`#375 <https://github.com/ros/ros_comm/issues/375>`_)
-* add architecture_independent flag in package.xml (`#391 <https://github.com/ros/ros_comm/issues/391>`_)
 
-1.11.0 (2014-03-04)
+1.10.2 (2014-03-03)
 -------------------
 * fix exception handling for queued connections (`#369 <https://github.com/ros/ros_comm/issues/369>`_)
-* use catkin_install_python() to install Python scripts (`#361 <https://github.com/ros/ros_comm/issues/361>`_)
 
-1.10.0 (2014-02-11)
+1.10.1 (2014-02-25)
 -------------------
 
 1.9.54 (2014-01-27)

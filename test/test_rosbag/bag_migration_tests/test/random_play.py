@@ -36,10 +36,7 @@ import unittest
 import rospy
 import rostest
 import sys
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
+from cStringIO import StringIO
 import time
 from random_messages import RandomMsgGen
 import subprocess
@@ -128,7 +125,7 @@ class RandomPlay(unittest.TestCase):
 
         msg_match = False
 
-        for ind in range(0,100):
+        for ind in xrange(0,100):
           (input_topic, input_msg, input_time) = self.input[ind]
 
           if (genpy.message.strify_message(expect_msg) == genpy.message.strify_message(input_msg)):
@@ -156,11 +153,11 @@ class RandomPlay(unittest.TestCase):
             break
 
         if not msg_match:
-          print("No match at time: %f" % expect_time)
+          print "No match at time: %f"%expect_time
 
         self.assertTrue(msg_match)
 
-      print("%f %f %f %f"%(max_early, max_late, avg_off, power))
+      print "%f %f %f %f"%(max_early, max_late, avg_off, power)
 
     finally:
       f1.communicate()

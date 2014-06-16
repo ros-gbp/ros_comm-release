@@ -32,22 +32,18 @@
 #
 # Revision $Id$
 
-from __future__ import print_function
-from __future__ import with_statement
-
 """
 Process monitoring implementation for roslaunch.
 """
+
+from __future__ import with_statement
 
 import os
 import sys
 import time
 import traceback
 import logging
-try:
-    from queue import Empty, Queue
-except ImportError:
-    from Queue import Empty, Queue
+import Queue
 import signal
 import atexit
 from threading import Thread, RLock, Lock
@@ -119,8 +115,8 @@ def shutdown_process_monitor(process_monitor):
         else:
             logger.debug("shutdown_process_monitor: ProcessMonitor shutdown succeeded")
             return True
-    except Exception as e:
-        print("exception in shutdown_process_monitor: %s" % e, file=sys.stderr)
+    except Exception, e:
+        print >> sys.stderr, "exception in shutdown_process_monitor: %s"%e
         traceback.print_exc()
         return False
 
@@ -136,7 +132,7 @@ def pmon_shutdown():
                 shutdown_process_monitor(p)
             del _pmons[:]
         except:
-            print("exception in pmon_shutdown")
+            print "exception in pmon_shutdown"
             traceback.print_exc()
     finally:
         _shutdown_lock.release()
@@ -410,16 +406,7 @@ class ProcessMonitor(Thread):
         method was called.
         @rtype: bool
         """
-        def isstring(s):
-            """Small helper version to check an object is a string in
-            a way that works for both Python 2 and 3
-            """
-            try:
-                return isinstance(s, basestring)
-            except NameError:
-                return isinstance(s, str)
-
-        if not isstring(name):
+        if not isinstance(name, basestring):
             raise RLException("kill_process takes in a process name but was given: %s"%name)
         logger.debug("ProcessMonitor.kill_process[%s]"%name)
         printlog("[%s] kill requested"%name)
@@ -558,7 +545,7 @@ class ProcessMonitor(Thread):
                         for l in self.listeners:
                             l.process_died(p.name, p.exit_code)
 
-                except Exception as e:
+                except Exception, e:
                     traceback.print_exc()
                     #don't respawn as this is an internal error
                     dead.append(p)
@@ -604,7 +591,7 @@ class ProcessMonitor(Thread):
         self.is_shutdown = True
         # killall processes on run exit
 
-        q = Queue()
+        q = Queue.Queue()
         q.join()
         
         with self.plock:
@@ -685,7 +672,7 @@ class _ProcessKiller(Thread):
                 p = q.get(False)
                 _kill_process(p, self.errors)
                 q.task_done()
-            except Empty:
+            except Queue.Empty:
                 pass
 
         

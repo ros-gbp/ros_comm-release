@@ -52,7 +52,7 @@ import yaml
 try:
     from cStringIO import StringIO  # Python 2.x
 except ImportError:
-    from io import BytesIO as StringIO  # Python 3.x
+    from io import StringIO  # Python 3.x
 
 import genmsg
 import genpy
@@ -61,7 +61,6 @@ import genpy.message
 
 import roslib.names # still needed for roslib.names.canonicalize_name()
 import rospy
-import roslz4
 
 class ROSBagException(Exception):
     """
@@ -93,7 +92,6 @@ class Compression:
     """
     NONE = 'none'
     BZ2  = 'bz2'
-    LZ4  = 'lz4'
 
 class Bag(object):
     """
@@ -136,7 +134,7 @@ class Bag(object):
         self._filename = None
         self._version  = None
 
-        allowed_compressions = [Compression.NONE, Compression.BZ2, Compression.LZ4]
+        allowed_compressions = [Compression.NONE, Compression.BZ2]
         if compression not in allowed_compressions:
             raise ValueError('compression must be one of: %s' % ', '.join(allowed_compressions))  
         self._compression = compression      
@@ -211,7 +209,7 @@ class Bag(object):
     
     def _set_compression(self, compression):
         """Set the compression method to use for writing."""
-        allowed_compressions = [Compression.NONE, Compression.BZ2, Compression.LZ4]
+        allowed_compressions = [Compression.NONE, Compression.BZ2]
         if compression not in allowed_compressions:
             raise ValueError('compression must be one of: %s' % ', '.join(allowed_compressions))        
         
@@ -412,7 +410,7 @@ class Bag(object):
             if self._version == 102 and type(self._reader) == _BagReader102_Unindexed:
                 rows.append(('version', '1.2 (unindexed)'))
             else:
-                rows.append(('version', '%d.%d' % (int(self._version / 100), self._version % 100)))
+                rows.append(('version', '%d.%d' % (self._version / 100, self._version % 100)))
 
             if not self._connection_indexes and not self._chunks:
                 rows.append(('size', _human_readable_size(self.size)))
@@ -421,8 +419,8 @@ class Bag(object):
                     start_stamp = self._chunks[ 0].start_time.to_sec()
                     end_stamp   = self._chunks[-1].end_time.to_sec()
                 else:
-                    start_stamp = min([index[ 0].time.to_sec() for index in self._connection_indexes.values()])
-                    end_stamp   = max([index[-1].time.to_sec() for index in self._connection_indexes.values()])
+                    start_stamp = min([index[ 0].time.to_sec() for index in self._connection_indexes.itervalues()])
+                    end_stamp   = max([index[-1].time.to_sec() for index in self._connection_indexes.itervalues()])
     
                 # Show duration
                 duration = end_stamp - start_stamp
@@ -448,10 +446,10 @@ class Bag(object):
                 if self._chunks:
                     num_messages = 0
                     for c in self._chunks:
-                        for counts in c.connection_counts.values():
+                        for counts in c.connection_counts.itervalues():
                             num_messages += counts
                 else:
-                    num_messages = sum([len(index) for index in self._connection_indexes.values()])
+                    num_messages = sum([len(index) for index in self._connection_indexes.itervalues()])
                 rows.append(('messages', str(num_messages)))
 
                 # Show compression information
@@ -461,7 +459,7 @@ class Bag(object):
                     compression_counts       = {}
                     compression_uncompressed = {}
                     compression_compressed   = {}
-                    for chunk_header in self._chunk_headers.values():
+                    for chunk_header in self._chunk_headers.itervalues():
                         if chunk_header.compression not in compression_counts:
                             compression_counts[chunk_header.compression] = 1
                             compression_uncompressed[chunk_header.compression] = chunk_header.uncompressed_size
@@ -484,8 +482,8 @@ class Bag(object):
     
                     all_uncompressed = (sum([count for c, count in compression_counts.items() if c != Compression.NONE]) == 0)
                     if not all_uncompressed:    
-                        total_uncompressed_size = sum((h.uncompressed_size for h in self._chunk_headers.values()))
-                        total_compressed_size   = sum((h.compressed_size   for h in self._chunk_headers.values()))
+                        total_uncompressed_size = sum((h.uncompressed_size for h in self._chunk_headers.itervalues()))
+                        total_compressed_size   = sum((h.compressed_size   for h in self._chunk_headers.itervalues()))
                         
                         total_uncompressed_size_str = _human_readable_size(total_uncompressed_size)
                         total_compressed_size_str   = _human_readable_size(total_compressed_size)
@@ -506,7 +504,7 @@ class Bag(object):
 
                 datatypes = set()
                 datatype_infos = []
-                for connection in self._connections.values():
+                for connection in self._connections.itervalues():
                     if connection.datatype in datatypes:
                         continue
                     datatype_infos.append((connection.datatype, connection.md5sum, connection.msg_def))
@@ -537,11 +535,11 @@ class Bag(object):
                             if med_period > 0.0:
                                 topic_freqs_median[topic] = 1.0 / med_period
 
-                topics = sorted(topic_datatypes.keys())
+                topics = sorted(topic_datatypes.iterkeys())
                 max_topic_len       = max([len(topic) for topic in topics])
                 max_datatype_len    = max([len(datatype) for datatype in datatypes])
-                max_msg_count_len   = max([len('%d' % msg_count) for msg_count in topic_msg_counts.values()])
-                max_freq_median_len = max([len(_human_readable_frequency(freq)) for freq in topic_freqs_median.values()]) if len(topic_freqs_median) > 0 else 0
+                max_msg_count_len   = max([len('%d' % msg_count) for msg_count in topic_msg_counts.itervalues()])
+                max_freq_median_len = max([len(_human_readable_frequency(freq)) for freq in topic_freqs_median.itervalues()]) if len(topic_freqs_median) > 0 else 0
 
                 # Show datatypes       
                 for i, (datatype, md5sum, msg_def) in enumerate(sorted(datatype_infos)):
@@ -594,7 +592,7 @@ class Bag(object):
             if self._version == 102 and type(self._reader) == _BagReader102_Unindexed:
                 s += 'version: 1.2 (unindexed)\n'
             else:
-                s += 'version: %d.%d\n' % (int(self._version / 100), self._version % 100)
+                s += 'version: %d.%d\n' % (self._version / 100, self._version % 100)
 
             if not self._connection_indexes and not self._chunks:
                 s += 'size: %d\n' % self.size
@@ -604,8 +602,8 @@ class Bag(object):
                     start_stamp = self._chunks[ 0].start_time.to_sec()
                     end_stamp   = self._chunks[-1].end_time.to_sec()
                 else:
-                    start_stamp = min([index[ 0].time.to_sec() for index in self._connection_indexes.values()])
-                    end_stamp   = max([index[-1].time.to_sec() for index in self._connection_indexes.values()])
+                    start_stamp = min([index[ 0].time.to_sec() for index in self._connection_indexes.itervalues()])
+                    end_stamp   = max([index[-1].time.to_sec() for index in self._connection_indexes.itervalues()])
                 
                 duration = end_stamp - start_stamp
                 s += 'duration: %.6f\n' % duration
@@ -615,10 +613,10 @@ class Bag(object):
                 if self._chunks:
                     num_messages = 0
                     for c in self._chunks:
-                        for counts in c.connection_counts.values():
+                        for counts in c.connection_counts.itervalues():
                             num_messages += counts
                 else:
-                    num_messages = sum([len(index) for index in self._connection_indexes.values()])
+                    num_messages = sum([len(index) for index in self._connection_indexes.itervalues()])
                 s += 'messages: %d\n' % num_messages
                 s += 'indexed: True\n'
 
@@ -629,7 +627,7 @@ class Bag(object):
                     compression_counts       = {}
                     compression_uncompressed = {}
                     compression_compressed   = {}
-                    for chunk_header in self._chunk_headers.values():
+                    for chunk_header in self._chunk_headers.itervalues():
                         if chunk_header.compression not in compression_counts:
                             compression_counts[chunk_header.compression] = 1
                             compression_uncompressed[chunk_header.compression] = chunk_header.uncompressed_size
@@ -646,12 +644,12 @@ class Bag(object):
     
                     all_uncompressed = (sum([count for c, count in compression_counts.items() if c != Compression.NONE]) == 0)
                     if not all_uncompressed:    
-                        s += 'uncompressed: %d\n' % sum((h.uncompressed_size for h in self._chunk_headers.values()))
-                        s += 'compressed: %d\n' % sum((h.compressed_size for h in self._chunk_headers.values()))
+                        s += 'uncompressed: %d\n' % sum((h.uncompressed_size for h in self._chunk_headers.itervalues()))
+                        s += 'compressed: %d\n' % sum((h.compressed_size for h in self._chunk_headers.itervalues()))
 
                 datatypes = set()
                 datatype_infos = []
-                for connection in self._connections.values():
+                for connection in self._connections.itervalues():
                     if connection.datatype in datatypes:
                         continue
                     datatype_infos.append((connection.datatype, connection.md5sum, connection.msg_def))
@@ -682,11 +680,11 @@ class Bag(object):
                             if med_period > 0.0:
                                 topic_freqs_median[topic] = 1.0 / med_period
 
-                topics = sorted(topic_datatypes.keys())
+                topics = sorted(topic_datatypes.iterkeys())
                 max_topic_len       = max([len(topic) for topic in topics])
                 max_datatype_len    = max([len(datatype) for datatype in datatypes])
-                max_msg_count_len   = max([len('%d' % msg_count) for msg_count in topic_msg_counts.values()])
-                max_freq_median_len = max([len(_human_readable_frequency(freq)) for freq in topic_freqs_median.values()]) if len(topic_freqs_median) > 0 else 0
+                max_msg_count_len   = max([len('%d' % msg_count) for msg_count in topic_msg_counts.itervalues()])
+                max_freq_median_len = max([len(_human_readable_frequency(freq)) for freq in topic_freqs_median.itervalues()]) if len(topic_freqs_median) > 0 else 0
 
                 # Show datatypes       
                 s += 'types:\n'
@@ -759,14 +757,14 @@ class Bag(object):
         if not self._chunk_headers:
             return False
 
-        return any((h.compression != Compression.NONE for h in self._chunk_headers.values()))
+        return any((h.compression != Compression.NONE for h in self._chunk_headers.itervalues()))
 
     @property
     def _uncompressed_size(self):
         if not self._chunk_headers:
             return self.size
 
-        return sum((h.uncompressed_size for h in self._chunk_headers.values()))
+        return sum((h.uncompressed_size for h in self._chunk_headers.itervalues()))
 
     def _read_message(self, position, raw=False):
         """
@@ -787,7 +785,7 @@ class Bag(object):
             else:
                 topics = set([roslib.names.canonicalize_name(t) for t in topics])
 
-        for c in self._connections.values():
+        for c in self._connections.itervalues():
             if topics and c.topic not in topics and roslib.names.canonicalize_name(c.topic) not in topics:
                 continue
             if connection_filter and not connection_filter(c.topic, c.datatype, c.md5sum, c.msg_def, c.header):
@@ -862,7 +860,7 @@ class Bag(object):
             self._reader._read_connection_index_records()
 
         if connections is None:
-            return self._connection_indexes.values()
+            return self._connection_indexes.itervalues()
         else:
             return (self._connection_indexes[c.id] for c in connections)
 
@@ -894,20 +892,11 @@ class Bag(object):
             elif mode == 'a': self._open_append(f, allow_unindexed)
             else:
                 raise ValueError('mode "%s" is invalid' % mode)
-            if 'b' not in self._file.mode and not isinstance('', bytes):
-                raise ROSBagException('In Python 3 the bag file must be opened in binary mode')
         except struct.error:
             raise ROSBagFormatException('error with bag')
 
-    def _is_file(self, f):
-        try:
-            return isinstance(f, file)  # Python 2
-        except NameError:
-            import io
-            return isinstance(f, io.IOBase)  # Python 3...this will return false in Python 2 always
-
     def _open_read(self, f, allow_unindexed):
-        if self._is_file(f):
+        if isinstance(f, file):
             self._file     = f
             self._filename = None
         else:
@@ -935,7 +924,7 @@ class Bag(object):
             raise
 
     def _open_write(self, f):
-        if self._is_file(f):
+        if isinstance(f, file):
             self._file     = f
             self._filename = None
         else:
@@ -954,7 +943,7 @@ class Bag(object):
             raise
 
     def _open_append(self, f, allow_unindexed):
-        if self._is_file(f):
+        if isinstance(f, file):
             self._file     = f
             self._filename = None
         else:        
@@ -1001,7 +990,7 @@ class Bag(object):
         """
         @raise ROSBagException: if the bag version is unsupported
         """
-        major_version, minor_version = int(self._version / 100), self._version % 100
+        major_version, minor_version = self._version / 100, self._version % 100
         if major_version == 2:
             self._reader = _BagReader200(self)
         elif major_version == 1:
@@ -1025,7 +1014,7 @@ class Bag(object):
         """
         @raise ROSBagException: if the file is empty, or the version line can't be parsed
         """
-        version_line = self._file.readline().rstrip().decode()
+        version_line = self._file.readline().rstrip()
         if len(version_line) == 0:
             raise ROSBagException('empty file')
         
@@ -1040,9 +1029,7 @@ class Bag(object):
         return version
 
     def _start_writing(self):        
-        version = _VERSION + '\n'
-        version = version.encode()
-        self._file.write(version)
+        self._file.write(_VERSION + '\n')
         self._file_header_pos = self._file.tell()
         self._write_file_header_record(0, 0, 0)
 
@@ -1054,7 +1041,7 @@ class Bag(object):
         self._index_data_pos = self._file.tell()
 
         # Write connection infos
-        for connection_info in self._connections.values():
+        for connection_info in self._connections.itervalues():
             self._write_connection_record(connection_info)
 
         # Write chunk infos
@@ -1127,9 +1114,7 @@ class Bag(object):
         
         # Create the compressor
         if compression == Compression.BZ2:
-            self._output_file = _CompressorFileFacade(self._file, bz2.BZ2Compressor())
-        elif compression == Compression.LZ4:
-            self._output_file = _CompressorFileFacade(self._file, roslz4.LZ4Compressor())
+            self._output_file = _BZ2CompressorFileFacade(self._file)
         elif compression == Compression.NONE:
             self._output_file = self._file
         else:
@@ -1241,9 +1226,7 @@ _CHUNK_INDEX_VERSION = 1
 class _ConnectionInfo(object):
     def __init__(self, id, topic, header):
         try:
-            datatype = _read_str_field(header, 'type')
-            md5sum   = _read_str_field(header, 'md5sum')
-            msg_def  = _read_str_field(header, 'message_definition')
+            datatype, md5sum, msg_def = header['type'], header['md5sum'], header['message_definition']
         except KeyError as ex:
             raise ROSBagFormatException('connection header field %s not found' % str(ex))
 
@@ -1287,39 +1270,12 @@ class _ChunkHeader(object):
         else:
             return 'compression: %s, size: %d, uncompressed: %d' % (self.compression, self.compressed_size, self.uncompressed_size)
 
-class ComparableMixin(object):
-    def _compare(self, other, method):
-        try:
-            return method(self._cmpkey(), other._cmpkey())
-        except (AttributeError, TypeError):
-            # _cmpkey not implemented or return different type
-            # so can not compare with other
-            return NotImplemented
-
-    def __lt__(self, other):
-        return self._compare(other, lambda s, o: s < o)
-
-    def __le__(self, other):
-        return self._compare(other, lambda s, o: s <= o)
-
-    def __eq__(self, other):
-        return self._compare(other, lambda s, o: s == o)
-
-    def __ge__(self, other):
-        return self._compare(other, lambda s, o: s >= o)
-
-    def __gt__(self, other):
-        return self._compare(other, lambda s, o: s > o)
-
-    def __ne__(self, other):
-        return self._compare(other, lambda s, o: s != o)
-
-class _IndexEntry(ComparableMixin):
+class _IndexEntry(object):
     def __init__(self, time):
         self.time = time
 
-    def _cmpkey(self):
-        return self.time
+    def __cmp__(self, other):
+        return self.time.__cmp__(other.time)
 
 class _IndexEntry102(_IndexEntry):
     def __init__(self, time, offset):
@@ -1400,8 +1356,6 @@ def _read_sized(f):
     return _read(f, size)
 
 def _write_sized(f, v):
-    if not isinstance(v, bytes):
-        v = v.encode()
     f.write(_pack_uint32(len(v)))
     f.write(v)
 
@@ -1416,8 +1370,7 @@ def _read_field(header, field, unpack_fn):
     
     return value
 
-def _read_str_field   (header, field):
-    return _read_field(header, field, lambda v: v)
+def _read_str_field   (header, field): return _read_field(header, field, lambda v: v)
 def _read_uint8_field (header, field): return _read_field(header, field, _unpack_uint8)
 def _read_uint32_field(header, field): return _read_field(header, field, _unpack_uint32)
 def _read_uint64_field(header, field): return _read_field(header, field, _unpack_uint64)
@@ -1436,14 +1389,7 @@ def _write_record(f, header, data='', padded_size=None):
     _write_sized(f, data)
 
 def _write_header(f, header):
-    header_str = b''
-    equal = b'='
-    for k, v in header.items():
-        if not isinstance(k, bytes):
-            k = k.encode()
-        if not isinstance(v, bytes):
-            v = v.encode()
-        header_str += _pack_uint32(len(k) + 1 + len(v)) + k + equal + v
+    header_str = ''.join([_pack_uint32(len(k) + 1 + len(v)) + k + '=' + v for k, v in header.items()])
     _write_sized(f, header_str)
     return header_str
 
@@ -1458,7 +1404,7 @@ def _read_header(f, req_op=None):
 
     # Parse header into a dict
     header_dict = {}
-    while header != b'':
+    while header != '':
         # Read size
         if len(header) < 4:
             raise ROSBagFormatException('Error reading header field')           
@@ -1468,11 +1414,10 @@ def _read_header(f, req_op=None):
         # Read bytes
         if len(header) < size:
             raise ROSBagFormatException('Error reading header field: expected %d bytes, read %d' % (size, len(header)))
-        (name, sep, value) = header[:size].partition(b'=')
-        if sep == b'':
+        (name, sep, value) = header[:size].partition('=')
+        if sep == '':
             raise ROSBagFormatException('Error reading header field')
 
-        name = name.decode()
         header_dict[name] = value                                          # @todo reindex: raise exception on empty name
         
         header = header[size:]
@@ -1637,7 +1582,7 @@ class _BagReader102_Unindexed(_BagReader):
         self.bag._connection_indexes_read = True
 
     def _create_connection_info_for_datatype(self, topic, datatype):
-        for c in self.bag._connections.values():
+        for c in self.bag._connections.itervalues():
             if c.datatype == datatype:
                 connection_id     = len(self.bag._connections)
                 connection_header = { 'topic' : topic, 'type' : c.header['type'], 'md5sum' : c.header['md5sum'], 'message_definition' : c.header['message_definition'] }
@@ -1919,8 +1864,6 @@ class _BagReader200(_BagReader):
             # Decompress it
             if chunk_header.compression == Compression.BZ2:
                 self.decompressed_chunk = bz2.decompress(compressed_chunk)
-            elif chunk_header.compression == Compression.LZ4:
-                self.decompressed_chunk = roslz4.decompress(compressed_chunk)
             else:
                 raise ROSBagException('unsupported compression type: %s' % chunk_header.compression)
 
@@ -2106,7 +2049,7 @@ class _BagReader200(_BagReader):
         # Remove any connections with no entries
         # This is a workaround for a bug where connection records were being written for
         # connections which had no messages in the bag
-        orphan_connection_ids = [id for id, index in self.bag._connection_indexes.items() if not index]
+        orphan_connection_ids = [id for id, index in self.bag._connection_indexes.iteritems() if not index]
         for id in orphan_connection_ids:
             del self.bag._connections[id]
             del self.bag._connection_indexes[id]
@@ -2222,8 +2165,6 @@ class _BagReader200(_BagReader):
 
                 if chunk_header.compression == Compression.BZ2:
                     self.decompressed_chunk = bz2.decompress(compressed_chunk)
-                elif chunk_header.compression == Compression.LZ4:
-                    self.decompressed_chunk = roslz4.decompress(compressed_chunk)
                 else:
                     raise ROSBagException('unsupported compression type: %s' % chunk_header.compression)
                 
@@ -2333,7 +2274,7 @@ def _mergesort(list_of_lists, key=None):
     heap = []
     for i, itr in enumerate(iter(pl) for pl in list_of_lists):
         try:
-            item = next(itr)
+            item = itr.next()
             toadd = (key(item), i, item, itr) if key else (item, i, itr)
             heap.append(toadd)
         except StopIteration:
@@ -2345,7 +2286,7 @@ def _mergesort(list_of_lists, key=None):
             _, idx, item, itr = heap[0]
             yield item, itr
             try:
-                item = next(itr)
+                item = itr.next()
                 heapq.heapreplace(heap, (key(item), idx, item, itr) )
             except StopIteration:
                 heapq.heappop(heap)
@@ -2355,17 +2296,17 @@ def _mergesort(list_of_lists, key=None):
             item, idx, itr = heap[0]
             yield item, itr
             try:
-                heapq.heapreplace(heap, (next(itr), idx, itr))
+                heapq.heapreplace(heap, (itr.next(), idx, itr))
             except StopIteration:
                 heapq.heappop(heap)
 
-class _CompressorFileFacade(object):
+class _BZ2CompressorFileFacade(object):
     """
-    A file facade for sequential compressors (e.g., bz2.BZ2Compressor).
+    A file facade for the bz2.BZ2Compressor.
     """
-    def __init__(self, file, compressor):
+    def __init__(self, file):
         self.file                = file
-        self.compressor          = compressor
+        self.compressor          = bz2.BZ2Compressor()
         self.compressed_bytes_in = 0
     
     def write(self, data):
@@ -2386,9 +2327,9 @@ def _median(values):
 
     sorted_values = sorted(values)
     if values_len % 2 == 1:
-        return sorted_values[int(values_len / 2)]
+        return sorted_values[(values_len + 1) / 2 - 1]
 
-    lower = sorted_values[int(values_len / 2) - 1]
-    upper = sorted_values[int(values_len / 2)]
+    lower = sorted_values[values_len / 2 - 1]
+    upper = sorted_values[values_len / 2]
 
     return float(lower + upper) / 2

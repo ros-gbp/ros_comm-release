@@ -7,8 +7,9 @@ catkin_python_setup()
 # install legacy infrastructure needed by rosbuild
 install(FILES rosbuild/rospy.cmake
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rosbuild)
-catkin_install_python(PROGRAMS
+install(PROGRAMS
   rosbuild/scripts/genmsg_py.py
   rosbuild/scripts/gensrv_py.py
-  rosbuild/scripts/genutil.py
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rosbuild/scripts)
+install(FILES rosbuild/scripts/genutil.py
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rosbuild/scripts)

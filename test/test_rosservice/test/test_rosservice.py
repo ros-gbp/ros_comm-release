@@ -34,10 +34,7 @@
 import os
 import sys 
 import unittest
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
+import cStringIO
 import time
         
 import rosunit
@@ -49,7 +46,7 @@ from contextlib import contextmanager
 @contextmanager
 def fakestdout():
     realstdout = sys.stdout
-    fakestdout = StringIO()
+    fakestdout = cStringIO.StringIO()
     sys.stdout = fakestdout
     yield fakestdout
     sys.stdout = realstdout
@@ -253,7 +250,7 @@ class TestRosservice(unittest.TestCase):
         try:
             rosservice.get_service_class_by_name('fake')
             self.fail("should have raised")
-        except rosservice.ROSServiceException as e:
+        except rosservice.ROSServiceException, e:
             self.assertEquals("Service [fake] is not available.", str(e))
         
     def test_cmd_call(self):

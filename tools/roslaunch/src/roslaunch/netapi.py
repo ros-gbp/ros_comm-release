@@ -36,10 +36,7 @@
 Convience methods for manipulating XML-RPC APIs
 """
 
-try:
-    from xmlrpc.client import ServerProxy
-except ImportError:
-    from xmlrpclib import ServerProxy
+import xmlrpclib
 
 import rosgraph
 import rosgraph.network
@@ -83,7 +80,7 @@ def list_processes(roslaunch_uris=None):
     procs = []
     for uri in roslaunch_uris:
         try:
-            r = ServerProxy(uri)
+            r = xmlrpclib.ServerProxy(uri)
             code, msg, val = r.list_processes()
             if code == 1:
                 active, dead = val

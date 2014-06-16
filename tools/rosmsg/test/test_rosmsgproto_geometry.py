@@ -39,6 +39,7 @@ NAME = 'test_rosmsgproto'
 import os
 import sys 
 import unittest
+import cStringIO
 import time
 import std_msgs
 

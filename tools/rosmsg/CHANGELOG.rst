@@ -2,25 +2,16 @@
 Changelog for package rosmsg
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.11.4 (2014-06-16)
--------------------
-* Python 3 compatibility (`#426 <https://github.com/ros/ros_comm/issues/426>`_)
+1.10.10 (2014-06-16)
+--------------------
 
-1.11.3 (2014-05-21)
--------------------
-
-1.11.2 (2014-05-08)
+1.10.3 (2014-06-02)
 -------------------
 
-1.11.1 (2014-05-07)
--------------------
-* fix rosmsg to find messages existing only in devel space (e.g. messages generated for actions) (`#385 <https://github.com/ros/ros_comm/issues/385>`_)
-* add architecture_independent flag in package.xml (`#391 <https://github.com/ros/ros_comm/issues/391>`_)
-
-1.11.0 (2014-03-04)
+1.10.2 (2014-03-03)
 -------------------
 
-1.10.0 (2014-02-11)
+1.10.1 (2014-02-25)
 -------------------
 
 1.9.54 (2014-01-27)

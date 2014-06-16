@@ -34,10 +34,7 @@
 import os
 import sys 
 import unittest
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
+import cStringIO
 import time
         
 import rosmsg
@@ -162,7 +159,7 @@ from contextlib import contextmanager
 @contextmanager
 def fakestdout():
     realstdout = sys.stdout
-    fakestdout = StringIO()
+    fakestdout = cStringIO.StringIO()
     sys.stdout = fakestdout
     yield fakestdout
     sys.stdout = realstdout

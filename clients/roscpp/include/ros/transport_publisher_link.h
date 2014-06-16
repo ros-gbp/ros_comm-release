@@ -60,7 +60,6 @@ public:
   const ConnectionPtr& getConnection() { return connection_; }
 
   virtual std::string getTransportType();
-  virtual std::string getTransportInfo();
   virtual void drop();
 
 private:

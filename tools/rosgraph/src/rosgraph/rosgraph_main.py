@@ -83,12 +83,12 @@ def rosgraph_main():
                   prefix = n + '|'
                   print('  ' + n + ' :')
                   print('    Inbound:')
-                  for k in g.nn_edges.edges_by_end.keys():
+                  for k in g.nn_edges.edges_by_end.iterkeys():
                       if k.startswith(prefix):
                           for c in g.nn_edges.edges_by_end[k]:
                               print('      ' + c.start)
                   print('    Outbound:')
-                  for k in g.nn_edges.edges_by_start.keys():
+                  for k in g.nn_edges.edges_by_start.iterkeys():
                       if k.startswith(prefix):
                           for c in g.nn_edges.edges_by_start[k]:
                               print('      ' + c.end)

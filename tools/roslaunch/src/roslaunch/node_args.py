@@ -32,8 +32,6 @@
 #
 # Revision $Id$
 
-from __future__ import print_function
-
 """
 Utility module of roslaunch that computes the command-line arguments
 for a node.
@@ -87,9 +85,9 @@ def print_node_list(roslaunch_files):
         loader = roslaunch.xmlloader.XmlLoader(resolve_anon=False)
         config = load_config_default(roslaunch_files, None, loader=loader, verbose=False, assign_machines=False)
         node_list = get_node_list(config)
-        print('\n'.join(node_list))
+        print '\n'.join(node_list)
     except RLException as e:
-        print(str(e), file=sys.stderr)
+        print >> sys.stderr, str(e)
         sys.exit(1)
 
 def print_node_args(node_name, roslaunch_files):
@@ -106,9 +104,9 @@ def print_node_args(node_name, roslaunch_files):
     try:
         node_name = script_resolve_name('roslaunch', node_name)
         args = get_node_args(node_name, roslaunch_files)
-        print(' '.join(args))
+        print ' '.join(args)
     except RLException as e:
-        print(str(e), file=sys.stderr)
+        print >> sys.stderr, str(e)
         sys.exit(1)
     
 def _resolved_name(node):
@@ -134,12 +132,12 @@ def print_node_filename(node_name, roslaunch_files):
         if len(nodes) > 1:
             raise RLException("ERROR: multiple nodes named [%s] in [%s].\nPlease fix the launch files as duplicate names are not allowed."%(node_name, ', '.join(roslaunch_files)))
         if not nodes:
-            print('ERROR: cannot find node named [%s]. Run \n\troslaunch --nodes <files>\nto see list of node names.' % (node_name), file=sys.stderr)
+            print >> sys.stderr, 'ERROR: cannot find node named [%s]. Run \n\troslaunch --nodes <files>\nto see list of node names.'%(node_name)
         else:
-            print(nodes[0].filename)
+            print nodes[0].filename
         
     except RLException as e:
-        print(str(e), file=sys.stderr)
+        print >> sys.stderr, str(e)
         sys.exit(1)
 
 def get_node_args(node_name, roslaunch_files):
@@ -179,7 +177,7 @@ def get_node_args(node_name, roslaunch_files):
 
     # remove setting identical to current environment for easier debugging
     to_remove = []
-    for k in env.keys():
+    for k in env.iterkeys():
         if env[k] == os.environ.get(k, None):
             to_remove.append(k)
     for k in to_remove:
@@ -188,16 +186,13 @@ def get_node_args(node_name, roslaunch_files):
     # resolve node name for generating args
     args = create_local_process_args(node, machine)
     # join environment vars are bash prefix args
-    return ["%s=%s"%(k, v) for k, v in env.items()] + args
+    return ["%s=%s"%(k, v) for k, v in env.iteritems()] + args
     
 def _launch_prefix_args(node):
     if node.launch_prefix:
         prefix = node.launch_prefix
-        try:
-            if type(prefix) == unicode:
-                prefix = prefix.encode('UTF-8')
-        except NameError:
-            pass
+        if type(prefix) == unicode:
+            prefix = prefix.encode('UTF-8')
         return shlex.split(prefix)
     else:
         return []
@@ -230,11 +225,8 @@ def create_local_process_args(node, machine, env=None):
     remap_args.append('__name:=%s'%node_name)
         
     resolved = substitution_args.resolve_args(node.args, context=resolve_dict, resolve_anon=True)
-    try:
-        if type(resolved) == unicode:
-            resolved = resolved.encode('UTF-8') #attempt to force to string for shlex/subprocess
-    except NameError:
-        pass
+    if type(resolved) == unicode:
+        resolved = resolved.encode('UTF-8') #attempt to force to string for shlex/subprocess
     args = shlex.split(resolved) + remap_args
     try:
         #TODO:fuerte: pass through rospack and catkin cache

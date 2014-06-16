@@ -2,35 +2,18 @@
 Changelog for package roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.11.4 (2014-06-16)
--------------------
+1.10.10 (2014-06-16)
+--------------------
 
-1.11.3 (2014-05-21)
+1.10.3 (2014-06-02)
 -------------------
-
-1.11.2 (2014-05-08)
--------------------
-
-1.11.1 (2014-05-07)
--------------------
-* update API to use boost::signals2 (`#267 <https://github.com/ros/ros_comm/issues/267>`_)
-* only update param cache when being subscribed (`#351 <https://github.com/ros/ros_comm/issues/351>`_)
-* ensure to remove delete parameters completely
-* invalidate cached parent parameters when namespace parameter is set / changes (`#352 <https://github.com/ros/ros_comm/issues/352>`_)
-* add optional topic/connection statistics (`#398 <https://github.com/ros/ros_comm/issues/398>`_)
-* add transport information in SlaveAPI::getBusInfo() for roscpp & rospy (`#328 <https://github.com/ros/ros_comm/issues/328>`_)
 * add AsyncSpinner::canStart() to check if a spinner can be started
 
-1.11.0 (2014-03-04)
+1.10.2 (2014-03-03)
 -------------------
-* allow getting parameters with name '/' (`#313 <https://github.com/ros/ros_comm/issues/313>`_)
-* support for /clock remapping (`#359 <https://github.com/ros/ros_comm/issues/359>`_)
-* suppress boost::signals deprecation warning (`#362 <https://github.com/ros/ros_comm/issues/362>`_)
-* use catkin_install_python() to install Python scripts (`#361 <https://github.com/ros/ros_comm/issues/361>`_)
 
-1.10.0 (2014-02-11)
+1.10.1 (2014-02-25)
 -------------------
-* remove use of __connection header
 
 1.9.54 (2014-01-27)
 -------------------
