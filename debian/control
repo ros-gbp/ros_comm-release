@@ -1,0 +1,12 @@
+Source: ros-indigo-rosbag-storage
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), libboost-all-dev, libbz2-dev, libconsole-bridge-dev, ros-indigo-catkin, ros-indigo-cpp-common (>= 0.3.17), ros-indigo-roscpp-serialization, ros-indigo-roscpp-traits (>= 0.3.17), ros-indigo-roslz4, ros-indigo-rostime
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-indigo-rosbag-storage
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-all-dev, libbz2-dev, libconsole-bridge-dev, ros-indigo-cpp-common (>= 0.3.17), ros-indigo-roscpp-serialization, ros-indigo-roscpp-traits (>= 0.3.17), ros-indigo-roslz4, ros-indigo-rostime
+Description: This is a set of tools for recording from and playing back ROS message without relying on the ROS client library.
