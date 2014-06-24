@@ -254,7 +254,7 @@ class XmlLoader(loader.Loader):
             raise XmlParseException(
                 "Invalid <param> tag: %s. \n\nParam xml is %s"%(e, tag.toxml()))
 
-    ARG_ATTRS = ('name', 'value', 'default')
+    ARG_ATTRS = ('name', 'value', 'default', 'doc')
     @ifunless
     def _arg_tag(self, tag, context, ros_config, verbose=True):
         """
@@ -263,13 +263,13 @@ class XmlLoader(loader.Loader):
         try:
             self._check_attrs(tag, context, ros_config, XmlLoader.ARG_ATTRS)
             (name,) = self.reqd_attrs(tag, context, ('name',))
-            value, default = self.opt_attrs(tag, context, ('value', 'default'))
+            value, default, doc = self.opt_attrs(tag, context, ('value', 'default', 'doc'))
             
             if value is not None and default is not None:
                 raise XmlParseException(
                     "<arg> tag must have one and only one of value/default.")
             
-            context.add_arg(name, value=value, default=default)
+            context.add_arg(name, value=value, default=default, doc=doc)
 
         except substitution_args.ArgException as e:
             raise XmlParseException(
@@ -361,6 +361,10 @@ class XmlLoader(loader.Loader):
             # it inherits from its parent
             remap_context = context.child('')
 
+            # each node gets its own copy of <env> arguments, which
+            # it inherits from its parent
+            env_context = context.child('')
+
             # nodes can have individual env args set in addition to
             # the ROS-specific ones.  
             for t in [c for c in tag.childNodes if c.nodeType == DomNode.ELEMENT_NODE]:
@@ -374,7 +378,7 @@ class XmlLoader(loader.Loader):
                 elif tag_name == 'rosparam':
                     self._rosparam_tag(t, param_ns, ros_config, verbose=verbose)
                 elif tag_name == 'env':
-                    self._env_tag(t, context, ros_config)
+                    self._env_tag(t, env_context, ros_config)
                 else:
                     ros_config.add_config_error("WARN: unrecognized '%s' tag in <node> tag. Node xml is %s"%(t.tagName, tag.toxml()))
 
@@ -391,13 +395,13 @@ class XmlLoader(loader.Loader):
             if not is_test:
                 return Node(pkg, node_type, name=name, namespace=child_ns.ns, machine_name=machine, 
                             args=args, respawn=respawn, 
-                            remap_args=remap_context.remap_args(), env_args=context.env_args,
+                            remap_args=remap_context.remap_args(), env_args=env_context.env_args,
                             output=output, cwd=cwd, launch_prefix=launch_prefix,
                             required=required, filename=context.filename)
             else:
                 return Test(test_name, pkg, node_type, name=name, namespace=child_ns.ns, 
                             machine_name=machine, args=args,
-                            remap_args=remap_context.remap_args(), env_args=context.env_args,
+                            remap_args=remap_context.remap_args(), env_args=env_context.env_args,
                             time_limit=time_limit, cwd=cwd, launch_prefix=launch_prefix,
                             retry=retry, filename=context.filename)
         except KeyError as e:
@@ -601,13 +605,11 @@ class XmlLoader(loader.Loader):
                         self._recurse_load(ros_config, tag.childNodes, child_ns, \
                                                default_machine, is_core, verbose)
             elif name == 'node':
-                # clone the context so that nodes' env does not pollute global env
-                n = self._node_tag(tag, context.child(''), ros_config, default_machine, verbose=verbose)
+                n = self._node_tag(tag, context, ros_config, default_machine, verbose=verbose)
                 if n is not None:
                     ros_config.add_node(n, core=is_core, verbose=verbose)
             elif name == 'test':
-                # clone the context so that nodes' env does not pollute global env                
-                t = self._node_tag(tag, context.child(''), ros_config, default_machine, is_test=True, verbose=verbose)
+                t = self._node_tag(tag, context, ros_config, default_machine, is_test=True, verbose=verbose)
                 if t is not None:
                     ros_config.add_test(t, verbose=verbose)
             elif name == 'param':
@@ -714,11 +716,14 @@ class XmlLoader(loader.Loader):
         try:
             if verbose:
                 print("... loading XML")
-            if hasattr(xml_text,'encode') and isinstance(xml_text, unicode):
-                # #3799: xml_text comes in a unicode object, which
-                # #fails since XML text is expected to be encoded.
-                # that's why force encoding to utf-8 here (make sure XML header is utf-8)
-                xml_text = xml_text.encode('utf-8')
+            try:
+                if hasattr(xml_text,'encode') and isinstance(xml_text, unicode):
+                    # #3799: xml_text comes in a unicode object, which
+                    # #fails since XML text is expected to be encoded.
+                    # that's why force encoding to utf-8 here (make sure XML header is utf-8)
+                    xml_text = xml_text.encode('utf-8')
+            except NameError:
+                pass
             root = parseString(xml_text).getElementsByTagName('launch')
         except Exception as e:
             logging.getLogger('roslaunch').error("Invalid roslaunch XML syntax:\nstring[%s]\ntraceback[%s]"%(xml_text, traceback.format_exc()))
