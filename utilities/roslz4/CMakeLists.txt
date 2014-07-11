@@ -27,8 +27,7 @@ target_link_libraries(roslz4 ${lz4_LIBRARIES} ${catkin_LIBRARIES})
 
 # Python bindings
 set(Python_ADDITIONAL_VERSIONS "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
-set(PythonLibs_FIND_VERSION "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
-find_package(PythonLibs REQUIRED)
+find_package(PythonLibs "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}" REQUIRED)
 include_directories(${PYTHON_INCLUDE_PATH})
 
 add_library(roslz4_py src/_roslz4module.c)
@@ -54,5 +53,7 @@ install(DIRECTORY include/${PROJECT_NAME}
 # Testing
 if (CATKIN_ENABLE_TESTING)
   catkin_add_gtest(test_roslz4 test/roslz4_test.cpp)
-  target_link_libraries(test_roslz4 roslz4 ${catkin_LIBRARIES})
+  if (TARGET test_roslz4)
+    target_link_libraries(test_roslz4 roslz4 ${catkin_LIBRARIES})
+  endif()
 endif()
