@@ -2,6 +2,9 @@
 Changelog for package rosbag_storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.11.6 (2014-07-10)
+-------------------
+
 1.11.5 (2014-06-24)
 -------------------
 * convert to use console bridge from upstream debian package (`ros/rosdistro#4633 <https://github.com/ros/rosdistro/issues/4633>`_)
