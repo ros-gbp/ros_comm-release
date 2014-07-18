@@ -2,6 +2,9 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.11.7 (2014-07-18)
+-------------------
+
 1.11.6 (2014-07-10)
 -------------------
 * fix rosbag record prefix (`#449 <https://github.com/ros/ros_comm/issues/449>`_)
