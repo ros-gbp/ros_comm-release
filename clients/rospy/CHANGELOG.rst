@@ -2,6 +2,9 @@
 Changelog for package rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.11.7 (2014-07-18)
+-------------------
+
 1.11.6 (2014-07-10)
 -------------------
 * make MasterProxy thread-safe (`#459 <https://github.com/ros/ros_comm/issues/459>`_)
