@@ -1,3 +1,57 @@
+## ros_comm (indigo) - 1.11.9-0
+
+The packages in the `ros_comm` repository were released into the `indigo` distro by running `/usr/bin/bloom-release -r indigo -t indigo ros_comm` on `Mon, 18 Aug 2014 19:17:45 -0000`
+
+These packages were released:
+- `message_filters`
+- `ros_comm`
+- `rosbag`
+- `rosbag_storage`
+- `rosconsole`
+- `roscpp`
+- `rosgraph`
+- `roslaunch`
+- `roslz4`
+- `rosmaster`
+- `rosmsg`
+- `rosnode`
+- `rosout`
+- `rosparam`
+- `rospy`
+- `rosservice`
+- `rostest`
+- `rostopic`
+- `roswtf`
+- `topic_tools`
+- `xmlrpcpp`
+
+These packages were explicitly ignored:
+- `test_rosbag`
+- `test_rosbag_storage`
+- `test_roscpp`
+- `test_rosgraph`
+- `test_roslaunch`
+- `test_roslib_comm`
+- `test_rosmaster`
+- `test_rosparam`
+- `test_rospy`
+- `test_rosservice`
+
+Version of package(s) in repository `ros_comm`:
+- upstream repository: git@github.com:ros/ros_comm.git
+- release repository: https://github.com/ros-gbp/ros_comm-release.git
+- rosdistro version: `1.11.8-0`
+- old version: `1.11.8-0`
+- new version: `1.11.9-0`
+
+Versions of tools used:
+- bloom version: `0.5.11`
+- catkin_pkg version: `0.2.4`
+- rosdep version: `0.10.30`
+- rosdistro version: `0.3.5`
+- vcstools version: `0.1.35`
+
+
 ## ros_comm (indigo) - 1.11.8-0
 
 The packages in the `ros_comm` repository were released into the `indigo` distro by running `/usr/bin/bloom-release -r indigo -t indigo ros_comm` on `Mon, 04 Aug 2014 18:22:32 -0000`
