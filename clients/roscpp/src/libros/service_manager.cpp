@@ -263,15 +263,11 @@ ServiceServerLinkPtr ServiceManager::createServiceServerLink(const std::string& 
   }
 
   TransportTCPPtr transport(new TransportTCP(&poll_manager_->getPollSet()));
-
-  // Make sure to initialize the connection *before* transport->connect()
-  // is called, otherwise we might miss a connect error (see #434).
-  ConnectionPtr connection(new Connection());
-  connection_manager_->addConnection(connection);
-  connection->initialize(transport, false, HeaderReceivedFunc());
-
   if (transport->connect(serv_host, serv_port))
   {
+    ConnectionPtr connection(new Connection());
+    connection_manager_->addConnection(connection);
+
     ServiceServerLinkPtr client(new ServiceServerLink(service, persistent, request_md5sum, response_md5sum, header_values));
 
     {
@@ -279,6 +275,7 @@ ServiceServerLinkPtr ServiceManager::createServiceServerLink(const std::string& 
       service_server_links_.push_back(client);
     }
 
+    connection->initialize(transport, false, HeaderReceivedFunc());
     client->initialize(connection);
 
     return client;

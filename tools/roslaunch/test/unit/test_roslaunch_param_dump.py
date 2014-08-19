@@ -34,15 +34,12 @@ import os
 import sys
 
     
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
+import cStringIO
 from contextlib import contextmanager
 @contextmanager
 def fakestdout():
     realstdout = sys.stdout
-    fakestdout = StringIO()
+    fakestdout = cStringIO.StringIO()
     sys.stdout = fakestdout
     yield fakestdout
     sys.stdout = realstdout

@@ -76,15 +76,14 @@ def record_cmd(argv):
     parser.add_option("-q", "--quiet",         dest="quiet",         default=False, action="store_true",          help="suppress console output")
     parser.add_option("-o", "--output-prefix", dest="prefix",        default=None,  action="store",               help="prepend PREFIX to beginning of bag name (name will always end with date stamp)")
     parser.add_option("-O", "--output-name",   dest="name",          default=None,  action="store",               help="record to bag with name NAME.bag")
-    parser.add_option(      "--split",         dest="split",         default=False, callback=handle_split, action="callback",    help="split the bag when maximum size or duration is reached")
+    parser.add_option(      "--split",         dest="split",         default=False, callback=handle_split, action="callback",    help="split the bag when maximum size or duariton is reached")
     parser.add_option(      "--size",          dest="size",                         type='int',   action="store", help="record a bag of maximum size SIZE", metavar="SIZE")
     parser.add_option(      "--duration",      dest="duration",                     type='string',action="store", help="record a bag of maximum duration DURATION in seconds, unless 'm', or 'h' is appended.", metavar="DURATION")
     parser.add_option("-b", "--buffsize",      dest="buffsize",      default=256,   type='int',   action="store", help="use an internal buffer of SIZE MB (Default: %default, 0 = infinite)", metavar="SIZE")
     parser.add_option("--chunksize",           dest="chunksize",     default=768,   type='int',   action="store", help="Advanced. Record to chunks of SIZE KB (Default: %default)", metavar="SIZE")
     parser.add_option("-l", "--limit",         dest="num",           default=0,     type='int',   action="store", help="only record NUM messages on each topic")
     parser.add_option(      "--node",          dest="node",          default=None,  type='string',action="store", help="record all topics subscribed to by a specific node")
-    parser.add_option("-j", "--bz2",           dest="compression",   default=None,  action="store_const", const='bz2', help="use BZ2 compression")
-    parser.add_option("--lz4",                 dest="compression",                  action="store_const", const='lz4', help="use LZ4 compression")
+    parser.add_option("-j", "--bz2",           dest="bz2",           default=False, action="store_true",          help="use BZ2 compression")
 
     (options, args) = parser.parse_args(argv)
 
@@ -109,7 +108,7 @@ def record_cmd(argv):
     if options.exclude_regex: cmd.extend(["--exclude", options.exclude_regex])
     if options.all:           cmd.extend(["--all"])
     if options.regex:         cmd.extend(["--regex"])
-    if options.compression:   cmd.extend(["--%s" % options.compression])
+    if options.bz2:           cmd.extend(["--bz2"])
     if options.split:
         if not options.duration and not options.size:
             parser.error("Split specified without giving a maximum duration or size")
@@ -485,17 +484,16 @@ def check_cmd(argv):
 def compress_cmd(argv):
     parser = optparse.OptionParser(usage='rosbag compress [options] BAGFILE1 [BAGFILE2 ...]',
                                    description='Compress one or more bag files.')
-    parser.add_option(      '--output-dir', action='store',       dest='output_dir',  help='write to directory DIR', metavar='DIR')
-    parser.add_option('-f', '--force',      action='store_true',  dest='force',       help='force overwriting of backup file if it exists')
-    parser.add_option('-q', '--quiet',      action='store_true',  dest='quiet',       help='suppress noncritical messages')
-    parser.add_option('-j', '--bz2',        action='store_const', dest='compression', help='use BZ2 compression', const=Compression.BZ2, default=Compression.BZ2)
-    parser.add_option(      '--lz4',        action='store_const', dest='compression', help='use lz4 compression', const=Compression.LZ4)
+    parser.add_option(      '--output-dir', action='store',      dest='output_dir', help='write to directory DIR', metavar='DIR')
+    parser.add_option('-f', '--force',      action='store_true', dest='force',      help='force overwriting of backup file if it exists')
+    parser.add_option('-q', '--quiet',      action='store_true', dest='quiet',      help='suppress noncritical messages')
+
     (options, args) = parser.parse_args(argv)
 
     if len(args) < 1:
         parser.error('You must specify at least one bag file.')
 
-    op = lambda inbag, outbag, quiet: change_compression_op(inbag, outbag, options.compression, options.quiet)
+    op = lambda inbag, outbag, quiet: change_compression_op(inbag, outbag, Compression.BZ2, options.quiet)
 
     bag_op(args, False, lambda b: False, op, options.output_dir, options.force, options.quiet)
 

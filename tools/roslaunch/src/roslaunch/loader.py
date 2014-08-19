@@ -73,7 +73,7 @@ def convert_value(value, type_):
                 return float(value)
             else:
                 return int(value)
-        except ValueError as e:
+        except ValueError, e:
             pass
         #bool
         lval = value.lower()
@@ -112,7 +112,7 @@ def process_include_args(context):
             raise LoadException("include args must have declared values")
         
     # save args that were passed so we can check for unused args in post-processing
-    context.args_passed = list(arg_dict.keys())
+    context.args_passed = arg_dict.keys()[:]
     # clear arg declarations so included file can re-declare
     context.arg_names = []
 
@@ -209,7 +209,7 @@ class LoaderContext(object):
             self._remap_args.remove(m)
         self._remap_args.append(remap)
         
-    def add_arg(self, name, default=None, value=None, doc=None):
+    def add_arg(self, name, default=None, value=None):
         """
         Add 'arg' to existing context. Args are only valid for their immediate context.
         """
@@ -239,16 +239,6 @@ class LoaderContext(object):
             # no value or default: appending to arg_names is all we
             # need to do as it declares the existence of the arg.
             pass
-
-        # add arg documentation string dict if it doesn't exist yet and if it can be used
-        if not 'arg_doc' in resolve_dict:
-            resolve_dict['arg_doc'] = {}
-        arg_doc_dict = resolve_dict['arg_doc']
-
-        if not value:
-            # store the documentation for this argument
-            arg_doc_dict[name] = (doc, default)
-
         
     def remap_args(self):
         """
@@ -346,7 +336,7 @@ class Loader(object):
 
         if type(param_value) == dict:
             # unroll params
-            for k, v in param_value.items():
+            for k, v in param_value.iteritems():
                 self.add_param(ros_config, ns_join(param_name, k), v, verbose=verbose)
         else:
             ros_config.add_param(Param(param_name, param_value), verbose=verbose)
@@ -403,12 +393,12 @@ class Loader(object):
                 # for our representation of empty.
                 if data is None:
                     data = {}
-            except yaml.MarkedYAMLError as e:
+            except yaml.MarkedYAMLError, e:
                 if not file_: 
                     raise ValueError("Error within YAML block:\n\t%s\n\nYAML is:\n%s"%(str(e), text))
                 else:
                     raise ValueError("file %s contains invalid YAML:\n%s"%(file_, str(e)))
-            except Exception as e:
+            except Exception, e:
                 if not file_:
                     raise ValueError("invalid YAML: %s\n\nYAML is:\n%s"%(str(e), text))
                 else:
@@ -463,28 +453,22 @@ class Loader(object):
             with open(textfile, 'r') as f:
                 return f.read()
         elif binfile is not None:
-            try:
-                from xmlrpc.client import Binary
-            except ImportError:
-                from xmlrpclib import Binary
+            import xmlrpclib
             with open(binfile, 'rb') as f:
-                return Binary(f.read())
+                return xmlrpclib.Binary(f.read())
         elif command is not None:
-            try:
-                if type(command) == unicode:
-                    command = command.encode('UTF-8') #attempt to force to string for shlex/subprocess
-            except NameError:
-                pass
+            if type(command) == unicode:
+                command = command.encode('UTF-8') #attempt to force to string for shlex/subprocess
             if verbose:
-                print("... executing command param [%s]" % command)
+                print "... executing command param [%s]"%command
             import subprocess, shlex #shlex rocks
             try:
                 p = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE)
                 c_value = p.communicate()[0]
                 if p.returncode != 0:
                     raise ValueError("Cannot load command parameter [%s]: command [%s] returned with code [%s]"%(name, command, p.returncode))
-            except OSError as e:
-                if e.errno == 2:
+            except OSError, (errno, strerr):
+                if errno == 2:
                     raise ValueError("Cannot load command parameter [%s]: no such command [%s]"%(name, command))
                 raise
             if c_value is None:

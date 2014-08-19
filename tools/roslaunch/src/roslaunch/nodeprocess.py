@@ -135,9 +135,7 @@ def create_node_process(run_id, node, master_uri):
     # default for node.output not set is 'log'
     log_output = node.output != 'screen'
     _logger.debug('process[%s]: returning LocalProcess wrapper')
-    return LocalProcess(run_id, node.package, name, args, env, log_output, \
-            respawn=node.respawn, respawn_delay=node.respawn_delay, \
-            required=node.required, cwd=node.cwd)
+    return LocalProcess(run_id, node.package, name, args, env, log_output, respawn=node.respawn, required=node.required, cwd=node.cwd)
 
 
 class LocalProcess(Process):
@@ -145,9 +143,7 @@ class LocalProcess(Process):
     Process launched on local machine
     """
     
-    def __init__(self, run_id, package, name, args, env, log_output,
-            respawn=False, respawn_delay=0.0, required=False, cwd=None,
-            is_node=True):
+    def __init__(self, run_id, package, name, args, env, log_output, respawn=False, required=False, cwd=None, is_node=True):
         """
         @param run_id: unique run ID for this roslaunch. Used to
           generate log directory location. run_id may be None if this
@@ -165,15 +161,12 @@ class LocalProcess(Process):
         @type  log_output: bool
         @param respawn: respawn process if it dies (default is False)
         @type  respawn: bool
-        @param respawn_delay: respawn process after a delay
-        @type  respawn_delay: float
         @param cwd: working directory of process, or None
         @type  cwd: str
         @param is_node: (optional) if True, process is ROS node and accepts ROS node command-line arguments. Default: True
         @type  is_node: False
         """    
-        super(LocalProcess, self).__init__(package, name, args, env,
-                respawn, respawn_delay, required)
+        super(LocalProcess, self).__init__(package, name, args, env, respawn, required)
         self.run_id = run_id
         self.popen = None
         self.log_output = log_output
@@ -211,11 +204,11 @@ class LocalProcess(Process):
         if not os.path.exists(log_dir):
             try:
                 os.makedirs(log_dir)
-            except OSError as e:
-                if e.errno == 13:
+            except OSError, (errno, msg):
+                if errno == 13:
                     raise RLException("unable to create directory for log file [%s].\nPlease check permissions."%log_dir)
                 else:
-                    raise RLException("unable to create directory for log file [%s]: %s"%(log_dir, e.msg))
+                    raise RLException("unable to create directory for log file [%s]: %s"%(log_dir, msg))
         # #973: save log dir for error messages
         self.log_dir = log_dir
 
@@ -266,7 +259,7 @@ class LocalProcess(Process):
             # _configure_logging() can mutate self.args
             try:
                 logfileout, logfileerr = self._configure_logging()
-            except Exception as e:
+            except Exception, e:
                 _logger.error(traceback.format_exc())
                 printerrlog("[%s] ERROR: unable to configure logging [%s]"%(self.name, str(e)))
                 # it's not safe to inherit from this process as
@@ -288,9 +281,9 @@ class LocalProcess(Process):
 
             try:
                 self.popen = subprocess.Popen(self.args, cwd=cwd, stdout=logfileout, stderr=logfileerr, env=full_env, close_fds=True, preexec_fn=os.setsid)
-            except OSError as e:
+            except OSError, (errno, msg):
                 self.started = True # must set so is_alive state is correct
-                _logger.error("OSError(%d, %s)", e.errno, e.msg)
+                _logger.error("OSError(%d, %s)", errno, msg)
                 if errno == 8: #Exec format error
                     raise FatalProcessLaunch("Unable to launch [%s]. \nIf it is a script, you may be missing a '#!' declaration at the top."%self.name)
                 elif errno == 2: #no such file or directory
@@ -329,13 +322,9 @@ executable permission. This is often caused by a bad launch-prefix."""%(msg, ' '
         if not self.started: #not started yet
             return True
         if self.stopped or self.popen is None:
-            if self.time_of_death is None:
-                self.time_of_death = time.time()
             return False
         self.exit_code = self.popen.poll()
         if self.exit_code is not None:
-            if self.time_of_death is None:
-                self.time_of_death = time.time()
             return False
         return True
 
@@ -406,7 +395,7 @@ executable permission. This is often caused by a bad launch-prefix."""%(msg, ' '
                         #self.popen.wait()
                         #os.wait()
                         _logger.info("process[%s]: sent SIGKILL", self.name)
-                    except OSError as e:
+                    except OSError, e:
                         if e.args[0] == 3:
                             printerrlog("no [%s] process with pid [%s]"%(self.name, pid))
                         else:
@@ -474,7 +463,7 @@ executable permission. This is often caused by a bad launch-prefix."""%(msg, ' '
                         #self.popen.wait()
                         #os.wait()
                         _logger.info("process[%s]: sent SIGKILL", self.name)
-                    except OSError as e:
+                    except OSError, e:
                         if e.args[0] == 3:
                             printerrlog("no [%s] process with pid [%s]"%(self.name, pid))
                         else:

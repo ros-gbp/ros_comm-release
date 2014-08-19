@@ -90,8 +90,6 @@ from rospy.core import *
 from rospy.exceptions import ROSSerializationException, TransportTerminated
 from rospy.msg import serialize_message, args_kwds_to_message
 
-from rospy.impl.statistics import SubscriberStatisticsLogger
-
 from rospy.impl.registration import get_topic_manager, set_topic_manager, Registration, get_registration_listeners
 from rospy.impl.tcpros import get_tcpros_handler, DEFAULT_BUFF_SIZE
 from rospy.impl.tcpros_pubsub import QueuedConnection
@@ -431,15 +429,12 @@ class _TopicImpl(object):
         """
         Get the stats for this topic
         @return: stats for topic in getBusInfo() format::
-          Publisher:
-          ((connection_id, destination_caller_id, direction, transport, topic_name, connected, connection_info_string)*)
-          Subscriber:
-          ((connection_id, publisher_xmlrpc_uri, direction, transport, topic_name, connected, connection_info_string)*)
+          ((connection_id, destination_caller_id, direction, transport, topic_name, connected)*)
         @rtype: list
         """
         # save referenceto avoid locking
         connections = self.connections
-        return [(c.id, c.endpoint_id, c.direction, c.transport_type, self.resolved_name, True, c.get_transport_info()) for c in connections]
+        return [(c.id, c.endpoint_id, c.direction, c.transport_type, self.resolved_name, True) for c in connections]
 
     def get_stats(self): # STATS
         """Get the stats for this topic (API stub)"""
@@ -560,7 +555,6 @@ class _SubscriberImpl(_TopicImpl):
         self.queue_size = None
         self.buff_size = DEFAULT_BUFF_SIZE
         self.tcp_nodelay = False
-        self.statistics_logger = SubscriberStatisticsLogger(self);
 
     def close(self):
         """close I/O and release resources"""
@@ -692,7 +686,7 @@ class _SubscriberImpl(_TopicImpl):
             else:
                 _logger.warn("during shutdown, bad callback: %s\n%s"%(cb, traceback.format_exc()))
         
-    def receive_callback(self, msgs, connection):
+    def receive_callback(self, msgs):
         """
         Called by underlying connection transport for each new message received
         @param msgs: message data
@@ -701,7 +695,6 @@ class _SubscriberImpl(_TopicImpl):
         # save reference to avoid lock
         callbacks = self.callbacks
         for msg in msgs:
-            self.statistics_logger.callback(msg, connection.callerid_pub, connection.stat_bytes)
             for cb, cb_args in callbacks:
                 self._invoke_callback(msg, cb, cb_args)
 
@@ -764,16 +757,6 @@ class Publisher(Topic):
         'latched', meaning that any future subscribers will be sent
         that message immediately upon connection.
         @type  latch: bool
-        @param headers: If not None, a dictionary with additional header
-        key-values being used for future connections.
-        @type  headers: dict
-        @param queue_size: The queue size used for asynchronously
-        publishing messages from different threads.  A size of zero
-        means an infinite queue, which can be dangerous.  When the
-        keyword is not being used or when None is passed all
-        publishing will happen synchronously and a warning message
-        will be printed.
-        @type  queue_size: int
         @raise ROSException: if parameters are invalid     
         """
         super(Publisher, self).__init__(name, data_class, Registration.PUB)
@@ -788,11 +771,7 @@ class Publisher(Topic):
             self.impl.add_headers(headers)
         if queue_size is not None:
             self.impl.set_queue_size(queue_size)
-        else:
-            import warnings
-            warnings.warn("The publisher should be created with an explicit keyword argument 'queue_size'. "
-                "Please see http://wiki.ros.org/rospy/Overview/Publishers%20and%20Subscribers for more information.", SyntaxWarning, stacklevel=2)
-
+            
     def publish(self, *args, **kwds):
         """
         Publish message data object to this topic. 
@@ -819,7 +798,7 @@ class Publisher(Topic):
             self.impl.publish(data)
         except genpy.SerializationError as e:
             # can't go to rospy.logerr(), b/c this could potentially recurse
-            _logger.error(traceback.format_exc())
+            _logger.error(traceback.format_exc(e))
             raise ROSSerializationException(str(e))
         finally:
             self.impl.release()            

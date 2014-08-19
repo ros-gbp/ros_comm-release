@@ -220,11 +220,6 @@ std::string TransportSubscriberLink::getTransportType()
   return connection_->getTransport()->getType();
 }
 
-std::string TransportSubscriberLink::getTransportInfo()
-{
-  return connection_->getTransport()->getTransportInfo();
-}
-
 void TransportSubscriberLink::drop()
 {
   // Only drop the connection if it's not already sending a header error

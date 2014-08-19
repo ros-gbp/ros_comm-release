@@ -58,7 +58,7 @@ class TestServiceFailure(unittest.TestCase):
                     self.assertEquals(resp.sum, 2)
                 else:
                     self.fail("service call should have failed: %s,%s, %s"%(a, 1, resp.sum))
-            except rospy.ServiceException as e:
+            except rospy.ServiceException, e:
                 if a == -1:
                     # expected
                     pass
@@ -79,7 +79,7 @@ class TestServiceFailure(unittest.TestCase):
                     self.assertEquals(resp.sum, 2)
                 else:
                     self.fail("service call should have failed")
-            except rospy.ServiceException:
+            except rospy.ServiceException, e:
                 if a == -1:
                     # expected
                     pass

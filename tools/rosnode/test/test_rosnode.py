@@ -36,17 +36,14 @@ import sys
 import time
 import unittest
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
+import cStringIO
 from subprocess import Popen, PIPE, check_call, call
 
 from contextlib import contextmanager
 @contextmanager
 def fakestdout():
     realstdout = sys.stdout
-    fakestdout = StringIO()
+    fakestdout = cStringIO.StringIO()
     sys.stdout = fakestdout
     yield fakestdout
     sys.stdout = realstdout
@@ -111,7 +108,7 @@ class TestRosnode(unittest.TestCase):
         try:
             rosnode._rosnode_cmd_info([cmd, 'info'])
             self.fail("should have failed")
-        except SystemExit as e:
+        except SystemExit, e:
             self.assertNotEquals(0, e.code)
             
         for n in nodes:
@@ -140,7 +137,7 @@ class TestRosnode(unittest.TestCase):
         try:
             rosnode._rosnode_cmd_list([cmd, 'list', 'one', 'two'])
             self.fail("should have failed")
-        except SystemExit as e:
+        except SystemExit, e:
             self.assertNotEquals(0, e.code)
             
         with fakestdout() as b:
@@ -199,7 +196,7 @@ class TestRosnode(unittest.TestCase):
                     rosnode.rosnodemain([cmd, c, '-h'])
                     self.assert_("usage" in b.getvalue())
                 self.fail("should have exited on usage")
-            except SystemExit as e:
+            except SystemExit, e:
                 self.assertEquals(0, e.code)
             
     def test_rosnode_ping(self):

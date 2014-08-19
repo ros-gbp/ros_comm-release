@@ -2,44 +2,20 @@
 Changelog for package topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.11.9 (2014-08-18)
+1.10.11 (2014-08-18)
+--------------------
+
+1.10.10 (2014-06-16)
+--------------------
+
+1.10.3 (2014-06-02)
 -------------------
 
-1.11.8 (2014-08-04)
+1.10.2 (2014-03-03)
 -------------------
 
-1.11.7 (2014-07-18)
+1.10.1 (2014-02-25)
 -------------------
-
-1.11.6 (2014-07-10)
--------------------
-
-1.11.5 (2014-06-24)
--------------------
-
-1.11.4 (2014-06-16)
--------------------
-* Python 3 compatibility (`#426 <https://github.com/ros/ros_comm/issues/426>`_)
-
-1.11.3 (2014-05-21)
--------------------
-* add demux program and related scripts (`#407 <https://github.com/ros/ros_comm/issues/407>`_)
-
-1.11.2 (2014-05-08)
--------------------
-
-1.11.1 (2014-05-07)
--------------------
-* add transform tool allowing to perform Python operations between message fields taken from several topics (`ros/rosdistro#398 <https://github.com/ros/ros_comm/issues/398>`_)
-
-1.11.0 (2014-03-04)
--------------------
-* make rostest in CMakeLists optional (`ros/rosdistro#3010 <https://github.com/ros/rosdistro/issues/3010>`_)
-* use catkin_install_python() to install Python scripts (`#361 <https://github.com/ros/ros_comm/issues/361>`_)
-
-1.10.0 (2014-02-11)
--------------------
-* remove use of __connection header
 
 1.9.54 (2014-01-27)
 -------------------

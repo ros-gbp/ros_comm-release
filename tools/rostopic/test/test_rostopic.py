@@ -34,10 +34,7 @@
 import os
 import sys 
 import unittest
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
+import cStringIO
 import time
 import rostest
         
@@ -51,7 +48,7 @@ from contextlib import contextmanager
 @contextmanager
 def fakestdout():
     realstdout = sys.stdout
-    fakestdout = StringIO()
+    fakestdout = cStringIO.StringIO()
     sys.stdout = fakestdout
     yield fakestdout
     sys.stdout = realstdout
@@ -123,7 +120,7 @@ class TestRostopic(unittest.TestCase):
         try:
             rostopic.rostopicmain([cmd, 'type', 'fake'])
             self.fail("should have exited")
-        except SystemExit as e:
+        except SystemExit, e:
             self.assertNotEquals(0, e.code)
                 
         for s in ['/chatter', 'chatter', 'foo/chatter', '/bar/chatter']:
@@ -138,12 +135,12 @@ class TestRostopic(unittest.TestCase):
         try:
             rostopic.rostopicmain([c])
             self.fail("should have exited with error")
-        except SystemExit as e:
+        except SystemExit, e:
             self.assertNotEquals(0, e.code)
         try:
             rostopic.rostopicmain([c, 'foo'])
             self.fail("should have exited with error")
-        except SystemExit as e:
+        except SystemExit, e:
             self.assertNotEquals(0, e.code)
         
     def test_cmd_pub(self):
@@ -165,7 +162,7 @@ class TestRostopic(unittest.TestCase):
             try:
                 rostopic.rostopicmain([cmd, 'pub'] + i)
                 self.fail("should have exited with error"+str(i))
-            except SystemExit as e:
+            except SystemExit, e:
                 self.assert_(e.code != 0)
         
 

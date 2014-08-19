@@ -207,19 +207,7 @@ shared_ptr<ros::Subscriber> Recorder::subscribe(string const& topic) {
     ros::NodeHandle nh;
     shared_ptr<int> count(new int(options_.limit));
     shared_ptr<ros::Subscriber> sub(new ros::Subscriber);
-
-    ros::SubscribeOptions ops;
-    ops.topic = topic;
-    ops.queue_size = 100;
-    ops.md5sum = ros::message_traits::md5sum<topic_tools::ShapeShifter>();
-    ops.datatype = ros::message_traits::datatype<topic_tools::ShapeShifter>();
-    ops.helper = ros::SubscriptionCallbackHelperPtr(
-        new ros::SubscriptionCallbackHelperT<const ros::MessageEvent<topic_tools::ShapeShifter const>& >(
-            boost::bind(&Recorder::doQueue, this, _1, topic, sub, count)
-        )
-    );
-    *sub = nh.subscribe(ops);
-
+    *sub = nh.subscribe<topic_tools::ShapeShifter>(topic, 100, boost::bind(&Recorder::doQueue, this, _1, topic, sub, count));
     currently_recording_.insert(topic);
     num_subscribers_++;
 
@@ -277,7 +265,7 @@ std::string Recorder::timeToStr(T ros_t)
 }
 
 //! Callback to be invoked to save messages into a queue
-void Recorder::doQueue(const ros::MessageEvent<topic_tools::ShapeShifter const>& msg_event, string const& topic, shared_ptr<ros::Subscriber> subscriber, shared_ptr<int> count) {
+void Recorder::doQueue(ros::MessageEvent<topic_tools::ShapeShifter const> msg_event, string const& topic, shared_ptr<ros::Subscriber> subscriber, shared_ptr<int> count) {
     //void Recorder::doQueue(topic_tools::ShapeShifter::ConstPtr msg, string const& topic, shared_ptr<ros::Subscriber> subscriber, shared_ptr<int> count) {
     Time rectime = Time::now();
     
@@ -331,9 +319,10 @@ void Recorder::updateFilenames() {
     std::string prefix = options_.prefix;
     uint32_t ind = prefix.rfind(".bag");
 
-    if (ind != -1 && ind == prefix.size() - 4)
+    if (ind == prefix.size() - 4)
     {
       prefix.erase(ind);
+      ind = prefix.rfind(".bag");
     }
 
     if (prefix.length() > 0)
@@ -561,17 +550,17 @@ void Recorder::doCheckMaster(ros::TimerEvent const& e, ros::NodeHandle& node_han
         } else {
 
           XmlRpc::XmlRpcClient c(peer_host.c_str(), peer_port, "/");
-          XmlRpc::XmlRpcValue req2;
-          XmlRpc::XmlRpcValue resp2;
-          req2[0] = ros::this_node::getName();
-          c.execute("getSubscriptions", req2, resp2);
+          XmlRpc::XmlRpcValue req;
+          XmlRpc::XmlRpcValue resp;
+          req[0] = ros::this_node::getName();
+          c.execute("getSubscriptions", req, resp);
           
-          if (!c.isFault() && resp2.valid() && resp2.size() > 0 && static_cast<int>(resp2[0]) == 1)
+          if (!c.isFault() && resp.size() > 0 && static_cast<int>(resp[0]) == 1)
           {
-            for(int i = 0; i < resp2[2].size(); i++)
+            for(int i = 0; i < resp[2].size(); i++)
             {
-              if (shouldSubscribeToTopic(resp2[2][i][0], true))
-                subscribe(resp2[2][i][0]);
+              if (shouldSubscribeToTopic(resp[2][i][0], true))
+                subscribe(resp[2][i][0]);
             }
           } else {
             ROS_ERROR("Node at: [%s] failed to return subscriptions.", static_cast<std::string>(resp[2]).c_str());

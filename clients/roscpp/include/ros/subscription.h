@@ -34,7 +34,6 @@
 #include "ros/forwards.h"
 #include "ros/transport_hints.h"
 #include "ros/xmlrpc_manager.h"
-#include "ros/statistics.h"
 #include "XmlRpc.h"
 
 #include <boost/thread.hpp>
@@ -225,8 +224,6 @@ private:
   boost::mutex publisher_links_mutex_;
 
   TransportHints transport_hints_;
-
-  StatisticsLogger statistics_;
 
   struct LatchInfo
   {

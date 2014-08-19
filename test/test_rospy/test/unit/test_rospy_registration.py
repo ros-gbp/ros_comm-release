@@ -36,6 +36,7 @@ import sys
 import struct
 import unittest
 import time
+import cStringIO
         
 class TestRospyRegistration(unittest.TestCase):
 

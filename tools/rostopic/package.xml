@@ -1,6 +1,6 @@
 <package>
   <name>rostopic</name>
-  <version>1.11.9</version>
+  <version>1.10.11</version>
   <description>
     rostopic contains the rostopic command-line tool for displaying
     debug information about
@@ -19,7 +19,7 @@
   <url>http://ros.org/wiki/rostopic</url>
   <author>Ken Conley</author>
 
-  <buildtool_depend version_gte="0.5.78">catkin</buildtool_depend>
+  <buildtool_depend version_gte="0.5.68">catkin</buildtool_depend>
 
   <build_depend>rostest</build_depend>
 

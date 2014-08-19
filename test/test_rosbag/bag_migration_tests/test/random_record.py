@@ -35,10 +35,7 @@ import unittest
 import rospy
 import rostest
 import sys
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
+from cStringIO import StringIO
 import time
 from random_messages import RandomMsgGen
 import subprocess

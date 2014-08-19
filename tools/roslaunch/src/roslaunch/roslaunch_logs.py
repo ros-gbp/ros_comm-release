@@ -64,7 +64,7 @@ def logs_main():
         
     log_dir = rospkg.get_log_dir()
     if not log_dir:
-        print("Cannot determine ROS log directory", file=sys.stderr)
+        print >> sys.stderr, "Cannot determine ROS log directory"
         sys.exit(1)
         
     run_id = get_run_id()

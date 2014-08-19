@@ -38,11 +38,7 @@ To run, invoke nodes/testMaster
 """
 
 import os, sys, getopt, traceback, logging, socket
-import datetime, math, random
-try:
-    from xmlrpc.client import DateTime, ServerProxy
-except ImportError:
-    from xmlrpclib import DateTime, ServerProxy
+import datetime, xmlrpclib, math, random
 import unittest
 import rospy
 from rostest import *
@@ -75,7 +71,7 @@ def verifyNodeAddress(master, callerId, name, machine, addr, port):
         raddrinfo = socket.getaddrinfo(raddr, 0, 0, 0, socket.SOL_TCP)
         assert raddrinfo == addrinfo, "%s!=%s" % (raddrinfo, addrinfo)
     #ping the node
-    apiSuccess(ServerProxy("http://%s:%s/"%(raddr, rport)).getPid(''))
+    apiSuccess(xmlrpclib.ServerProxy("http://%s:%s/"%(raddr, rport)).getPid(''))
 
 def testGraphState(master, graphNodes, graphFlows):
     graph = apiSuccess(master.getGraph(''))
@@ -92,13 +88,13 @@ def testGraphState(master, graphNodes, graphFlows):
 
 def testParamState(master, myState):
     callerId = 'master' #validate from root 
-    for (k, v) in myState.items():
+    for (k, v) in myState.iteritems():
         if HAS_PARAM:
             assert apiSuccess(master.hasParam(callerId, k))
         print "verifying parameter %s"%k
         v2 = apiSuccess(master.getParam(callerId, k))
-        if isinstance(v2, DateTime):
-            assert DateTime(v) == v2, "[%s]: %s != %s, %s"%(k, v, v2, v2.__class__)
+        if isinstance(v2, xmlrpclib.DateTime):
+            assert xmlrpclib.DateTime(v) == v2, "[%s]: %s != %s, %s"%(k, v, v2, v2.__class__)
         else:
             assert v == v2, "[%s]: %s != %s, %s"%(k, v, v2, v2.__class__)
     paramNames = myState.keys()
@@ -140,18 +136,15 @@ class ParamServerTestCase(ROSGraphTestCase):
 
     def testParamValues(self):
         """testParamValues: test storage of all XML-RPC compatible types"""
-        try:
-            from xmlrpc.client import Binary
-        except ImportError:
-            from xmlrpclib import Binary
+        from xmlrpclib import Binary
         testVals = [
             ['int', [0, 1024, 2147483647, -2147483647]],
             ['boolean', [True, False]],
-            ['string', ['', '\0', 'x', 'hello', ''.join([chr(n) for n in range(0, 255)])]],
+            ['string', ['', '\0', 'x', 'hello', ''.join([chr(n) for n in xrange(0, 255)])]],
             ['double', [0.0, math.pi, -math.pi, 3.4028235e+38, -3.4028235e+38]],
             #TODO: microseconds?
             ['datetime', [datetime.datetime(2005, 12, 6, 12, 13, 14), datetime.datetime(1492, 12, 6, 12, 13, 14)]],
-            ['base64', [Binary(''), Binary('\0'), Binary(''.join([chr(n) for n in range(0, 255)]))]],
+            ['base64', [Binary(''), Binary('\0'), Binary(''.join([chr(n) for n in xrange(0, 255)]))]],
             ['struct', [{ "a": 2, "b": 4},
                         {"a" : "b", "c" : "d"},
                         {"a" : {"b" : { "c" : "d"}}}]],
@@ -348,7 +341,7 @@ class MasterTestCase(ROSGraphTestCase):
     def _verifyFlowNameState(self, master, state):
         flows = apiSuccess(master.getFlowNames('node1', ''))
         assert len(flows) == len(state.values()), "Master reported a different number of flows"
-        for val in state.values():
+        for val in state.itervalues():
             assert val in flows, "flows does not contain %s : %s"%(val, flows)
 
     def testPromoteFlow(self):
@@ -572,7 +565,7 @@ class MasterTestCase(ROSGraphTestCase):
     def _verifyNodeDead(self, port):
         testUri = "http://localhost:%s/"%port
         try:
-            ServerProxy(testUri).getPid('node')
+            xmlrpclib.ServerProxy(testUri).getPid('node')
             self.fail("test node is still running")
         except:
             pass

@@ -45,16 +45,10 @@ import socket
 import time
 import traceback
 import yaml
-try:
-    from xmlrpc.client import Fault
-except ImportError:
-    from xmlrpclib import Fault
+import xmlrpclib
 
 from operator import itemgetter
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
+from urlparse import urlparse
 
 import genpy
 
@@ -87,7 +81,7 @@ def _check_master():
 def _master_get_topic_types(master):
     try:
         val = master.getTopicTypes()
-    except Fault:
+    except xmlrpclib.Fault:
         #TODO: remove, this is for 1.1
         sys.stderr.write("WARNING: rostopic is being used against an older version of ROS/roscore\n")
         val = master.getPublishedTopics('/')
@@ -257,14 +251,6 @@ class ROSTopicBandwidth(object):
             
         print("average: %s/s\n\tmean: %s min: %s max: %s window: %s"%(bw, mean, min_s, max_s, n))
 
-def _isstring_type(t):
-    valid_types = [str]
-    try:
-        valid_type.append(unicode)
-    except NameError:
-        pass
-    return t in valid_types
-
 def _rostopic_bw(topic, window_size=-1):
     """
     periodically print the received bandwidth of a topic to console until
@@ -295,72 +281,15 @@ def msgevalgen(pattern):
     """
     if not pattern or pattern == '/':
         return None
-    assert pattern[0] == '/'
-    msg_attribute = pattern[1:]
-
-    # use slice arguments if present
-    array_index_or_slice_object = None
-    index = msg_attribute.find('[')
-    if index != -1:
-        if not msg_attribute.endswith(']'):
-            sys.stderr.write("Topic name '%s' contains '[' but does not end with ']'\n" % msg_attribute)
-            return None
-        index_string = msg_attribute[index + 1:-1]
-        try:
-            array_index_or_slice_object = _get_array_index_or_slice_object(index_string)
-        except AssertionError as e:
-            sys.stderr.write("Topic name '%s' contains invalid slice argument '%s': %s\n" % (msg_attribute, index_string, str(e)))
-            return None
-        msg_attribute = msg_attribute[:index]
-
     def msgeval(msg):
         # I will probably replace this with some less beautiful but more efficient
         try:
-            value = _get_nested_attribute(msg, msg_attribute)
+            return eval('msg'+'.'.join(pattern.split('/')))
         except AttributeError as e:
             sys.stdout.write("no field named [%s]"%pattern+"\n")
             return None
-        if array_index_or_slice_object is not None:
-            value = value[array_index_or_slice_object]
-        return value
     return msgeval
-
-def _get_array_index_or_slice_object(index_string):
-    assert index_string != '', 'empty array index'
-    index_string_parts = index_string.split(':')
-    if len(index_string_parts) == 1:
-        try:
-            array_index = int(index_string_parts[0])
-        except ValueError:
-            assert False, "non-integer array index step '%s'" % index_string_parts[0]
-        return array_index
-
-    slice_args = [None, None, None]
-    if index_string_parts[0] != '':
-        try:
-            slice_args[0] = int(index_string_parts[0])
-        except ValueError:
-            assert False, "non-integer slice start '%s'" % index_string_parts[0]
-    if index_string_parts[1] != '':
-        try:
-            slice_args[1] = int(index_string_parts[1])
-        except ValueError:
-            assert False, "non-integer slice stop '%s'" % index_string_parts[1]
-    if len(index_string_parts) > 2 and index_string_parts[2] != '':
-            try:
-                slice_args[2] = int(index_string_parts[2])
-            except ValueError:
-                assert False, "non-integer slice step '%s'" % index_string_parts[2]
-    if len(index_string_parts) > 3:
-        assert False, 'too many slice arguments'
-    return slice(*slice_args)
-
-def _get_nested_attribute(msg, nested_attributes):
-    value = msg
-    for attr in nested_attributes.split('/'):
-        value = getattr(value, attr)
-    return value
-
+    
 def _get_topic_type(topic):
     """
     subroutine for getting the topic type
@@ -378,28 +307,6 @@ def _get_topic_type(topic):
         matches = [(t, t_type) for t, t_type in val if topic.startswith(t+'/')]
         # choose longest match
         matches.sort(key=itemgetter(0), reverse=True)
-
-        # try to ignore messages which don't have the field specified as part of the topic name
-        while matches:
-            t, t_type = matches[0]
-            msg_class = roslib.message.get_message_class(t_type)
-            if not msg_class:
-                # if any class is not fetchable skip ignoring any message types
-                break
-            msg = msg_class()
-            nested_attributes = topic[len(t) + 1:].rstrip('/')
-            nested_attributes = nested_attributes.split('[')[0]
-            if nested_attributes == '':
-                break
-            try:
-                _get_nested_attribute(msg, nested_attributes)
-            except AttributeError:
-                # ignore this type since it does not have the requested field
-                matches.pop(0)
-                continue
-            matches = [(t, t_type)]
-            break
-
     if matches:
         t, t_type = matches[0]
         if t_type == rosgraph.names.ANYTYPE:
@@ -478,7 +385,7 @@ def _sub_str_plot_fields(val, f, field_filter):
         sub = [s for s in sub if s is not None]
         if sub:
             return ','.join([s for s in sub])
-    elif _isstring_type(type_):
+    elif type_ in (str, unicode):
         return f
     elif type_ in (list, tuple):
         if len(val) == 0:
@@ -488,12 +395,12 @@ def _sub_str_plot_fields(val, f, field_filter):
         # no arrays of arrays
         if type0 in (bool, int, float) or \
                isinstance(val0, genpy.TVal):
-            return ','.join(["%s%s"%(f,x) for x in range(0,len(val))])
-        elif _isstring_type(type0):
+            return ','.join(["%s%s"%(f,x) for x in xrange(0,len(val))])
+        elif type0 in (str, unicode):
             
-            return ','.join(["%s%s"%(f,x) for x in range(0,len(val))])
+            return ','.join(["%s%s"%(f,x) for x in xrange(0,len(val))])
         elif hasattr(val0, "_slot_types"):
-            labels = ["%s%s"%(f,x) for x in range(0,len(val))]
+            labels = ["%s%s"%(f,x) for x in xrange(0,len(val))]
             sub = [s for s in [_sub_str_plot_fields(v, sf, field_filter) for v,sf in zip(val, labels)] if s]
             if sub:
                 return ','.join([s for s in sub])
@@ -550,7 +457,7 @@ def _sub_str_plot(val, time_offset, field_filter):
         sub = [s for s in sub if s is not None]
         if sub:
             return ','.join(sub)
-    elif _isstring_type(type_):
+    elif type_ in (str, unicode):
         return val
     elif type_ in (list, tuple):
         if len(val) == 0:
@@ -563,7 +470,7 @@ def _sub_str_plot(val, time_offset, field_filter):
         elif type0 in (int, float) or \
                isinstance(val0, genpy.TVal):
             return ','.join([str(v) for v in val])
-        elif _isstring_type(type0):
+        elif type0 in (str, unicode):
             return ','.join([v for v in val])            
         elif hasattr(val0, "_slot_types"):
             sub = [s for s in [_sub_str_plot(v, time_offset, field_filter) for v in val] if s is not None]
@@ -578,7 +485,7 @@ def _convert_getattr(val, f, t):
     to convert uint8[] fields back to an array type.
     """
     attr = getattr(val, f)
-    if _isstring_type(type(attr)) and 'uint8[' in t:
+    if type(attr) in (str, unicode) and 'uint8[' in t:
         return [ord(x) for x in attr]
     else:
         return attr
@@ -985,12 +892,8 @@ def get_info_text(topic):
     
     :param topic: topic name, ``str``
     """
-    try:
-        from cStringIO import StringIO
-    except ImportError:
-        from io import StringIO
-    import itertools
-    buff = StringIO()
+    import cStringIO, itertools
+    buff = cStringIO.StringIO()
     def topic_type(t, topic_types):
         matches = [t_type for t_name, t_type in topic_types if t_name == t]
         if matches:
@@ -1273,7 +1176,7 @@ def create_publisher(topic_name, topic_type, latch):
         raise ROSTopicException("invalid message type: %s.\nIf this is a valid message type, perhaps you need to type 'rosmake %s'"%(topic_type, pkg))
     # disable /rosout and /rostime as this causes blips in the pubsub network due to rostopic pub often exiting quickly
     rospy.init_node('rostopic', anonymous=True, disable_rosout=True, disable_rostime=True)
-    pub = rospy.Publisher(topic_name, msg_class, latch=latch, queue_size=100)
+    pub = rospy.Publisher(topic_name, msg_class, latch=latch)
     return pub, msg_class
 
 def _publish_at_rate(pub, msg, rate, verbose=False):
