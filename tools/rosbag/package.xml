@@ -1,6 +1,6 @@
 <package>
   <name>rosbag</name>
-  <version>1.10.10</version>
+  <version>1.10.11</version>
   <description>
     This is a set of tools for recording from and playing back to ROS
     topics.  It is intended to be high performance and avoids
@@ -37,8 +37,4 @@
   <run_depend>rospy</run_depend>
   <run_depend>topic_tools</run_depend>
   <run_depend>xmlrpcpp</run_depend>
-
-  <export>
-    <rosdoc config="${prefix}/rosdoc.yaml"/>
-  </export>
 </package>
