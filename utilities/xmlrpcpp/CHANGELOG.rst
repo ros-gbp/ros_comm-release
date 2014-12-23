@@ -2,6 +2,11 @@
 Changelog for package xmlrpcpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.11.10 (2014-12-22)
+--------------------
+* improve Android support (`#537 <https://github.com/ros/ros_comm/pull/537>`_)
+* fix various defects reported by coverity
+
 1.11.9 (2014-08-18)
 -------------------
 
