@@ -38,7 +38,8 @@
 #include "ros/header.h"
 #include "common.h"
 
-#include <boost/signals.hpp>
+#include <boost/signals2.hpp>
+
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/shared_array.hpp>
@@ -143,13 +144,13 @@ public:
    */
   void write(const boost::shared_array<uint8_t>& buffer, uint32_t size, const WriteFinishedFunc& finished_callback, bool immedate = true);
 
-  typedef boost::signal<void(const ConnectionPtr&, DropReason reason)> DropSignal;
+  typedef boost::signals2::signal<void(const ConnectionPtr&, DropReason reason)> DropSignal;
   typedef boost::function<void(const ConnectionPtr&, DropReason reason)> DropFunc;
   /**
    * \brief Add a callback to be called when this connection has dropped
    */
-  boost::signals::connection addDropListener(const DropFunc& slot);
-  void removeDropListener(const boost::signals::connection& c);
+  boost::signals2::connection addDropListener(const DropFunc& slot);
+  void removeDropListener(const boost::signals2::connection& c);
 
   /**
    * \brief Set the header receipt callback

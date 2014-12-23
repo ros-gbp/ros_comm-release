@@ -1,6 +1,6 @@
 <package>
   <name>roslaunch</name>
-  <version>1.10.11</version>
+  <version>1.11.10</version>
   <description>
     roslaunch is a tool for easily launching multiple ROS <a
     href="http://ros.org/wiki/Nodes">nodes</a> locally and remotely
@@ -18,7 +18,7 @@
   <url>http://ros.org/wiki/roslaunch</url>
   <author>Ken Conley</author>
 
-  <buildtool_depend version_gte="0.5.68">catkin</buildtool_depend>
+  <buildtool_depend version_gte="0.5.78">catkin</buildtool_depend>
 
   <run_depend>python-paramiko</run_depend>
   <run_depend>python-rospkg</run_depend>
@@ -29,10 +29,12 @@
   <run_depend>rosmaster</run_depend>
   <run_depend>rosout</run_depend>
   <run_depend>rosparam</run_depend>
+  <run_depend>rosunit</run_depend>
 
   <test_depend>rosbuild</test_depend>
 
   <export>
     <rosdoc config="rosdoc.yaml"/>
+    <architecture_independent/>
   </export>
 </package>

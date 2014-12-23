@@ -97,7 +97,7 @@ def resolve_launch_arguments(args):
         except rospkg.ResourceNotFound:
             pass
     # try to resolve launch file
-    if resolved_args is None and os.path.isfile(args[0]):
+    if resolved_args is None and (args[0] == '-' or os.path.isfile(args[0])):
         resolved_args = [args[0]] + args[1:]
     # raise if unable to resolve
     if resolved_args is None:
@@ -205,13 +205,13 @@ def check_roslaunch(f):
         errors.append("Could not resolve arg [%s] in [%s]"%(str(e), f))
         missing = {}
         file_deps = {}
-    for pkg, miss in missing.iteritems():
+    for pkg, miss in missing.items():
         if miss:
             errors.append("Missing manifest dependencies: %s/manifest.xml: %s"%(pkg, ', '.join(miss)))
     
     # load all node defs
     nodes = []
-    for filename, rldeps in file_deps.iteritems():
+    for filename, rldeps in file_deps.items():
         nodes.extend(rldeps.nodes)
 
     # check for missing packages

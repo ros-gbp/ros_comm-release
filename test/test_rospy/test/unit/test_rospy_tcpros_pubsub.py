@@ -56,6 +56,8 @@ class FakeSocket(object):
         self.data = self.data+d
     def close(self):
         pass
+    def getsockname(self):
+        return (None, None)
 
 # test rospy API verifies that the rospy module exports the required symbols
 class TestRospyTcprosPubsub(unittest.TestCase):
@@ -170,7 +172,7 @@ class TestRospyTcprosPubsub(unittest.TestCase):
         
         headers = { 'topic': topic_name, 'md5sum': data_class._md5sum, 'callerid': '/node'}
         # test required logic
-        for k in headers.iterkeys():
+        for k in headers.keys():
             header_copy = headers.copy()
             del header_copy[k]
             err = tch(sock, client_addr, header_copy)

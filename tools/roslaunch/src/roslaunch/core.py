@@ -30,6 +30,8 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import print_function
+
 """
 Core roslaunch model and lower-level utility routines.
 """
@@ -39,7 +41,10 @@ import logging
 
 import socket
 import sys
-import xmlrpclib
+try:
+    from xmlrpc.client import MultiCall, ServerProxy
+except ImportError:
+    from xmlrpclib import MultiCall, ServerProxy
 
 import rospkg
 
@@ -85,7 +90,8 @@ def is_machine_local(machine):
     :returns: True if machine is local and doesn't require remote login, ``bool``
     """    
     try:
-        machine_ips = [host[4][0] for host in socket.getaddrinfo(machine.address, 0, 0, 0, socket.SOL_TCP)]
+        # If Python has ipv6 disabled but machine.address can be resolved somehow to an ipv6 address, then host[4][0] will be int
+        machine_ips = [host[4][0] for host in socket.getaddrinfo(machine.address, 0, 0, 0, socket.SOL_TCP) if isinstance(host[4][0], str)]
     except socket.gaierror:
         raise RLException("cannot resolve host address for machine [%s]"%machine.address)
     local_addresses = ['localhost'] + rosgraph.network.get_local_addresses()
@@ -111,7 +117,7 @@ def printlog(msg):
         except:
             pass
     try: # don't let this bomb out the actual code        
-        print msg
+        print(msg)
     except:
         pass
 
@@ -127,9 +133,9 @@ def printlog_bold(msg):
             pass
     try: # don't let this bomb out the actual code        
         if sys.platform in ['win32']:
-            print '%s'%msg  #windows console is terrifically boring 
+            print('%s' % msg)  # windows console is terrifically boring 
         else:
-            print '\033[1m%s\033[0m'%msg
+            print('\033[1m%s\033[0m' % msg)
     except:
         pass
 
@@ -146,7 +152,7 @@ def printerrlog(msg):
     # #1003: this has raised IOError (errno 104) in robot use. Better to
     # trap than let a debugging routine fault code.
     try: # don't let this bomb out the actual code
-        print >> sys.stderr, '\033[31m%s\033[0m'%msg
+        print('\033[31m%s\033[0m' % msg, file=sys.stderr)
     except:
         pass
 
@@ -282,15 +288,15 @@ class Master:
 
     def get(self):
         """
-        :returns:: XMLRPC proxy for communicating with master, ``xmlrpclib.ServerProxy``
+        :returns:: XMLRPC proxy for communicating with master, ``xmlrpc.client.ServerProxy``
         """
-        return xmlrpclib.ServerProxy(self.uri)
+        return ServerProxy(self.uri)
     
     def get_multi(self):
         """
-        :returns:: multicall XMLRPC proxy for communicating with master, ``xmlrpclib.MultiCall``
+        :returns:: multicall XMLRPC proxy for communicating with master, ``xmlrpc.client.MultiCall``
         """
-        return xmlrpclib.MultiCall(self.get())
+        return MultiCall(self.get())
     
     def is_running(self):
         """
@@ -414,13 +420,15 @@ class Node(object):
     """
     __slots__ = ['package', 'type', 'name', 'namespace', \
                  'machine_name', 'machine', 'args', 'respawn', \
+                 'respawn_delay', \
                  'remap_args', 'env_args',\
                  'process_name', 'output', 'cwd',
                  'launch_prefix', 'required',
                  'filename']
 
     def __init__(self, package, node_type, name=None, namespace='/', \
-                 machine_name=None, args='', respawn=False, \
+                 machine_name=None, args='', \
+                 respawn=False, respawn_delay=0.0, \
                  remap_args=None,env_args=None, output=None, cwd=None, \
                  launch_prefix=None, required=False, filename='<unknown>'):
         """
@@ -431,6 +439,7 @@ class Node(object):
         :param machine_name: name of machine to run node on, ``str``
         :param args: argument string to pass to node executable, ``str``
         :param respawn: if True, respawn node if it dies, ``bool``
+        :param respawn: if respawn is True, respawn node after delay, ``float``
         :param remap_args: list of [(from, to)] remapping arguments, ``[(str, str)]``
         :param env_args: list of [(key, value)] of
         additional environment vars to set for node, ``[(str, str)]``
@@ -449,6 +458,7 @@ class Node(object):
         self.namespace = rosgraph.names.make_global_ns(namespace or '/')
         self.machine_name = machine_name or None
         self.respawn = respawn
+        self.respawn_delay = respawn_delay
         self.args = args or ''
         self.remap_args = remap_args or []
         self.env_args = env_args or []        
@@ -509,6 +519,7 @@ class Node(object):
             ('output', self.output),
             ('cwd', cwd_str), 
             ('respawn', self.respawn), #not valid on <test>
+            ('respawn_delay', self.respawn_delay), # not valid on <test>
             ('name', name_str),
             ('launch-prefix', self.launch_prefix),
             ('required', self.required),
@@ -589,7 +600,12 @@ class Test(Node):
 
         self.retry = retry or 0
         time_limit = time_limit or TEST_TIME_LIMIT_DEFAULT
-        if not type(time_limit) in (float, int, long):
+        number_types = [float, int]
+        try:
+            number_types.append(long)
+        except NameError:
+            pass
+        if not type(time_limit) in number_types:
             raise ValueError("'time-limit' must be a number")
         time_limit = float(time_limit) #force to floating point
         if time_limit <= 0:
@@ -606,7 +622,8 @@ class Test(Node):
         to what it was initialized with, though the properties are the same
         """
         attrs = Node.xmlattrs(self)
-        attrs = [(a, v) for (a, v) in attrs if a != 'respawn']
+        attrs = [(a, v) for (a, v) in attrs if a not in ['respawn', \
+                                                         'respawn_delay']]
         attrs.append(('test-name', self.test_name))
 
         if self.retry:

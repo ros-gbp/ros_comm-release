@@ -87,6 +87,7 @@ add_library(roscpp
   src/libros/topic_manager.cpp
   src/libros/poll_manager.cpp
   src/libros/publication.cpp
+  src/libros/statistics.cpp
   src/libros/intraprocess_subscriber_link.cpp
   src/libros/intraprocess_publisher_link.cpp
   src/libros/callback_queue.cpp
@@ -95,6 +96,7 @@ add_library(roscpp
   src/libros/node_handle.cpp
   src/libros/connection_manager.cpp
   src/libros/file_log.cpp
+  src/libros/transport/transport.cpp
   src/libros/transport/transport_udp.cpp
   src/libros/transport/transport_tcp.cpp
   src/libros/subscriber_link.cpp
@@ -134,10 +136,8 @@ install(FILES ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/ros/co
 # install legacy infrastructure needed by rosbuild
 install(FILES rosbuild/roscpp.cmake
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rosbuild)
-install(PROGRAMS
+catkin_install_python(PROGRAMS
   rosbuild/scripts/genmsg_cpp.py
   rosbuild/scripts/gensrv_cpp.py
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rosbuild/scripts)
-install(FILES
   rosbuild/scripts/msg_gen.py
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rosbuild/scripts)

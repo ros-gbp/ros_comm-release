@@ -47,20 +47,21 @@ from rosbag import bag
 import rospy
 from std_msgs.msg import Int32
 from std_msgs.msg import ColorRGBA
+from std_msgs.msg import String
 
 class TestRosbag(unittest.TestCase):
     def setUp(self):
         pass
     
     def test_opening_stream_works(self):
-        f = open('/tmp/test_opening_stream_works.bag', 'w')
+        f = open('/tmp/test_opening_stream_works.bag', 'wb')
         with rosbag.Bag(f, 'w') as b:
             for i in range(10):
                 msg = Int32()
                 msg.data = i
                 b.write('/int', msg)
         
-        f = open('/tmp/test_opening_stream_works.bag', 'r')
+        f = open('/tmp/test_opening_stream_works.bag', 'rb')
         b = rosbag.Bag(f, 'r')
         self.assert_(len(list(b.read_messages())) == 10)
         b.close()
@@ -200,7 +201,7 @@ class TestRosbag(unittest.TestCase):
                     b.write('/topic%d' % j, msg)
             file_header_pos = b._file_header_pos
 
-        start_index = 4117 + chunk_threshold * 2 + chunk_threshold / 2
+        start_index = 4117 + chunk_threshold * 2 + int(chunk_threshold / 2)
 
         trunc_filename   = '%s.trunc%s'   % os.path.splitext(fn)
         reindex_filename = '%s.reindex%s' % os.path.splitext(fn)
@@ -223,7 +224,7 @@ class TestRosbag(unittest.TestCase):
        
             try:
                 b = rosbag.Bag(reindex_filename, 'a', allow_unindexed=True)
-            except Exception, ex:
+            except Exception as ex:
                 pass
             for done in b.reindex():
                 pass
@@ -240,18 +241,140 @@ class TestRosbag(unittest.TestCase):
                 msg.data = i
                 b.write('/int', msg)
 
-                header = { 'op': bag._pack_uint8(max(bag._OP_CODES.iterkeys()) + 1) }
+                header = { 'op': bag._pack_uint8(max(bag._OP_CODES.keys()) + 1) }
                 data = 'ABCDEFGHI123456789'
                 bag._write_record(b._file, header, data)
 
             b._file.seek(0)
-            b._file.write('#ROSBAG V%d.%d\n' % (b._version / 100, (b._version % 100) + 1))   # increment the minor version
+            data = '#ROSBAG V%d.%d\n' % (int(b._version / 100), (b._version % 100) + 1)  # increment the minor version
+            data = data.encode()
+            b._file.write(data)
             b._file.seek(0, os.SEEK_END)
 
         with rosbag.Bag(fn) as b:
             for topic, msg, t in b:
                 pass
+            
+    def test_get_message_count(self):
+        fn = '/tmp/test_get_message_count.bag'
+        with rosbag.Bag(fn, mode='w') as bag:
+            for i in xrange(100):
+                bag.write("/test_bag", Int32(data=i))
+                bag.write("/test_bag", String(data='also'))
+                bag.write("/test_bag/more", String(data='alone'))
+                
+        with rosbag.Bag(fn) as bag:
+            self.assertEquals(bag.get_message_count(), 300)
+            self.assertEquals(bag.get_message_count(topic_filters='/test_bag'), 200)
+            self.assertEquals(bag.get_message_count(topic_filters=['/test_bag', '/test_bag/more']), 300)
+            self.assertEquals(bag.get_message_count(topic_filters=['/none']), 0)
+        
+    def test_get_compression_info(self):
+        fn = '/tmp/test_get_compression_info.bag'
+        
+        # No Compression
+        with rosbag.Bag(fn, mode='w') as bag:
+            for i in xrange(100):
+                bag.write("/test_bag", Int32(data=i))
+                
+        with rosbag.Bag(fn) as bag:
+            info = bag.get_compression_info()
+            self.assertEquals(info.compression, rosbag.Compression.NONE)
+            # 167 Bytes of overhead, 50 Bytes per Int32.
+            self.assertEquals(info.uncompressed, 5167)
+            self.assertEquals(info.compressed, 5167)
+        
+        with rosbag.Bag(fn, mode='w', compression=rosbag.Compression.BZ2) as bag:
+            for i in xrange(100):
+                bag.write("/test_bag", Int32(data=i))
+                
+        with rosbag.Bag(fn) as bag:
+            info = bag.get_compression_info()
+            self.assertEquals(info.compression, rosbag.Compression.BZ2)
+            self.assertEquals(info.uncompressed, 5167)
+            
+            # the value varies each run, I suspect based on rand, but seems
+            # to generally be around 960 to 980 on my comp
+            self.assertLess(info.compressed, 1000)
+            self.assertGreater(info.compressed, 900)
+        
+    def test_get_time(self):
+        fn = '/tmp/test_get_time.bag'
+        
+        with rosbag.Bag(fn, mode='w') as bag:
+            for i in xrange(100):
+                bag.write("/test_bag", Int32(data=i), t=genpy.Time.from_sec(i))
+                
+        with rosbag.Bag(fn) as bag:
+            start_stamp = bag.get_start_time()
+            end_stamp = bag.get_end_time()
+            
+            self.assertEquals(start_stamp, 0.0)
+            self.assertEquals(end_stamp, 99.0)
 
+    def test_get_type_and_topic_info(self):
+        fn = '/tmp/test_get_type_and_topic_info.bag'
+        topic_1 = "/test_bag"
+        topic_2 = "/test_bag/more"
+        with rosbag.Bag(fn, mode='w') as bag:
+            for i in xrange(100):
+                bag.write(topic_1, Int32(data=i))
+                bag.write(topic_1, String(data='also'))
+                bag.write(topic_2, String(data='alone'))
+                
+        with rosbag.Bag(fn) as bag:
+            msg_types, topics = bag.get_type_and_topic_info()
+            self.assertEquals(len(msg_types), 2)
+            self.assertTrue("std_msgs/Int32" in msg_types)
+            self.assertTrue("std_msgs/String" in msg_types)
+            self.assertEquals(len(topics), 2)
+            self.assertTrue(topic_1 in topics)
+            self.assertTrue(topic_2 in topics)
+            
+            self.assertEquals(topics[topic_1].message_count, 200)
+            self.assertEquals(topics[topic_1].msg_type, "std_msgs/Int32")
+            self.assertEquals(topics[topic_2].message_count, 100)
+            self.assertEquals(topics[topic_2].msg_type, "std_msgs/String")
+            
+            #filter on topic 1
+            msg_types, topics = bag.get_type_and_topic_info(topic_1)
+            
+            # msg_types should be unaffected by the filter
+            self.assertEquals(len(msg_types), 2)
+            self.assertTrue("std_msgs/Int32" in msg_types)
+            self.assertTrue("std_msgs/String" in msg_types)            
+            
+            self.assertEquals(len(topics), 1)
+            self.assertTrue(topic_1 in topics)
+            
+            self.assertEquals(topics[topic_1].message_count, 200)
+            self.assertEquals(topics[topic_1].msg_type, "std_msgs/Int32")
+            
+            #filter on topic 2
+            msg_types, topics = bag.get_type_and_topic_info(topic_2)
+            
+            # msg_types should be unaffected by the filter
+            self.assertEquals(len(msg_types), 2)
+            self.assertTrue("std_msgs/Int32" in msg_types)
+            self.assertTrue("std_msgs/String" in msg_types)            
+            
+            self.assertEquals(len(topics), 1)
+            self.assertTrue(topic_2 in topics)
+            
+            self.assertEquals(topics[topic_2].message_count, 100)
+            self.assertEquals(topics[topic_2].msg_type, "std_msgs/String")
+            
+            #filter on missing topic
+            msg_types, topics = bag.get_type_and_topic_info("/none")
+            
+            # msg_types should be unaffected by the filter
+            self.assertEquals(len(msg_types), 2)
+            self.assertTrue("std_msgs/Int32" in msg_types)
+            self.assertTrue("std_msgs/String" in msg_types)            
+            
+            # topics should be empty
+            self.assertEquals(len(topics), 0)
+        
     def _print_bag_records(self, fn):
         with open(fn) as f:
             f.seek(0, os.SEEK_END)
@@ -259,14 +382,14 @@ class TestRosbag(unittest.TestCase):
             f.seek(0)
 
             version_line = f.readline().rstrip()
-            print version_line
+            print(version_line)
 
             while f.tell() < size:
                 header = bag._read_header(f)
                 op = bag._read_uint8_field(header, 'op')
                 data = bag._read_record_data(f)
 
-                print bag._OP_CODES.get(op, op)
+                print(bag._OP_CODES.get(op, op))
 
 if __name__ == '__main__':
     import rostest

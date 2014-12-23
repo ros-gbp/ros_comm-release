@@ -106,6 +106,8 @@ struct ROSBAG_DECL RecorderOptions
     uint32_t        max_size;
     ros::Duration   max_duration;
     std::string     node;
+    unsigned long long min_space;
+    std::string min_space_str;
 
     std::vector<std::string> topics;
 };
@@ -136,7 +138,7 @@ private:
 
     void snapshotTrigger(std_msgs::Empty::ConstPtr trigger);
     //    void doQueue(topic_tools::ShapeShifter::ConstPtr msg, std::string const& topic, boost::shared_ptr<ros::Subscriber> subscriber, boost::shared_ptr<int> count);
-    void doQueue(ros::MessageEvent<topic_tools::ShapeShifter const> msg_event, std::string const& topic, boost::shared_ptr<ros::Subscriber> subscriber, boost::shared_ptr<int> count);
+    void doQueue(const ros::MessageEvent<topic_tools::ShapeShifter const>& msg_event, std::string const& topic, boost::shared_ptr<ros::Subscriber> subscriber, boost::shared_ptr<int> count);
     void doRecord();
     bool checkSize();
     bool checkDuration(const ros::Time&);

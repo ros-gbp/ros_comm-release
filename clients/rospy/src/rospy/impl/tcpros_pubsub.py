@@ -167,6 +167,11 @@ def robust_connect_subscriber(conn, dest_addr, dest_port, pub_uri, receive_cb, r
         try:
             conn.connect(dest_addr, dest_port, pub_uri, timeout=60.)
         except rospy.exceptions.TransportInitError as e:
+            # if the connection was closed intentionally
+            # because of an unknown error, stop trying
+            if conn.protocol is None:
+                conn.done = True
+                break
             rospyerr("unable to create subscriber transport: %s.  Will try again in %ss", e, interval)
             interval = interval * 2
             time.sleep(interval)
@@ -351,6 +356,7 @@ class TCPROSHandler(rospy.impl.transport.ProtocolHandler):
                 protocol = TCPROSPub(resolved_topic_name, topic.data_class, is_latch=topic.is_latch, headers=topic.headers)
                 transport = TCPROSTransport(protocol, resolved_topic_name)
                 transport.set_socket(sock, header['callerid'])
+                transport.remote_endpoint = client_addr
                 transport.write_header()
                 topic.add_connection(transport)
             
