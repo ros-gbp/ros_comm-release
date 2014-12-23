@@ -2,6 +2,10 @@
 Changelog for package rosbag_storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.11.10 (2014-12-22)
+--------------------
+* fix various defects reported by coverity
+
 1.11.9 (2014-08-18)
 -------------------
 
