@@ -1,0 +1,12 @@
+Source: ros-jade-test-rosgraph
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-jade-catkin (>= 0.5.68), ros-jade-rostest
+Homepage: http://ros.org/wiki/rosgraph
+Standards-Version: 3.9.2
+
+Package: ros-jade-test-rosgraph
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, 
+Description: Tests for rosgraph which depend on rostest.
