@@ -1,0 +1,12 @@
+Source: ros-jade-test-rosservice
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-jade-catkin (>= 0.5.68), ros-jade-genmsg, ros-jade-rospy, ros-jade-rostest, ros-jade-rosunit, ros-jade-std-msgs, ros-jade-test-rosmaster
+Homepage: http://ros.org/wiki/rosservice
+Standards-Version: 3.9.2
+
+Package: ros-jade-test-rosservice
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, 
+Description: Tests for the rosservice tool.
