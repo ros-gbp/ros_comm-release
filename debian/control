@@ -1,0 +1,12 @@
+Source: ros-jade-ros-comm
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-jade-catkin
+Homepage: http://www.ros.org/wiki/ros_comm
+Standards-Version: 3.9.2
+
+Package: ros-jade-ros-comm
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-jade-message-filters, ros-jade-ros, ros-jade-rosbag, ros-jade-rosconsole, ros-jade-roscpp, ros-jade-rosgraph, ros-jade-rosgraph-msgs, ros-jade-roslaunch, ros-jade-roslisp, ros-jade-rosmaster, ros-jade-rosmsg, ros-jade-rosnode, ros-jade-rosout, ros-jade-rosparam, ros-jade-rospy, ros-jade-rosservice, ros-jade-rostest, ros-jade-rostopic, ros-jade-roswtf, ros-jade-std-srvs, ros-jade-topic-tools, ros-jade-xmlrpcpp
+Description: ROS communications-related packages, including core client libraries (roscpp, rospy) and graph introspection tools (rostopic, rosnode, rosservice, rosparam).
