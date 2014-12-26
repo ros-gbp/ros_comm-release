@@ -1,0 +1,12 @@
+Source: ros-jade-test-roslib-comm
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-jade-catkin (>= 0.5.68), ros-jade-genmsg, ros-jade-genpy, ros-jade-rosgraph-msgs, ros-jade-roslib, ros-jade-std-msgs
+Homepage: http://ros.org/wiki/roslib
+Standards-Version: 3.9.2
+
+Package: ros-jade-test-roslib-comm
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, 
+Description: Unit tests verifying that roslib is operating as expected.
