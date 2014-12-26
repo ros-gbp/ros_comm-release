@@ -1,0 +1,12 @@
+Source: ros-jade-test-rosparam
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), python-yaml, ros-jade-catkin (>= 0.5.68), ros-jade-rosgraph, ros-jade-rosparam, ros-jade-rostest
+Homepage: http://ros.org/wiki/rosparam
+Standards-Version: 3.9.2
+
+Package: ros-jade-test-rosparam
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, 
+Description: A package containing the unit tests for rosparam.
