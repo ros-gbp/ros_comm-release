@@ -39,10 +39,7 @@ Process handler for launching ssh-based roslaunch child processes.
 import os
 import socket
 import traceback
-try:
-    from xmlrpc.client import ServerProxy
-except ImportError:
-    from xmlrpclib import ServerProxy
+import xmlrpclib
 
 import rosgraph
 from roslaunch.core import printlog, printerrlog
@@ -175,10 +172,7 @@ class SSHChildROSLaunchProcess(roslaunch.server.ChildROSLaunchProcess):
         username = username or config_block['user']
         identity_file = None
         if config_block.get('identityfile', None):
-            if isinstance(config_block['identityfile'], list):
-                identity_file = [os.path.expanduser(f) for f in config_block['identityfile']]
-            else:
-                identity_file = os.path.expanduser(config_block['identityfile'])
+            identity_file = os.path.expanduser(config_block['identityfile'])
         #load ssh client and connect
         ssh = paramiko.SSHClient()
         err_msg = ssh_check_known_hosts(ssh, address, port, username=username, logger=_logger)
@@ -243,7 +237,7 @@ class SSHChildROSLaunchProcess(roslaunch.server.ChildROSLaunchProcess):
         :returns: ServerProxy to remote client XMLRPC server, `ServerProxy`
         """
         if self.uri:
-            return ServerProxy(self.uri)
+            return xmlrpclib.ServerProxy(self.uri)
         else:
             return None
     

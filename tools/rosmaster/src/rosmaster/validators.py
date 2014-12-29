@@ -39,16 +39,6 @@ from rosgraph.names import resolve_name, ANYTYPE
 TYPE_SEPARATOR = '/'
 ROSRPC = "rosrpc://"
 
-def isstring(s):
-    """Small helper version to check an object is a string in a way that works
-    for both Python 2 and 3
-    """
-    try:
-        return isinstance(s, basestring)
-    except NameError:
-        return isinstance(s, str)
-
-
 class ParameterInvalid(Exception):
     """Exception that is raised when a parameter fails validation checks"""
     def __init__(self, message):
@@ -70,7 +60,7 @@ def non_empty_str(param_name):
     def validator(param, context):
         if not param:
             raise ParameterInvalid("ERROR: parameter [%s] must be specified and non-empty"%param_name)
-        elif not isstring(param):
+        elif not isinstance(param, basestring):
             raise ParameterInvalid("ERROR: parameter [%s] must be a string"%param_name)            
         return param
     return validator
@@ -92,7 +82,7 @@ def is_api(paramName):
     (i.e. URI). Both http and rosrpc are allowed schemes.
     """
     def validator(param_value, callerId):
-        if not param_value or not isstring(param_value):
+        if not param_value or not isinstance(param_value, basestring):
             raise ParameterInvalid("ERROR: parameter [%s] is not an XMLRPC URI"%paramName)
         if not param_value.startswith("http://") and not param_value.startswith(ROSRPC):
             raise ParameterInvalid("ERROR: parameter [%s] is not an RPC URI"%paramName)
@@ -127,7 +117,7 @@ def empty_or_valid_name(param_name):
     an empty string is returned.
     """
     def validator(param_value, caller_id):
-        if not isstring(param_value):
+        if not isinstance(param_value, basestring):
             raise ParameterInvalid("ERROR: parameter [%s] must be a string"%param_name)              
         if not param_value:
             return ''
@@ -136,7 +126,7 @@ def empty_or_valid_name(param_name):
     return validator
 
 def valid_name_validator_resolved(param_name, param_value, caller_id):
-    if not param_value or not isstring(param_value):
+    if not param_value or not isinstance(param_value, basestring):
         raise ParameterInvalid("ERROR: parameter [%s] must be a non-empty string"%param_name)            
     #TODO: actual validation of chars
     # I added the colon check as the common error will be to send an URI instead of name
@@ -145,7 +135,7 @@ def valid_name_validator_resolved(param_name, param_value, caller_id):
     #return resolve_name(param_value, namespace(caller_id))
     return resolve_name(param_value, caller_id)
 def valid_name_validator_unresolved(param_name, param_value, caller_id):
-    if not param_value or not isstring(param_value):
+    if not param_value or not isinstance(param_value, basestring):
         raise ParameterInvalid("ERROR: parameter [%s] must be a non-empty string"%param_name)            
     #TODO: actual validation of chars        
     # I added the colon check as the common error will be to send an URI instead of name
@@ -177,7 +167,7 @@ def global_name(param_name):
     @rtype: str
     """
     def validator(param_value, caller_id):
-        if not param_value or not isstring(param_value):
+        if not param_value or not isinstance(param_value, basestring):
             raise ParameterInvalid("ERROR: parameter [%s] must be a non-empty string"%param_name)
         #TODO: actual validation of chars
         if not is_global(param_value):
@@ -190,7 +180,7 @@ def valid_type_name(param_name):
     def validator(param_value, caller_id):
         if param_value == ANYTYPE:
             return param_value
-        if not param_value or not isstring(param_value):
+        if not param_value or not isinstance(param_value, basestring):
             raise ParameterInvalid("ERROR: parameter [%s] must be a non-empty string"%param_name)            
         if not len(param_value.split(TYPE_SEPARATOR)) == 2:
             raise ParameterInvalid("ERROR: parameter [%s] is not a valid package resource name"%param_name)

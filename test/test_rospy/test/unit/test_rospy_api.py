@@ -47,10 +47,7 @@ class TestRospyApi(unittest.TestCase):
         import rospy
         #trip wires against Message API
         m = rospy.Message()
-        try:
-            from cStringIO import StringIO
-        except ImportError:
-            from io import StringIO
+        from cStringIO import StringIO
         buff = StringIO()
         m.serialize(buff)
         self.assertEquals(0, buff.tell())
@@ -61,10 +58,7 @@ class TestRospyApi(unittest.TestCase):
         # rospy uses its functionality.
         
 
-        try:
-            from cStringIO import StringIO
-        except ImportError:
-            from io import StringIO
+        from cStringIO import StringIO
         import rospy
         #trip wires against AnyMsg API
         m = rospy.AnyMsg()

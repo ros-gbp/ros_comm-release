@@ -41,7 +41,6 @@ namespace ros
 struct ROSCPP_DECL ServiceClientOptions
 {
   ServiceClientOptions()
-  : persistent(false)
   {
   }
 

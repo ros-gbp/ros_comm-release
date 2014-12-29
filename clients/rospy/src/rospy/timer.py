@@ -65,10 +65,8 @@ class Rate(object):
         account the time elapsed since the last successful
         sleep().
         
-        @raise ROSInterruptException: if ROS shutdown occurs before
-        sleep completes
-        @raise ROSTimeMovedBackwardsException: if ROS time is set
-        backwards
+        @raise ROSInterruptException: if ROS time is set backwards or if
+        ROS shutdown occurs before sleep completes
         """
         curr_time = rospy.rostime.get_rostime()
         # detect time jumping backwards
@@ -85,6 +83,7 @@ class Rate(object):
         if curr_time - self.last_time > self.sleep_dur * 2:
             self.last_time = curr_time
 
+# TODO: may want more specific exceptions for sleep
 def sleep(duration):
     """
     sleep for the specified duration in ROS time. If duration
@@ -92,10 +91,8 @@ def sleep(duration):
     
     @param duration: seconds (or rospy.Duration) to sleep
     @type  duration: float or Duration
-    @raise ROSInterruptException: if ROS shutdown occurs before sleep
-    completes
-    @raise ROSTimeMovedBackwardsException: if ROS time is set
-    backwards
+    @raise ROSInterruptException: if ROS time is set backwards or if
+    ROS shutdown occurs before sleep completes
     """
     if rospy.rostime.is_wallclock():
         if isinstance(duration, genpy.Duration):
@@ -131,9 +128,7 @@ def sleep(duration):
                 rostime_cond.wait(0.5)
 
         if rospy.rostime.get_rostime() < initial_rostime:
-            time_jump = (initial_rostime - rospy.rostime.get_rostime()).to_sec()
-            rospy.core.logerr("ROS time moved backwards: %ss", time_jump)
-            raise rospy.exceptions.ROSTimeMovedBackwardsException(time_jump)
+            raise rospy.exceptions.ROSInterruptException("ROS time moved backwards")
         if rospy.core.is_shutdown():
             raise rospy.exceptions.ROSInterruptException("ROS shutdown request")
 

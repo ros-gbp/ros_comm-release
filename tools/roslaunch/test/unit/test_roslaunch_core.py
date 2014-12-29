@@ -33,10 +33,7 @@
 import os
 import sys
 import rospkg
-try:
-    from xmlrpc.client import MultiCall, ServerProxy
-except ImportError:
-    from xmlrpclib import MultiCall, ServerProxy
+import xmlrpclib
 
 
 import roslaunch.core
@@ -83,11 +80,7 @@ def test_Node():
     assert n.package == 'package'
     assert n.type == 'node_type'
     assert n.xmltype() == 'node'
-    assert n.xmlattrs() == [('pkg', 'package'), ('type', 'node_type'),
-            ('machine', None), ('ns', '/'), ('args', ''), ('output', None),
-            ('cwd', None), ('respawn', False), ('respawn_delay', 0.0),
-            ('name', None), ('launch-prefix', None), ('required', False)], \
-            n.xmlattrs()
+    assert n.xmlattrs() == [('pkg', 'package'), ('type', 'node_type'), ('machine', None), ('ns', '/'), ('args', ''), ('output', None), ('cwd', None), ('respawn', False), ('name', None), ('launch-prefix', None), ('required', False)], n.xmlattrs()
     assert n.output == None
 
     #tripwire for now
@@ -246,8 +239,8 @@ def test_Master():
     m.get_host() == 'localhost'
     m.get_port() == 11311
     assert m.is_running() in [True, False]
-    assert isinstance(m.get(), ServerProxy)
-    assert isinstance(m.get_multi(), MultiCall)
+    assert isinstance(m.get(), xmlrpclib.ServerProxy)
+    assert isinstance(m.get_multi(), xmlrpclib.MultiCall)
     
     m = Master(uri='http://badhostname:11312')
     m.get_host() == 'badhostname'

@@ -34,8 +34,6 @@
 ## Integration test for empty services to test serializers
 ## and transport
 
-from __future__ import print_function
-
 PKG = 'test_rospy'
 NAME = 'test_pubsub_order'
 
@@ -78,7 +76,7 @@ class TestPubSubOrder(unittest.TestCase):
             rospy.resolve_name(PUBTOPIC),
             rospy.resolve_name(LPNODE)), "%s is not up"%LPNODE)
         
-        print("Publishing to ", PUBTOPIC)
+        print "Publishing to ", PUBTOPIC
         pub = rospy.Publisher(PUBTOPIC, MSG)
         rospy.Subscriber(LPTOPIC, MSG, self._test_subscriber_first_callback) 
 
@@ -86,7 +84,7 @@ class TestPubSubOrder(unittest.TestCase):
         import random
         val = random.randint(0, 109812312)
         msg = "hi [%s]"%val
-        for i in range(0, 10):
+        for i in xrange(0, 10):
             pub.publish(MSG(msg))
             time.sleep(0.1)
 

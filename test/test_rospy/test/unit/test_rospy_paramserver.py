@@ -51,15 +51,15 @@ class TestRospyParamServer(unittest.TestCase):
         try:
             ps.get('foo')
             self.fail("get should fail on non-existent key")
-        except KeyError:
+        except KeyError, e:
             pass
-        for i in range(0, 10):
+        for i in xrange(0, 10):
             k = 'key-%s%s'%(i, random.randint(0, 1000))
             v = 'value-%s'%random.randint(0, 1000)
             try:
                 ps.update(k, v)
                 self.fail("update should fail on non-existent key "+k)
-            except KeyError:
+            except KeyError, e:
                 pass
                 
             ps.set(k, v)

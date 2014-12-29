@@ -39,7 +39,6 @@
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
-#include <vector>
 
 namespace ros
 {
@@ -55,7 +54,7 @@ class Header;
 class Transport : public boost::enable_shared_from_this<Transport>
 {
 public:
-  Transport();
+  Transport() {}
   virtual ~Transport() {}
 
   /**
@@ -135,20 +134,6 @@ protected:
   Callback disconnect_cb_;
   Callback read_cb_;
   Callback write_cb_;
-
-  /**
-   * \brief returns true if the transport is allowed to connect to the host passed to it.
-   */
-  bool isHostAllowed(const std::string &host) const;
-
-  /**
-   * \brief returns true if this transport is only allowed to talk to localhost
-   */
-  bool isOnlyLocalhostAllowed() const { return only_localhost_allowed_; }
-
-private:
-  bool only_localhost_allowed_;
-  std::vector<std::string> allowed_hosts_;
 };
 
 }

@@ -35,19 +35,11 @@ import os
 import sys
 import struct
 import unittest
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
+from cStringIO import StringIO
 import time
 import random
 
 import rospy.rostime
-
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle    
 
 # currently tests rospy.rostime, rospy.simtime, and some parts of rospy.client
 
@@ -73,10 +65,11 @@ class TestRospyTime(unittest.TestCase):
         self.assertEquals(a.secs, b.secs)
         self.assertEquals(a.nsecs, b.nsecs)
 
-        buff = StringIO()
-        pickle.dump(a, buff)
+        import cPickle, cStringIO
+        buff = cStringIO.StringIO()
+        cPickle.dump(a, buff)
         buff.seek(0)
-        c = pickle.load(buff)    
+        c = cPickle.load(buff)    
         self.assertEquals(a.secs, c.secs)
         self.assertEquals(a.nsecs, c.nsecs)
                                  
@@ -87,11 +80,12 @@ class TestRospyTime(unittest.TestCase):
         b = copy.deepcopy(a)
         self.assertEquals(a.secs, b.secs)
         self.assertEquals(a.nsecs, b.nsecs)
-        
-        buff = StringIO()
-        pickle.dump(a, buff)
+
+        import cPickle, cStringIO
+        buff = cStringIO.StringIO()
+        cPickle.dump(a, buff)
         buff.seek(0)
-        c = pickle.load(buff)    
+        c = cPickle.load(buff)    
         self.assertEquals(a.secs, c.secs)
         self.assertEquals(a.nsecs, c.nsecs)
 
@@ -328,13 +322,11 @@ class TestRospyTime(unittest.TestCase):
         self.assertEquals(t, rospy.get_rostime())
         self.assertEquals(t.to_time(), rospy.get_time())        
 
-        import threading
+        import thread
 
         #start sleeper
         self.failIf(test_sleep_done)
-        sleepthread = threading.Thread(target=sleeper, args=())
-        sleepthread.setDaemon(True)
-        sleepthread.start()
+        thread.start_new_thread(sleeper, ())
         time.sleep(1.0) #make sure thread is spun up
         self.failIf(test_sleep_done)
 
@@ -344,10 +336,8 @@ class TestRospyTime(unittest.TestCase):
         self.assert_(test_sleep_done, "sleeper did not wake up")
 
         #start duration sleeper
-        self.failIf(test_duration_sleep_done)      
-        dursleepthread = threading.Thread(target=duration_sleeper, args=())
-        dursleepthread.setDaemon(True)
-        dursleepthread.start()
+        self.failIf(test_duration_sleep_done)                
+        thread.start_new_thread(duration_sleeper, ())
         time.sleep(1.0) #make sure thread is spun up
         self.failIf(test_duration_sleep_done)
 
@@ -358,9 +348,7 @@ class TestRospyTime(unittest.TestCase):
 
         #start backwards sleeper
         self.failIf(test_backwards_sleep_done)
-        backsleepthread = threading.Thread(target=backwards_sleeper, args=())
-        backsleepthread.setDaemon(True)
-        backsleepthread.start()
+        thread.start_new_thread(backwards_sleeper, ())
         time.sleep(1.0) #make sure thread is spun up
         self.failIf(test_backwards_sleep_done)
 

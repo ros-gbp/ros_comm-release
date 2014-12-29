@@ -161,11 +161,8 @@ class TestRospyTopics(unittest.TestCase):
         self.assert_(impl.has_connections())        
         impl.publish(Val('hello world-1'), connection_override=co1)
 
-        try:
-            from cStringIO import StringIO
-        except ImportError:
-            from io import StringIO
-        buff = StringIO()
+        import cStringIO
+        buff = cStringIO.StringIO()
         Val('hello world-1').serialize(buff)
         # - check equals, but strip length field first
         self.assertEquals(co1.data[4:], buff.getvalue())
@@ -190,7 +187,7 @@ class TestRospyTopics(unittest.TestCase):
         impl.publish(v, connection_override=co2)
         self.assert_(v == impl.latch)
 
-        buff = StringIO()
+        buff = cStringIO.StringIO()
         Val('hello world-2').serialize(buff)
         # - strip length and check value
         self.assertEquals(co2.data[4:], buff.getvalue())

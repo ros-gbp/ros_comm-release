@@ -41,7 +41,6 @@ import os
 import socket
 import struct
 import sys
-from threading import Lock
 import time
 import random
 import yaml
@@ -340,7 +339,6 @@ def init_node(name, argv=None, anonymous=False, log_level=None, disable_rostime=
 
 #_master_proxy is a MasterProxy wrapper
 _master_proxy = None
-_master_proxy_lock = Lock()
 
 def get_master(env=os.environ):
     """
@@ -353,12 +351,10 @@ def get_master(env=os.environ):
     @raise Exception: if server cannot be located or system cannot be
     initialized
     """
-    global _master_proxy, _master_proxy_lock
-    if _master_proxy is None:
-        with _master_proxy_lock:
-            if _master_proxy is None:
-                _master_proxy = rospy.msproxy.MasterProxy(
-                    rosgraph.get_master_uri())
+    global _master_proxy
+    if _master_proxy is not None:
+        return _master_proxy
+    _master_proxy = rospy.msproxy.MasterProxy(rosgraph.get_master_uri())
     return _master_proxy
 
 #########################################################
@@ -426,17 +422,13 @@ def wait_for_message(topic, topic_type, timeout=None):
 # Param Server Access
 
 _param_server = None
-_param_server_lock = Lock()
 def _init_param_server():
     """
     Initialize parameter server singleton
     """
-    global _param_server, _param_server_lock
+    global _param_server
     if _param_server is None:
-        with _param_server_lock:
-            if _param_server is None:
-                _param_server = get_master()
-    return _param_server_lock
+        _param_server = get_master() #in the future param server will be a service
         
 # class and singleton to distinguish whether or not user has passed us a default value
 class _Unspecified(object): pass
@@ -446,7 +438,7 @@ def get_param(param_name, default=_unspecified):
     """
     Retrieve a parameter from the param server
 
-    NOTE: this method is thread-safe.
+    NOTE: this method is not thread-safe.
     
     @param default: (optional) default value to return if key is not set
     @type  default: any
@@ -468,7 +460,7 @@ def get_param_names():
     """
     Retrieve list of parameter names.
 
-    NOTE: this method is thread-safe.
+    NOTE: this method is not thread-safe.
     
     @return: parameter names
     @rtype: [str]
@@ -485,7 +477,7 @@ def set_param(param_name, param_value):
     """
     Set a parameter on the param server
 
-    NOTE: this method is thread-safe.
+    NOTE: this method is not thread-safe.
     
     @param param_name: parameter name
     @type  param_name: str
@@ -505,7 +497,7 @@ def search_param(param_name):
     """
     Search for a parameter on the param server
 
-    NOTE: this method is thread-safe.
+    NOTE: this method is not thread-safe.
     
     @param param_name: parameter name
     @type  param_name: str
@@ -520,7 +512,7 @@ def delete_param(param_name):
     """
     Delete a parameter on the param server
 
-    NOTE: this method is thread-safe.
+    NOTE: this method is not thread-safe.
     
     @param param_name: parameter name
     @type  param_name: str
@@ -534,7 +526,7 @@ def has_param(param_name):
     """
     Test if parameter exists on the param server
 
-    NOTE: this method is thread-safe.
+    NOTE: this method is not thread-safe.
     
     @param param_name: parameter name
     @type  param_name: str

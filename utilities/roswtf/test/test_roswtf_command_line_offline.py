@@ -34,6 +34,7 @@
 import os
 import sys 
 import unittest
+import cStringIO
 import time
         
 from subprocess import Popen, PIPE, check_call, call
@@ -54,7 +55,6 @@ class TestRoswtfOffline(unittest.TestCase):
     def test_cmd_help(self):
         cmd = 'roswtf'
         output = Popen([cmd, '-h'], stdout=PIPE).communicate()[0]
-        output = output.decode()
         self.assert_('Options' in output)
             
     def test_offline(self):
@@ -68,26 +68,19 @@ class TestRoswtfOffline(unittest.TestCase):
         # add all dependencies to ros package path
         pkgs = ['roswtf',
             'rosgraph', 'roslaunch', 'roslib', 'rosnode', 'rosservice',
-            'rosbag', 'rosbag_storage', 'roslz4', 'rosconsole', 'roscpp', 'rosgraph_msgs', 'roslang', 'rosmaster', 'rosmsg', 'rosout', 'rosparam', 'rospy', 'rostest', 'rostopic', 'topic_tools', 'xmlrpcpp',
+            'rosbag', 'rosbag_storage', 'rosconsole', 'roscpp', 'rosgraph_msgs', 'roslang', 'rosmaster', 'rosmsg', 'rosout', 'rosparam', 'rospy', 'rostest', 'rostopic', 'topic_tools', 'xmlrpcpp',
             'cpp_common', 'roscpp_serialization', 'roscpp_traits', 'rostime',  # roscpp_core
             'rosbuild', 'rosclean', 'rosunit',  # ros
             'rospack', 'std_msgs', 'message_runtime', 'message_generation', 'gencpp', 'genlisp', 'genpy', 'genmsg', 'catkin',
+            'console_bridge'
         ]
-        paths = [rospack.get_path(pkg) for pkg in pkgs]
-        try:
-            path = rospack.get_path('cmake_modules')
-        except rospkg.ResourceNotFound:
-            pass
-        else:
-            paths.append(path)
-        env['ROS_PACKAGE_PATH'] = os.pathsep.join(paths)
+        env['ROS_PACKAGE_PATH'] = os.pathsep.join([rospack.get_path(pkg) for pkg in pkgs])
 
         cwd  = get_roswtf_path()
         kwds = { 'env': env, 'stdout': PIPE, 'stderr': PIPE, 'cwd': cwd}
 
         # run roswtf nakedly
         output = Popen([cmd], **kwds).communicate()
-        output = [o.decode() for o in output]
         # - due both a positive and negative test
         self.assert_('No errors or warnings' in output[0], "OUTPUT[%s]"%str(output))
         self.assert_('ERROR' not in output[0], "OUTPUT[%s]"%str(output))
@@ -95,6 +88,5 @@ class TestRoswtfOffline(unittest.TestCase):
         # run roswtf on a simple launch file offline
         p = os.path.join(get_test_path(), 'min.launch')
         output = Popen([cmd, p], **kwds).communicate()[0]
-        output = output.decode()
         self.assert_('No errors or warnings' in output, "OUTPUT[%s]"%output)
         self.assert_('ERROR' not in output, "OUTPUT[%s]"%output)        

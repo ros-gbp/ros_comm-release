@@ -74,7 +74,6 @@ public:
   virtual void call(SubscriptionCallbackHelperCallParams& params) = 0;
   virtual const std::type_info& getTypeInfo() = 0;
   virtual bool isConst() = 0;
-  virtual bool hasHeader() = 0;
 };
 typedef boost::shared_ptr<SubscriptionCallbackHelper> SubscriptionCallbackHelperPtr;
 
@@ -110,11 +109,6 @@ public:
     create_ = create;
   }
 
-  virtual bool hasHeader()
-  {
-     return message_traits::hasHeader<typename ParameterAdapter<P>::Message>();
-  }
-
   virtual VoidConstPtr deserialize(const SubscriptionCallbackHelperDeserializeParams& params)
   {
     namespace ser = serialization;
@@ -126,6 +120,8 @@ public:
       ROS_DEBUG("Allocation failed for message of type [%s]", getTypeInfo().name());
       return VoidConstPtr();
     }
+
+    assignSubscriptionConnectionHeader(msg.get(), params.connection_header);
 
     ser::PreDeserializeParams<NonConstType> predes_params;
     predes_params.message = msg;

@@ -44,10 +44,7 @@ import itertools
 import random
 import logging
 import traceback
-try:
-    from xmlrpc.client import ServerProxy
-except ImportError:
-    from xmlrpclib import ServerProxy
+import xmlrpclib
 import socket
 
 import rosgraph.masterapi
@@ -101,7 +98,7 @@ class EdgeList(object):
         self.edges_by_end = {}        
 
     def __iter__(self):
-        return itertools.chain(*[v for v in self.edges_by_start.values()])
+        return itertools.chain(*[v for v in self.edges_by_start.itervalues()])
     
     def has(self, edge):
         """
@@ -171,7 +168,7 @@ class EdgeList(object):
         @type  node: str
         """
         def matching(map, pref):
-            return [map[k] for k in map.keys() if k.startswith(pref)]
+            return [map[k] for k in map.iterkeys() if k.startswith(pref)]
         
         pref = node+"|"
         edge_lists = matching(self.edges_by_start, pref) + matching(self.edges_by_end, pref)
@@ -452,7 +449,7 @@ class Graph(object):
         uri = self._node_uri_refresh(node)
         try:
             if uri:
-                api = ServerProxy(uri)
+                api = xmlrpclib.ServerProxy(uri)
                 updated = self._node_refresh_businfo(node, api, bad_node)
         except KeyError as e:
             logger.warn('cannot contact node [%s] as it is not in the lookup table'%node)

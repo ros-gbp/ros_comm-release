@@ -167,10 +167,7 @@ def is_local_address(hostname):
     :returns True: if hostname maps to a local address, False otherwise. False conditions include invalid hostnames.
     """
     try:
-        if use_ipv6():
-            reverse_ips = [host[4][0] for host in socket.getaddrinfo(hostname, 0, 0, 0, socket.SOL_TCP)]
-        else:
-            reverse_ips = [host[4][0] for host in socket.getaddrinfo(hostname, 0, socket.AF_INET, 0, socket.SOL_TCP)]
+        reverse_ips = [host[4][0] for host in socket.getaddrinfo(hostname, 0, 0, 0, socket.SOL_TCP)]
     except socket.error:
         return False
     local_addresses = ['localhost'] + get_local_addresses()
@@ -395,7 +392,7 @@ def encode_ros_handshake_header(header):
     :param header: header field keys/values, ``dict``
     :returns: header encoded as byte string, ``str``
     """    
-    fields = ["%s=%s" % (k, header[k]) for k in sorted(header.keys())]
+    fields = ["%s=%s"%(k,v) for k,v in header.items()]
     
     # in the usual configuration, the error 'TypeError: can't concat bytes to str' appears:
     if python3 == 0:

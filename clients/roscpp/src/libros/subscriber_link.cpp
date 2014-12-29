@@ -34,7 +34,6 @@ namespace ros
 {
 
 SubscriberLink::SubscriberLink()
-  : connection_id_(0)
 {
 
 }

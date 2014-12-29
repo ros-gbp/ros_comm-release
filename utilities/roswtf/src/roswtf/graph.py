@@ -32,7 +32,6 @@
 #
 # Revision $Id$
 
-from __future__ import print_function
 from __future__ import with_statement
 
 import os
@@ -40,10 +39,7 @@ import itertools
 import socket
 import sys
 import time
-try:
-    from xmlrpc.client import ServerProxy
-except ImportError:
-    from xmlrpclib import ServerProxy
+import xmlrpclib
 
 import rospkg.environment
 
@@ -84,7 +80,7 @@ def _businfo(ctx, node, bus_info):
             elif direction == 'o':
                 edges.append((topic, node, dest_id))
             elif direction == 'b':
-                print("cannot handle bidirectional edges", file=sys.stderr)
+                print >> sys.stderr, "cannot handle bidirectional edges"
             else:
                 raise Exception()
 
@@ -147,13 +143,13 @@ def unconnected_subscriptions(ctx):
     ret = ''
     whitelist = ['/reset_time']
     if ctx.use_sim_time:
-        for sub, l in ctx.unconnected_subscriptions.items():
+        for sub, l in ctx.unconnected_subscriptions.iteritems():
             l = [t for t in l if t not in whitelist]
             if l:
                 ret += ' * %s:\n'%sub
                 ret += ''.join(["   * %s\n"%t for t in l])
     else:
-        for sub, l in ctx.unconnected_subscriptions.items():
+        for sub, l in ctx.unconnected_subscriptions.iteritems():
             l = [t for t in l if t not in ['/time', '/clock']]
             if l:
                 ret += ' * %s:\n'%sub
@@ -291,7 +287,7 @@ class NodeInfoThread(threading.Thread):
                     ctx.errors.append(WtfError("Master does not have lookup information for node [%s]"%n))
                 return
                 
-            node = ServerProxy(node_api)
+            node = xmlrpclib.ServerProxy(node_api)
             start = time.time()
             socket.setdefaulttimeout(3.0)            
             code, msg, bus_info = node.getBusInfo('/roswtf')
@@ -307,9 +303,9 @@ class NodeInfoThread(threading.Thread):
                 else:
                     edges = _businfo(ctx, n, bus_info)
                     actual_edges.extend(edges)
-        except socket.error:
+        except socket.error, e:
             pass #ignore as we have rules to catch this
-        except Exception as e:
+        except Exception, e:
             ctx.errors.append(WtfError("Communication with [%s] raised an error: %s"%(n, str(e))))
         finally:
             self.done = True
@@ -380,9 +376,9 @@ def wtf_check_graph(ctx, names=None):
         return
             
     # fill in ctx info so we only have to compute once
-    print("analyzing graph...")
+    print "analyzing graph..."
     _compute_online_context(ctx)
-    print("... done analyzing graph")
+    print "... done analyzing graph"
     
     if names:
         check_topics = [t for t in names if t in ctx.topics]
@@ -409,9 +405,9 @@ def wtf_check_graph(ctx, names=None):
                 error_rule(r, r[0](ctx, n), ctx)            
 
 
-    print("running graph rules...")
+    print "running graph rules..."
     for r in graph_warnings:
         warning_rule(r, r[0](ctx), ctx)
     for r in graph_errors:
         error_rule(r, r[0](ctx), ctx)
-    print("... done running graph rules")
+    print "... done running graph rules"        

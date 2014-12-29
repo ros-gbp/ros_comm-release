@@ -44,8 +44,6 @@ import os
 import sys
 import yaml
 
-from catkin.find_in_workspaces import find_in_workspaces
-
 import rospkg
 import genmsg
 
@@ -341,7 +339,7 @@ def rosmsg_cmd_prototype(args):
     #     if not options.silent:
     #         print(file=sys.stderr, "Invalid package: '%s'"%e)
     #         sys.exit(getattr(os, 'EX_USAGE', 1))
-    except ValueError as e:
+    except ValueError, e:
         if not options.silent:
             sys.stderr.write("Invalid type: '%s'"%e)
             sys.exit(getattr(os, 'EX_USAGE', 1))
@@ -394,9 +392,9 @@ def get_srv_text(type_, raw=False, rospack=None):
     srv_search_path = {}
     msg_search_path = {}
     for p in rospack.list():
-        package_paths = _get_package_paths(p, rospack)
-        msg_search_path[p] = [os.path.join(d, 'msg') for d in package_paths]
-        srv_search_path[p] = [os.path.join(d, 'srv') for d in package_paths]
+        path = rospack.get_path(p)
+        msg_search_path[p] = [os.path.join(path, 'msg')]
+        srv_search_path[p] = [os.path.join(path, 'srv')]
         
     #TODO: cache context somewhere
     context = genmsg.MsgContext.create_default()
@@ -423,8 +421,7 @@ def get_msg_text(type_, raw=False, rospack=None):
         rospack = rospkg.RosPack()
     search_path = {}
     for p in rospack.list():
-        package_paths = _get_package_paths(p, rospack)
-        search_path[p] = [os.path.join(d, 'msg') for d in package_paths]
+        search_path[p] = [os.path.join(rospack.get_path(p), 'msg')]
 
     context = genmsg.MsgContext.create_default()
     try:
@@ -537,23 +534,9 @@ def iterate_packages(rospack, mode):
 
     pkgs = rospack.list()
     for p in pkgs:
-        package_paths = _get_package_paths(p, rospack)
-        for package_path in package_paths:
-            d = os.path.join(package_path, subdir)
-            if os.path.isdir(d):
-                yield p, d
-
-_catkin_workspace_to_source_spaces = {}
-_catkin_source_path_to_packages = {}
-
-def _get_package_paths(pkgname, rospack):
-    paths = []
-    path = rospack.get_path(pkgname)
-    paths.append(path)
-    results = find_in_workspaces(search_dirs=['share'], project=pkgname, first_match_only=True, workspace_to_source_spaces=_catkin_workspace_to_source_spaces, source_path_to_packages=_catkin_source_path_to_packages)
-    if results and results[0] != path:
-        paths.append(results[0])
-    return paths
+        d = os.path.join(rospack.get_path(p), subdir)
+        if os.path.isdir(d):
+            yield p, d
     
 def rosmsg_search(rospack, mode, base_type):
     """

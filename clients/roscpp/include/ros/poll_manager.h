@@ -31,9 +31,7 @@
 #include "forwards.h"
 #include "poll_set.h"
 #include "common.h"
-
-#include <boost/signals2.hpp>
-
+#include <boost/signals.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/thread.hpp>
 
@@ -42,7 +40,7 @@ namespace ros
 
 class PollManager;
 typedef boost::shared_ptr<PollManager> PollManagerPtr;
-typedef boost::signals2::signal<void(void)> VoidSignal;
+typedef boost::signal<void(void)> VoidSignal;
 typedef boost::function<void(void)> VoidFunc;
 
 class ROSCPP_DECL PollManager
@@ -55,8 +53,8 @@ public:
 
   PollSet& getPollSet() { return poll_set_; }
 
-  boost::signals2::connection addPollThreadListener(const VoidFunc& func);
-  void removePollThreadListener(boost::signals2::connection c);
+  boost::signals::connection addPollThreadListener(const VoidFunc& func);
+  void removePollThreadListener(boost::signals::connection c);
 
   void start();
   void shutdown();

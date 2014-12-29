@@ -81,7 +81,6 @@ class TestRostopicOnline(unittest.TestCase):
         # list
         # - we aren't matching against the core services as those can make the test suites brittle
         output = Popen([cmd, 'list'], stdout=PIPE).communicate()[0]
-        output = output.decode()
         l = set(output.split())
         for t in topics:
             self.assert_(t in l)
@@ -89,12 +88,10 @@ class TestRostopicOnline(unittest.TestCase):
         for name in names:
             # type
             output = Popen([cmd, 'type', name], stdout=PIPE).communicate()[0]
-            output = output.decode()
             self.assertEquals('std_msgs/String', output.strip())
 
             # find
             output = Popen([cmd, 'find', 'std_msgs/String'], stdout=PIPE).communicate()[0]
-            output = output.decode()
             values = [n.strip() for n in output.split('\n') if n.strip()]
             self.assertEquals(set(values), set(topics))
 
@@ -102,7 +99,6 @@ class TestRostopicOnline(unittest.TestCase):
             # test with -c option to get command to terminate
             count = 3
             output = Popen([cmd, 'echo', name, '-n', str(count)], stdout=PIPE).communicate()[0]
-            output = output.decode()
             values = [n.strip() for n in output.split('\n') if n.strip()]
             values = [n for n in values if n != '---']
             self.assertEquals(count, len(values), "wrong number of echos in output:\n"+str(values))

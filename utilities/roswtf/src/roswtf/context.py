@@ -157,7 +157,7 @@ class WtfContext(object):
         for f in roslaunch_files:
             try:
                 l.load(f, c, verbose=False) 
-            except roslaunch.RLException as e:
+            except roslaunch.RLException, e:
                 raise WtfException("Unable to load roslaunch file [%s]: %s"%(f, str(e)))
 
         ctx = WtfContext()

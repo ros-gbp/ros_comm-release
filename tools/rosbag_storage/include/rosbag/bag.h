@@ -228,7 +228,6 @@ private:
     void     decompressChunk(uint64_t chunk_pos) const;
     void     decompressRawChunk(ChunkHeader const& chunk_header) const;
     void     decompressBz2Chunk(ChunkHeader const& chunk_header) const;
-    void     decompressLz4Chunk(ChunkHeader const& chunk_header) const;
     uint32_t getChunkOffset() const;
 
     // Record header I/O
@@ -405,6 +404,9 @@ boost::shared_ptr<T> Bag::instantiateBuffer(IndexEntry const& index_entry) const
 
         boost::shared_ptr<T> p = boost::shared_ptr<T>(new T());
 
+        // Set the connection header (if this is a ros::Message)
+        ros::assignSubscriptionConnectionHeader<T>(p.get(), connection_info->header);
+
         ros::serialization::PreDeserializeParams<T> predes_params;
         predes_params.message = p;
         predes_params.connection_header = connection_info->header;
@@ -448,6 +450,9 @@ boost::shared_ptr<T> Bag::instantiateBuffer(IndexEntry const& index_entry) const
             (*message_header)[i->first] = i->second;
         (*message_header)["latching"] = latching;
         (*message_header)["callerid"] = callerid;
+
+        // Set the connection header (if this is a ros::Message)
+        ros::assignSubscriptionConnectionHeader<T>(p.get(), message_header);
 
         ros::serialization::PreDeserializeParams<T> predes_params;
         predes_params.message = p;

@@ -34,6 +34,7 @@
 import os
 import sys 
 import unittest
+import cStringIO
 import time
 
 import rospkg
