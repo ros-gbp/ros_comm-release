@@ -1,3 +1,58 @@
+## ros_comm (hydro) - 1.10.12-0
+
+The packages in the `ros_comm` repository were released into the `hydro` distro by running `/usr/bin/bloom-release -r hydro -t hydro ros_comm` on `Mon, 29 Dec 2014 19:36:11 -0000`
+
+These packages were released:
+- `message_filters`
+- `ros_comm`
+- `rosbag`
+- `rosbag_storage`
+- `rosconsole`
+- `roscpp`
+- `rosgraph`
+- `rosgraph_msgs`
+- `roslaunch`
+- `rosmaster`
+- `rosmsg`
+- `rosnode`
+- `rosout`
+- `rosparam`
+- `rospy`
+- `rosservice`
+- `rostest`
+- `rostopic`
+- `roswtf`
+- `std_srvs`
+- `topic_tools`
+- `xmlrpcpp`
+
+These packages were explicitly ignored:
+- `test_rosbag`
+- `test_rosbag_storage`
+- `test_roscpp`
+- `test_rosgraph`
+- `test_roslaunch`
+- `test_roslib_comm`
+- `test_rosmaster`
+- `test_rosparam`
+- `test_rospy`
+- `test_rosservice`
+
+Version of package(s) in repository `ros_comm`:
+- upstream repository: git@github.com:ros/ros_comm.git
+- release repository: https://github.com/ros-gbp/ros_comm-release.git
+- rosdistro version: `1.10.11-0`
+- old version: `1.10.11-0`
+- new version: `1.10.12-0`
+
+Versions of tools used:
+- bloom version: `0.5.16`
+- catkin_pkg version: `0.2.6`
+- rosdep version: `0.11.0`
+- rosdistro version: `0.4.0`
+- vcstools version: `0.1.36`
+
+
 ## ros_comm (jade) - 1.11.10-0
 
 The packages in the `ros_comm` repository were released into the `jade` distro by running `/usr/bin/bloom-release -r jade -t jade ros_comm` on `Fri, 26 Dec 2014 19:42:50 -0000`
