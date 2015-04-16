@@ -59,23 +59,44 @@ class Rate(object):
         self.last_time = rospy.rostime.get_rostime()
         self.sleep_dur = rospy.rostime.Duration(0, int(1e9/hz))
 
+    def _remaining(self, curr_time):
+        """
+        Calculate the time remaining for rate to sleep.
+        @param curr_time: current time
+        @type  curr_time: L{Time}
+        @return: time remaining
+        @rtype: L{Time}
+        """
+        # detect time jumping backwards
+        if self.last_time > curr_time:
+            self.last_time = curr_time
+
+        # calculate remaining time
+        elapsed = curr_time - self.last_time
+        return self.sleep_dur - elapsed
+
+    def remaining(self):
+        """
+        Return the time remaining for rate to sleep.
+        @return: time remaining
+        @rtype: L{Time}
+        """
+        curr_time = rospy.rostime.get_rostime()
+        return self._remaining(curr_time)
+
     def sleep(self):
         """
         Attempt sleep at the specified rate. sleep() takes into
         account the time elapsed since the last successful
         sleep().
         
-        @raise ROSInterruptException: if ROS time is set backwards or if
-        ROS shutdown occurs before sleep completes
+        @raise ROSInterruptException: if ROS shutdown occurs before
+        sleep completes
+        @raise ROSTimeMovedBackwardsException: if ROS time is set
+        backwards
         """
         curr_time = rospy.rostime.get_rostime()
-        # detect time jumping backwards
-        if self.last_time > curr_time:
-            self.last_time = curr_time
-
-        # calculate sleep interval
-        elapsed = curr_time - self.last_time
-        sleep(self.sleep_dur - elapsed)
+        sleep(self._remaining(curr_time))
         self.last_time = self.last_time + self.sleep_dur
 
         # detect time jumping forwards, as well as loops that are
@@ -83,7 +104,6 @@ class Rate(object):
         if curr_time - self.last_time > self.sleep_dur * 2:
             self.last_time = curr_time
 
-# TODO: may want more specific exceptions for sleep
 def sleep(duration):
     """
     sleep for the specified duration in ROS time. If duration
@@ -91,8 +111,10 @@ def sleep(duration):
     
     @param duration: seconds (or rospy.Duration) to sleep
     @type  duration: float or Duration
-    @raise ROSInterruptException: if ROS time is set backwards or if
-    ROS shutdown occurs before sleep completes
+    @raise ROSInterruptException: if ROS shutdown occurs before sleep
+    completes
+    @raise ROSTimeMovedBackwardsException: if ROS time is set
+    backwards
     """
     if rospy.rostime.is_wallclock():
         if isinstance(duration, genpy.Duration):
@@ -128,7 +150,9 @@ def sleep(duration):
                 rostime_cond.wait(0.5)
 
         if rospy.rostime.get_rostime() < initial_rostime:
-            raise rospy.exceptions.ROSInterruptException("ROS time moved backwards")
+            time_jump = (initial_rostime - rospy.rostime.get_rostime()).to_sec()
+            rospy.core.logerr("ROS time moved backwards: %ss", time_jump)
+            raise rospy.exceptions.ROSTimeMovedBackwardsException(time_jump)
         if rospy.core.is_shutdown():
             raise rospy.exceptions.ROSInterruptException("ROS shutdown request")
 

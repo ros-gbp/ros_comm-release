@@ -326,20 +326,20 @@ ROSCONSOLE_DECL std::string formatToString(const char* fmt, ...);
 
 #define ROSCONSOLE_DEFINE_LOCATION(cond, level, name) \
   ROSCONSOLE_AUTOINIT; \
-  static ::ros::console::LogLocation loc = {false, false, ::ros::console::levels::Count, 0}; /* Initialized at compile-time */ \
-  if (ROS_UNLIKELY(!loc.initialized_)) \
+  static ::ros::console::LogLocation __rosconsole_define_location__loc = {false, false, ::ros::console::levels::Count, 0}; /* Initialized at compile-time */ \
+  if (ROS_UNLIKELY(!__rosconsole_define_location__loc.initialized_)) \
   { \
-    initializeLogLocation(&loc, name, level); \
+    initializeLogLocation(&__rosconsole_define_location__loc, name, level); \
   } \
-  if (ROS_UNLIKELY(loc.level_ != level)) \
+  if (ROS_UNLIKELY(__rosconsole_define_location__loc.level_ != level)) \
   { \
-    setLogLocationLevel(&loc, level); \
-    checkLogLocationEnabled(&loc); \
+    setLogLocationLevel(&__rosconsole_define_location__loc, level); \
+    checkLogLocationEnabled(&__rosconsole_define_location__loc); \
   } \
-  bool enabled = loc.logger_enabled_ && (cond);
+  bool __rosconsole_define_location__enabled = __rosconsole_define_location__loc.logger_enabled_ && (cond);
 
 #define ROSCONSOLE_PRINT_AT_LOCATION_WITH_FILTER(filter, ...) \
-    ::ros::console::print(filter, loc.logger_, loc.level_, __FILE__, __LINE__, __ROSCONSOLE_FUNCTION__, __VA_ARGS__)
+    ::ros::console::print(filter, __rosconsole_define_location__loc.logger_, __rosconsole_define_location__loc.level_, __FILE__, __LINE__, __ROSCONSOLE_FUNCTION__, __VA_ARGS__)
 
 #define ROSCONSOLE_PRINT_AT_LOCATION(...) \
     ROSCONSOLE_PRINT_AT_LOCATION_WITH_FILTER(0, __VA_ARGS__)
@@ -350,7 +350,7 @@ ROSCONSOLE_DECL std::string formatToString(const char* fmt, ...);
   { \
     std::stringstream __rosconsole_print_stream_at_location_with_filter__ss__; \
     __rosconsole_print_stream_at_location_with_filter__ss__ << args; \
-    ::ros::console::print(filter, loc.logger_, loc.level_, __rosconsole_print_stream_at_location_with_filter__ss__, __FILE__, __LINE__, __ROSCONSOLE_FUNCTION__); \
+    ::ros::console::print(filter, __rosconsole_define_location__loc.logger_, __rosconsole_define_location__loc.level_, __rosconsole_print_stream_at_location_with_filter__ss__, __FILE__, __LINE__, __ROSCONSOLE_FUNCTION__); \
   } while (0)
 
 #define ROSCONSOLE_PRINT_STREAM_AT_LOCATION(args) \
@@ -370,7 +370,7 @@ ROSCONSOLE_DECL std::string formatToString(const char* fmt, ...);
   { \
     ROSCONSOLE_DEFINE_LOCATION(cond, level, name); \
     \
-    if (ROS_UNLIKELY(enabled)) \
+    if (ROS_UNLIKELY(__rosconsole_define_location__enabled)) \
     { \
       ROSCONSOLE_PRINT_AT_LOCATION(__VA_ARGS__); \
     } \
@@ -389,7 +389,7 @@ ROSCONSOLE_DECL std::string formatToString(const char* fmt, ...);
   do \
   { \
     ROSCONSOLE_DEFINE_LOCATION(cond, level, name); \
-    if (ROS_UNLIKELY(enabled)) \
+    if (ROS_UNLIKELY(__rosconsole_define_location__enabled)) \
     { \
       ROSCONSOLE_PRINT_STREAM_AT_LOCATION(args); \
     } \
@@ -406,7 +406,7 @@ ROSCONSOLE_DECL std::string formatToString(const char* fmt, ...);
   { \
     ROSCONSOLE_DEFINE_LOCATION(true, level, name); \
     static bool hit = false; \
-    if (ROS_UNLIKELY(enabled) && ROS_UNLIKELY(!hit)) \
+    if (ROS_UNLIKELY(__rosconsole_define_location__enabled) && ROS_UNLIKELY(!hit)) \
     { \
       hit = true; \
       ROSCONSOLE_PRINT_AT_LOCATION(__VA_ARGS__); \
@@ -425,7 +425,7 @@ ROSCONSOLE_DECL std::string formatToString(const char* fmt, ...);
   { \
     ROSCONSOLE_DEFINE_LOCATION(true, level, name); \
     static bool __ros_log_stream_once__hit__ = false; \
-    if (ROS_UNLIKELY(enabled) && ROS_UNLIKELY(!__ros_log_stream_once__hit__)) \
+    if (ROS_UNLIKELY(__rosconsole_define_location__enabled) && ROS_UNLIKELY(!__ros_log_stream_once__hit__)) \
     { \
       __ros_log_stream_once__hit__ = true; \
       ROSCONSOLE_PRINT_STREAM_AT_LOCATION(args); \
@@ -445,7 +445,7 @@ ROSCONSOLE_DECL std::string formatToString(const char* fmt, ...);
     ROSCONSOLE_DEFINE_LOCATION(true, level, name); \
     static double last_hit = 0.0; \
     ::ros::Time now = ::ros::Time::now(); \
-    if (ROS_UNLIKELY(enabled) && ROS_UNLIKELY(last_hit + rate <= now.toSec())) \
+    if (ROS_UNLIKELY(__rosconsole_define_location__enabled) && ROS_UNLIKELY(last_hit + rate <= now.toSec())) \
     { \
       last_hit = now.toSec(); \
       ROSCONSOLE_PRINT_AT_LOCATION(__VA_ARGS__); \
@@ -466,9 +466,50 @@ ROSCONSOLE_DECL std::string formatToString(const char* fmt, ...);
     ROSCONSOLE_DEFINE_LOCATION(true, level, name); \
     static double __ros_log_stream_throttle__last_hit__ = 0.0; \
     ::ros::Time __ros_log_stream_throttle__now__ = ::ros::Time::now(); \
-    if (ROS_UNLIKELY(enabled) && ROS_UNLIKELY(__ros_log_stream_throttle__last_hit__ + rate <= __ros_log_stream_throttle__now__.toSec())) \
+    if (ROS_UNLIKELY(__rosconsole_define_location__enabled) && ROS_UNLIKELY(__ros_log_stream_throttle__last_hit__ + rate <= __ros_log_stream_throttle__now__.toSec())) \
     { \
       __ros_log_stream_throttle__last_hit__ = __ros_log_stream_throttle__now__.toSec(); \
+      ROSCONSOLE_PRINT_STREAM_AT_LOCATION(args); \
+    } \
+  } while(0)
+
+/**
+ * \brief Log to a given named logger at a given verbosity level, limited to a specific rate of printing, with printf-style formatting
+ *
+ * \param level One of the levels specified in ::ros::console::levels::Level
+ * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include "ros.<package_name>".  Use ROSCONSOLE_DEFAULT_NAME if you would like to use the default name.
+ * \param rate The rate it should actually trigger at
+ */
+#define ROS_LOG_DELAYED_THROTTLE(rate, level, name, ...) \
+  do \
+  { \
+    ROSCONSOLE_DEFINE_LOCATION(true, level, name); \
+    ::ros::Time __ros_log_delayed_throttle__now__ = ::ros::Time::now(); \
+    static double __ros_log_delayed_throttle__last_hit__ = __ros_log_delayed_throttle__now__.toSec(); \
+    if (ROS_UNLIKELY(__rosconsole_define_location__enabled) && ROS_UNLIKELY(__ros_log_delayed_throttle__last_hit__ + rate <= __ros_log_delayed_throttle__now__.toSec())) \
+    { \
+      __ros_log_delayed_throttle__last_hit__ = __ros_log_delayed_throttle__now__.toSec(); \
+      ROSCONSOLE_PRINT_AT_LOCATION(__VA_ARGS__); \
+    } \
+  } while(0)
+
+// inside a macro which uses args use only well namespaced variable names in order to not overlay variables coming in via args
+/**
+ * \brief Log to a given named logger at a given verbosity level, limited to a specific rate of printing and postponed first message
+ *
+ * \param level One of the levels specified in ::ros::console::levels::Level
+ * \param name Name of the logger.  Note that this is the fully qualified name, and does NOT include "ros.<package_name>".  Use ROSCONSOLE_DEFAULT_NAME if you would like to use the default name.
+ * \param rate The rate it should actually trigger at, and the delay before which no message will be shown.
+ */
+#define ROS_LOG_STREAM_DELAYED_THROTTLE(rate, level, name, args) \
+  do \
+  { \
+    ROSCONSOLE_DEFINE_LOCATION(true, level, name); \
+    ::ros::Time __ros_log_stream_delayed_throttle__now__ = ::ros::Time::now(); \
+    static double __ros_log_stream_delayed_throttle__last_hit__ = __ros_log_stream_delayed_throttle__now__.toSec(); \
+    if (ROS_UNLIKELY(__rosconsole_define_location__enabled) && ROS_UNLIKELY(__ros_log_stream_delayed_throttle__last_hit__ + rate <= __ros_log_stream_delayed_throttle__now__.toSec())) \
+    { \
+      __ros_log_stream_delayed_throttle__last_hit__ = __ros_log_stream_delayed_throttle__now__.toSec(); \
       ROSCONSOLE_PRINT_STREAM_AT_LOCATION(args); \
     } \
   } while(0)
@@ -484,7 +525,7 @@ ROSCONSOLE_DECL std::string formatToString(const char* fmt, ...);
   do \
   { \
     ROSCONSOLE_DEFINE_LOCATION(true, level, name); \
-    if (ROS_UNLIKELY(enabled) && (filter)->isEnabled()) \
+    if (ROS_UNLIKELY(__rosconsole_define_location__enabled) && (filter)->isEnabled()) \
     { \
       ROSCONSOLE_PRINT_AT_LOCATION_WITH_FILTER(filter, __VA_ARGS__); \
     } \
@@ -501,7 +542,7 @@ ROSCONSOLE_DECL std::string formatToString(const char* fmt, ...);
   do \
   { \
     ROSCONSOLE_DEFINE_LOCATION(true, level, name); \
-    if (ROS_UNLIKELY(enabled) && (filter)->isEnabled()) \
+    if (ROS_UNLIKELY(__rosconsole_define_location__enabled) && (filter)->isEnabled()) \
     { \
       ROSCONSOLE_PRINT_STREAM_AT_LOCATION_WITH_FILTER(filter, args); \
     } \

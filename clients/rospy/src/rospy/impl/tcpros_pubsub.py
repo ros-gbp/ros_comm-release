@@ -255,14 +255,18 @@ class TCPROSHandler(rospy.impl.transport.ProtocolHandler):
         t = threading.Thread(name=resolved_name, target=robust_connect_subscriber, args=(conn, dest_addr, dest_port, pub_uri, sub.receive_callback,resolved_name))
         # don't enable this just yet, need to work on this logic
         #rospy.core._add_shutdown_thread(t)
-        t.start()
 
         # Attach connection to _SubscriberImpl
         if sub.add_connection(conn): #pass tcp connection to handler
+            # since the thread might cause the connection to close
+            # it should only be started after the connection has been added to the subscriber
+            # https://github.com/ros/ros_comm/issues/544
+            t.start()
             return 1, "Connected topic[%s]. Transport impl[%s]"%(resolved_name, conn.__class__.__name__), dest_port
         else:
+            # _SubscriberImpl already closed or duplicate subscriber created
             conn.close()
-            return 0, "ERROR: Race condition failure: duplicate topic subscriber [%s] was created"%(resolved_name), 0
+            return 0, "ERROR: Race condition failure creating topic subscriber [%s]"%(resolved_name), 0
 
     def supports(self, protocol):
         """
@@ -356,6 +360,7 @@ class TCPROSHandler(rospy.impl.transport.ProtocolHandler):
                 protocol = TCPROSPub(resolved_topic_name, topic.data_class, is_latch=topic.is_latch, headers=topic.headers)
                 transport = TCPROSTransport(protocol, resolved_topic_name)
                 transport.set_socket(sock, header['callerid'])
+                transport.remote_endpoint = client_addr
                 transport.write_header()
                 topic.add_connection(transport)
             
@@ -381,11 +386,15 @@ class QueuedConnection(object):
 
         self._lock = threading.Lock()
         self._cond_data_available = threading.Condition(self._lock)
+        self._connection.set_cleanup_callback(self._closed_connection_callback)
         self._queue = []
         self._error = None
 
         self._thread = threading.Thread(target=self._run)
         self._thread.start()
+
+    def _closed_connection_callback(self, connection):
+        self._cond_data_available.notify()
 
     def __getattr__(self, name):
         if name.startswith('__'):
@@ -414,7 +423,7 @@ class QueuedConnection(object):
             with self._lock:
                 # wait for available data
                 while not self._queue and not self._connection.done:
-                    self._cond_data_available.wait(1.0)
+                    self._cond_data_available.wait()
                 # take all data from queue for processing outside of the lock
                 if self._queue:
                     queue = self._queue

@@ -38,7 +38,7 @@
 #include <deque>
 #include "boost/thread.hpp"
 #include "boost/shared_ptr.hpp"
-#include <boost/signals.hpp>
+
 #include "ros/time.h"
 
 #include "connection.h"

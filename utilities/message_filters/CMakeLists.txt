@@ -78,4 +78,8 @@ if(CATKIN_ENABLE_TESTING)
   if(TARGET ${PROJECT_NAME}-test_subscriber)
     target_link_libraries(${PROJECT_NAME}-test_subscriber message_filters)
   endif()
+
+  # Unit test of the approximate synchronizer
+  catkin_add_nosetests(test/test_approxsync.py)
+  catkin_add_nosetests(test/test_message_filters_cache.py)
 endif()

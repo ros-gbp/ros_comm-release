@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(topic_tools)
-find_package(catkin COMPONENTS cpp_common message_generation rosconsole roscpp rostest rostime rosunit std_msgs xmlrpcpp)
+find_package(catkin COMPONENTS cpp_common message_generation rosconsole roscpp rostime std_msgs xmlrpcpp)
 
 include_directories(include)
 include_directories(${catkin_INCLUDE_DIRS})
@@ -10,7 +10,11 @@ add_service_files(DIRECTORY srv
   MuxAdd.srv
   MuxDelete.srv
   MuxList.srv
-  MuxSelect.srv)
+  MuxSelect.srv
+  DemuxAdd.srv
+  DemuxDelete.srv
+  DemuxList.srv
+  DemuxSelect.srv)
 
 generate_messages(DEPENDENCIES std_msgs)
 
@@ -20,6 +24,8 @@ catkin_package(
   CATKIN_DEPENDS message_runtime rosconsole roscpp std_msgs xmlrpcpp
  )
 
+catkin_add_env_hooks(20.transform SHELLS bash DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/env-hooks)
+
 add_library(topic_tools src/shape_shifter.cpp src/parse.cpp)
 target_link_libraries(topic_tools ${catkin_LIBRARIES})
 
@@ -28,6 +34,10 @@ target_link_libraries(switch_mux topic_tools ${catkin_LIBRARIES})
 
 add_executable(mux src/mux.cpp)
 target_link_libraries(mux topic_tools ${catkin_LIBRARIES})
+add_dependencies(topic_tools topic_tools_gencpp)
+
+add_executable(demux src/demux.cpp)
+target_link_libraries(demux topic_tools ${catkin_LIBRARIES})
 add_dependencies(topic_tools topic_tools_gencpp)
 
 add_executable(relay src/relay.cpp)
@@ -44,7 +54,7 @@ install(TARGETS topic_tools
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION})
 
-install(TARGETS switch_mux mux relay drop throttle
+install(TARGETS switch_mux mux demux relay drop throttle
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
@@ -53,15 +63,18 @@ install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   FILES_MATCHING PATTERN "*.h")
 
-install(PROGRAMS
+catkin_install_python(PROGRAMS
   scripts/mux_add
   scripts/mux_delete
   scripts/mux_list
   scripts/mux_select
+  scripts/transform
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 #Testing
 if(CATKIN_ENABLE_TESTING)
+  find_package(rostest)
+  find_package(rosunit)
   catkin_add_gtest(${PROJECT_NAME}-utest test/utest.cpp)
   if(TARGET ${PROJECT_NAME}-utest)
     target_link_libraries(${PROJECT_NAME}-utest topic_tools)

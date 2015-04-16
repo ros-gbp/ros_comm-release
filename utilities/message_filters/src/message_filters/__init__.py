@@ -30,6 +30,7 @@ Message Filter Objects
 ======================
 """
 
+import itertools
 import threading
 import rospy
 
@@ -89,14 +90,66 @@ class Cache(SimpleFilter):
         SimpleFilter.__init__(self)
         self.connectInput(f)
         self.cache_size = cache_size
+        # Array to store messages
+        self.cache_msgs = []
+        # Array to store msgs times, auxiliary structure to facilitate
+        # sorted insertion
+        self.cache_times = []
 
     def connectInput(self, f):
         self.incoming_connection = f.registerCallback(self.add)
 
     def add(self, msg):
-        # Add msg to cache... XXX TODO
+        # Cannot use message filters with non-stamped messages
+        if not hasattr(msg, 'header') or not hasattr(msg.header, 'stamp'):
+            rospy.logwarn("Cannot use message filters with non-stamped messages")
+            return
 
+        # Insert sorted
+        stamp = msg.header.stamp
+        self.cache_times.append(stamp)
+        self.cache_msgs.append(msg)
+
+        # Implement a ring buffer, discard older if oversized
+        if (len(self.cache_msgs) > self.cache_size):
+            del self.cache_msgs[0]
+            del self.cache_times[0]
+
+        # Signal new input
         self.signalMessage(msg)
+
+    def getInterval(self, from_stamp, to_stamp):
+        """Query the current cache content between from_stamp to to_stamp."""
+        assert from_stamp <= to_stamp
+        return [m for m in self.cache_msgs
+                if m.header.stamp >= from_stamp and m.header.stamp <= to_stamp]
+
+    def getElemAfterTime(self, stamp):
+        """Return the oldest element after or equal the passed time stamp."""
+        newer = [m for m in self.cache_msgs if m.header.stamp >= stamp]
+        if not newer:
+            return None
+        return newer[0]
+
+    def getElemBeforeTime(self, stamp):
+        """Return the newest element before or equal the passed time stamp."""
+        older = [m for m in self.cache_msgs if m.header.stamp <= stamp]
+        if not older:
+            return None
+        return older[-1]
+
+    def getLastestTime(self):
+        """Return the newest recorded timestamp."""
+        if not self.cache_times:
+            return None
+        return self.cache_times[-1]
+
+    def getOldestTime(self):
+        """Return the oldest recorded timestamp."""
+        if not self.cache_times:
+            return None
+        return self.cache_times[0]
+
 
 class TimeSynchronizer(SimpleFilter):
 
@@ -142,4 +195,34 @@ class TimeSynchronizer(SimpleFilter):
             self.signalMessage(*msgs)
             for q in self.queues:
                 del q[t]
+        self.lock.release()
+
+class ApproximateTimeSynchronizer(TimeSynchronizer):
+
+    """
+    Approximately synchronizes messages by their timestamps.
+
+    :class:`ApproximateTimeSynchronizer` synchronizes incoming message filters by the
+    timestamps contained in their messages' headers. The API is the same as TimeSynchronizer
+    except for an extra `slop` parameter in the constructor that defines the delay (in seconds)
+    with which messages can be synchronized
+    """
+
+    def __init__(self, fs, queue_size, slop):
+        TimeSynchronizer.__init__(self, fs, queue_size)
+        self.slop = rospy.Duration.from_sec(slop)
+
+    def add(self, msg, my_queue):
+        self.lock.acquire()
+        my_queue[msg.header.stamp] = msg
+        while len(my_queue) > self.queue_size:
+            del my_queue[min(my_queue)]
+        for vv in itertools.product(*[list(q.keys()) for q in self.queues]):
+            qt = list(zip(self.queues, vv))
+            if ( ((max(vv) - min(vv)) < self.slop) and
+                (len([1 for q,t in qt if t not in q]) == 0) ):
+                msgs = [q[t] for q,t in qt]
+                self.signalMessage(*msgs)
+                for q,t in qt:
+                    del q[t]
         self.lock.release()

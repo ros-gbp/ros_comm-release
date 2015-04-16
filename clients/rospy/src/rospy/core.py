@@ -309,8 +309,8 @@ def _add_shutdown_hook(h, hooks):
     """
     shared implementation of add_shutdown_hook and add_preshutdown_hook
     """
-    if type(h) not in [types.FunctionType, types.MethodType]:
-        raise TypeError("shutdown hook [%s] must be a function: %s"%(h, type(h)))
+    if not callable(h):
+        raise TypeError("shutdown hook [%s] must be a function or callable object: %s"%(h, type(h)))
     if _shutdown_flag:
         _logger.warn("add_shutdown_hook called after shutdown")
         h("already shutdown")
@@ -346,8 +346,8 @@ def add_client_shutdown_hook(h):
     L{add_shutdown_hook} and L{add_preshutdown_hooks}, these methods
     will be called before any rospy internal shutdown code.
     
-    @param h: function that takes in a single string argument (shutdown reason)
-    @type  h: fn(str)
+    @param h: function with zero args
+    @type  h: fn()
     """
     _add_shutdown_hook(h, _client_shutdown_hooks)
 

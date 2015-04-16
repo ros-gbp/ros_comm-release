@@ -45,6 +45,9 @@
   #include <sys/types.h>
   #include <sys/uio.h>
   #include <unistd.h>
+#elif defined(__ANDROID__)
+  // For readv() and writev() on ANDROID
+  #include <sys/uio.h>
 #endif
 
 namespace ros
@@ -57,6 +60,7 @@ TransportUDP::TransportUDP(PollSet* poll_set, int flags, int max_datagram_size)
 , expecting_write_(false)
 , is_server_(false)
 , server_port_(-1)
+, local_port_(-1)
 , poll_set_(poll_set)
 , flags_(flags)
 , connection_id_(0)
@@ -131,11 +135,16 @@ void TransportUDP::socketUpdate(int events)
 
 std::string TransportUDP::getTransportInfo()
 {
-  return "UDPROS connection to [" + cached_remote_host_ + "]";
+  std::stringstream str;
+  str << "UDPROS connection on port " << local_port_ << " to [" << cached_remote_host_ << "]";
+  return str.str();
 }
 
 bool TransportUDP::connect(const std::string& host, int port, int connection_id)
 {
+  if (!isHostAllowed(host))
+    return false; // adios amigo
+
   sock_ = socket(AF_INET, SOCK_DGRAM, 0);
   connection_id_ = connection_id;
 
@@ -208,6 +217,10 @@ bool TransportUDP::connect(const std::string& host, int port, int connection_id)
   Sleep(100);
 #endif
 
+  std::stringstream ss;
+  ss << host << ":" << port << " on socket " << sock_;
+  cached_remote_host_ = ss.str();
+
   if (!initializeSocket())
   {
     return false;
@@ -232,7 +245,9 @@ bool TransportUDP::createIncoming(int port, bool is_server)
 
   server_address_.sin_family = AF_INET;
   server_address_.sin_port = htons(port);
-  server_address_.sin_addr.s_addr = INADDR_ANY;
+  server_address_.sin_addr.s_addr = isOnlyLocalhostAllowed() ? 
+                                    htonl(INADDR_LOOPBACK) :
+                                    INADDR_ANY;
   if (bind(sock_, (sockaddr *)&server_address_, sizeof(server_address_)) < 0)
   {
     ROS_ERROR("bind() failed with error [%s]",  last_socket_error_string());
@@ -267,6 +282,10 @@ bool TransportUDP::initializeSocket()
       return false;
     }
   }
+
+  socklen_t len = sizeof(local_address_);
+  getsockname(sock_, (sockaddr *)&local_address_, &len);
+  local_port_ = ntohs(local_address_.sin_port);
 
   ROS_ASSERT(poll_set_ || (flags_ & SYNCHRONOUS));
   if (poll_set_)
@@ -675,6 +694,27 @@ TransportUDPPtr TransportUDP::createOutgoing(std::string host, int port, int con
   }
   return transport;
 
+}
+
+std::string TransportUDP::getClientURI()
+{
+  ROS_ASSERT(!is_server_);
+
+  sockaddr_storage sas;
+  socklen_t sas_len = sizeof(sas);
+  getpeername(sock_, (sockaddr *)&sas, &sas_len);
+
+  sockaddr_in *sin = (sockaddr_in *)&sas;
+
+  char namebuf[128];
+  int port = ntohs(sin->sin_port);
+  strcpy(namebuf, inet_ntoa(sin->sin_addr));
+
+  std::string ip = namebuf;
+  std::stringstream uri;
+  uri << ip << ":" << port;
+
+  return uri.str();
 }
 
 }

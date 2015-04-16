@@ -92,11 +92,14 @@ add_rostest(launch/pubsub_unadv.xml)
 # Call a service
 add_rostest(launch/service_call.xml)
 
-add_rostest(launch/service_deadlock.xml)
+# disabling the test again since it does not work realiable
+#add_rostest(launch/service_deadlock.xml)
 
 add_rostest(launch/service_exception.xml)
 
 add_rostest(launch/service_call_unadv.xml)
+
+add_rostest(launch/service_call_zombie.xml)
 
 # Repeatedly call ros::init() and ros::fini()
 add_rostest(launch/multiple_init_fini.xml)
@@ -155,3 +158,5 @@ add_rostest(launch/local_remappings.xml)
 add_rostest(launch/global_remappings.xml)
 add_rostest(launch/ns_node_remapping.xml)
 add_rostest(launch/search_param.xml)
+
+add_rostest(launch/stamped_topic_statistics_with_empty_timestamp.xml)

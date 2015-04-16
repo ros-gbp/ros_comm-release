@@ -63,13 +63,17 @@ def namespaces_of(name):
     """
     if name is None: 
         raise ValueError('name')
-    if not isinstance(name, basestring):
-        raise TypeError('name')
+    try:
+        if not isinstance(name, basestring):
+            raise TypeError('name')
+    except NameError:
+        if not isinstance(name, str):
+            raise TypeError('name')
     if not name:
         return ['/']
 
     splits = [x for x in name.split('/') if x]
-    return ['/'] + ['/'+'/'.join(splits[:i]) for i in xrange(1, len(splits))]
+    return ['/'] + ['/'+'/'.join(splits[:i]) for i in range(1, len(splits))]
 
 def get_roscore_filename():
     # precedence: look for version in /etc/ros.  If it's not there, fall back to roslaunch package
@@ -215,7 +219,7 @@ class ROSLaunchConfig(object):
         # determine whether or not there are any machines we will need
         # to setup remote roslaunch clients for
         self._remote_nodes_present = False 
-        if [m for m in machine_unify_dict.itervalues() if not is_machine_local(m)]:
+        if [m for m in machine_unify_dict.values() if not is_machine_local(m)]:
             self._remote_nodes_present = True
 
     def summary(self, local=False):
@@ -229,7 +233,26 @@ class ROSLaunchConfig(object):
         if self.clear_params:
             summary += '\n\nCLEAR PARAMETERS\n' + '\n'.join(sorted([' * %s'%p for p in self.clear_params]))
         if self.params:
-            summary += '\n\nPARAMETERS\n' + '\n'.join(sorted([' * %s'%k for k in self.params]))
+            def strip_string(value):
+                # not dealing with non-ascii characters here
+                try:
+                    value = str(value)
+                except UnicodeEncodeError:
+                    return '<...>'
+                max_length = 20
+                if len(value) > max_length:
+                    value = value[:max_length - 3] + '...'
+                # if non printable characters are present return replacement
+                for i, char in enumerate(value):
+                    o = ord(char)
+                    if o < 32 or o > 126:
+                        # skip when the special characters are only trailing whitespaces
+                        value = value.rstrip()
+                        if i >= len(value):
+                            break
+                        return '<...>'
+                return value
+            summary += '\n\nPARAMETERS\n' + '\n'.join(sorted([' * %s: %s' % (k, strip_string(v.value)) for k, v in self.params.items()]))
         if not local:
             summary += '\n\nMACHINES\n' + '\n'.join(sorted([' * %s'%k for k in self.machines if k]))
         summary += '\n\nNODES\n'
@@ -244,7 +267,7 @@ class ROSLaunchConfig(object):
                 namespaces[ns] = [n]
             else:
                 namespaces[ns].append(n)
-        for k,v in namespaces.iteritems():
+        for k,v in namespaces.items():
             summary += '  %s\n'%k + '\n'.join(sorted(['    %s'%_summary_name(n) for n in v]))
             summary += '\n'
         return summary
@@ -288,12 +311,12 @@ class ROSLaunchConfig(object):
 
         self.params[key] = p
         if verbose:
-            print "Added parameter [%s]"%key
+            print("Added parameter [%s]" % key)
         t = type(p.value)
-        if t in [str, unicode, types.InstanceType]:
-            self.logger.debug("add_param[%s]: type [%s]"%(p.key, t))
-        else:
+        if t in [bool, int, float]:
             self.logger.debug("add_param[%s]: type [%s] value [%s]"%(p.key, t, p.value))
+        else:
+            self.logger.debug("add_param[%s]: type [%s]"%(p.key, t))
             
     def add_machine(self, m, verbose=True):
         """
@@ -320,7 +343,7 @@ class ROSLaunchConfig(object):
         else:
             self.machines[name] = m
             if verbose:
-                print "Added machine [%s]"%name
+                print("Added machine [%s]" % name)
             return True
 
     def add_test(self, test, verbose=True):
@@ -352,14 +375,14 @@ class ROSLaunchConfig(object):
         if not core:
             self.nodes.append(node)
             if verbose:
-                print "Added node of type [%s/%s] in namespace [%s]"%(node.package, node.type, node.namespace)
+                print("Added node of type [%s/%s] in namespace [%s]" % (node.package, node.type, node.namespace))
             self.logger.info("Added node of type [%s/%s] in namespace [%s]", node.package, node.type, node.namespace)
         else:
             if not node.name:
                 raise RLException("ROS core nodes must have a name. [%s/%s]"%(node.package, node.type))
             self.nodes_core.append(node)
             if verbose:
-                print "Added core node of type [%s/%s] in namespace [%s]"%(node.package, node.type, node.namespace)
+                print("Added core node of type [%s/%s] in namespace [%s]" % (node.package, node.type, node.namespace))
             self.logger.info("Added core node of type [%s/%s] in namespace [%s]", node.package, node.type, node.namespace)
             
     def _select_machine(self, node):
@@ -426,9 +449,9 @@ def load_config_default(roslaunch_files, port, roslaunch_strs=None, loader=None,
         try:
             logger.info('loading config file %s'%f)
             loader.load(f, config, verbose=verbose)
-        except roslaunch.xmlloader.XmlParseException, e:
+        except roslaunch.xmlloader.XmlParseException as e:
             raise RLException(e)
-        except roslaunch.loader.LoadException, e:
+        except roslaunch.loader.LoadException as e:
             raise RLException(e)
         
     # we need this for the hardware test systems, which builds up
@@ -438,9 +461,9 @@ def load_config_default(roslaunch_files, port, roslaunch_strs=None, loader=None,
             try:
                 logger.info('loading config file from string')
                 loader.load_string(launch_str, config)
-            except roslaunch.xmlloader.XmlParseException, e:
+            except roslaunch.xmlloader.XmlParseException as e:
                 raise RLException('Launch string: %s\nException: %s'%(launch_str, e))
-            except roslaunch.loader.LoadException, e:
+            except roslaunch.loader.LoadException as e:
                 raise RLException('Launch string: %s\nException: %s'%(launch_str, e))
 
     # choose machines for the nodes

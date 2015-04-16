@@ -163,9 +163,15 @@ class Registrations(object):
         self.map = {} 
         self.service_api_map = None
 
+    def __bool__(self):
+        """
+        @return: True if there are registrations
+        """
+        return len(self.map) != 0
+
     def __nonzero__(self):
         """
-        @return: True if there are no registrations
+        @return: True if there are registrations
         """
         return len(self.map) != 0
 
@@ -174,7 +180,7 @@ class Registrations(object):
         Iterate over registration keys
         @return: iterator for registration keys
         """
-        return self.map.iterkeys()
+        return self.map.keys()
 
     def get_service_api(self, service):
         """
@@ -235,7 +241,7 @@ class Registrations(object):
         @rtype: [str, [str]...]
         """
         retval = []
-        for k in self.map.iterkeys():
+        for k in self.map.keys():
             retval.append([k, [id for id, _ in self.map[k]]])
         return retval
 
@@ -292,7 +298,7 @@ class Registrations(object):
             del self.map[k]
         if self.type == Registrations.SERVICE and self.service_api_map:
             del dead_keys[:]
-            for key, val in self.service_api_map.iteritems():
+            for key, val in self.service_api_map.items():
                 if val[0] == caller_id:
                     dead_keys.append(key)
             for k in dead_keys:
@@ -371,7 +377,7 @@ class RegistrationManager(object):
         this.
         @rtype: [NodeRef]
         """
-        matches = [n for n in self.nodes.iteritems() if n.api == caller_api]
+        matches = [n for n in self.nodes.items() if n.api == caller_api]
         if matches:
             return matches
         

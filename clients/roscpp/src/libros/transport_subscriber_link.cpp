@@ -111,6 +111,7 @@ bool TransportSubscriberLink::handleHeader(const Header& header)
   m["message_definition"] = pt->getMessageDefinition();
   m["callerid"] = this_node::getName();
   m["latching"] = pt->isLatching() ? "1" : "0";
+  m["topic"] = topic_;
   connection_->writeHeader(m, boost::bind(&TransportSubscriberLink::onHeaderWritten, this, _1));
 
   pt->addSubscriberLink(shared_from_this());
@@ -218,6 +219,11 @@ void TransportSubscriberLink::enqueueMessage(const SerializedMessage& m, bool se
 std::string TransportSubscriberLink::getTransportType()
 {
   return connection_->getTransport()->getType();
+}
+
+std::string TransportSubscriberLink::getTransportInfo()
+{
+  return connection_->getTransport()->getTransportInfo();
 }
 
 void TransportSubscriberLink::drop()
