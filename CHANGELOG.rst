@@ -2,6 +2,9 @@
 Changelog for package rosgraph
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.11.11 (2015-04-16)
+--------------------
+
 1.11.10 (2014-12-22)
 --------------------
 * rosconsole format for rospy (`#517 <https://github.com/ros/ros_comm/issues/517>`_)
