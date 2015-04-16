@@ -2,6 +2,9 @@
 Changelog for package rostopic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.11.11 (2015-04-16)
+--------------------
+
 1.11.10 (2014-12-22)
 --------------------
 * add support for fixed-width floating-point and integer array values (`#400 <https://github.com/ros/ros_comm/issues/400>`_)
