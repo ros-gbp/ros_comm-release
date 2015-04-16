@@ -244,6 +244,20 @@ ROSCPP_DECL bool getCached(const std::string& key, std::string& s);
  * \throws InvalidNameException if the key is not a valid graph resource name
  */
 ROSCPP_DECL bool getCached(const std::string& key, double& d);
+/** \brief Get a float value from the parameter server, with local caching
+ *
+ * This function will cache parameters locally, and subscribe for updates from
+ * the parameter server.  Once the parameter is retrieved for the first time
+ * no subsequent getCached() calls with the same key will query the master --
+ * they will instead look up in the local cache.
+ *
+ * \param key The key to be used in the parameter server's dictionary
+ * \param[out] f Storage for the retrieved value.
+ *
+ * \return true if the parameter value was retrieved, false otherwise
+ * \throws InvalidNameException if the key is not a valid graph resource name
+ */
+ROSCPP_DECL bool getCached(const std::string& key, float& f);
 /** \brief Get an integer value from the parameter server, with local caching
  *
  * This function will cache parameters locally, and subscribe for updates from
@@ -594,6 +608,31 @@ void param(const std::string& param_name, T& param_val, const T& default_val)
   }
 
   param_val = default_val;
+}
+
+/**
+ * \brief Return value from parameter server, or default if unavailable.
+ *
+ * This method tries to retrieve the indicated parameter value from the
+ * parameter server. If the parameter cannot be retrieved, \c default_val
+ * is returned instead.
+ *
+ * \param param_name The key to be searched on the parameter server.
+ *
+ * \param default_val Value to return if the server doesn't contain this
+ * parameter.
+ *
+ * \return The parameter value retrieved from the parameter server, or
+ * \c default_val if unavailable.
+ *
+ * \throws InvalidNameException If the key is not a valid graph resource name.
+ */
+template<typename T>
+T param(const std::string& param_name, const T& default_val)
+{
+  T param_val;
+  param(param_name, param_val, default_val);
+  return param_val;
 }
 
 } // namespace param
