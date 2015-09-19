@@ -2,6 +2,10 @@
 Changelog for package roswtf
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.11.14 (2015-09-19)
+--------------------
+* add optional dependency on geneus to make roswtf tests pass in jade
+
 1.11.13 (2015-04-28)
 --------------------
 
