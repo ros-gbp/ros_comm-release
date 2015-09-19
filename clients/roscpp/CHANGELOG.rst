@@ -2,6 +2,12 @@
 Changelog for package roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.11.14 (2015-09-19)
+--------------------
+* add optional reset argument to Timer::setPeriod() (`#590 <https://github.com/ros/ros_comm/issues/590>`_)
+* add getParam() and getParamCached() for float (`#621 <https://github.com/ros/ros_comm/issues/621>`_, `#623 <https://github.com/ros/ros_comm/issues/623>`_)
+* use explicit bool cast to compile with C++11 (`#632 <https://github.com/ros/ros_comm/pull/632>`_)
+
 1.11.13 (2015-04-28)
 --------------------
 
@@ -139,7 +145,7 @@ Changelog for package roscpp
 * allow sending data exceeding 2GB in chunks (`#4049 <https://code.ros.org/trac/ros/ticket/4049>`_)
 * update getParam() doc (`#1460 <https://code.ros.org/trac/ros/ticket/1460>`_)
 * add param::get(float) (`#3754 <https://code.ros.org/trac/ros/ticket/3754>`_)
-* update inactive assert when publishing message with md5sum *, update related tests (`#3714 <https://code.ros.org/trac/ros/ticket/3714>`_)
+* update inactive assert when publishing message with md5sum "*", update related tests (`#3714 <https://code.ros.org/trac/ros/ticket/3714>`_)
 * fix ros master retry timeout (`#4024 <https://code.ros.org/trac/ros/ticket/4024>`_)
 * fix inactive assert when publishing message with wrong type (`#3714 <https://code.ros.org/trac/ros/ticket/3714>`_)
 
