@@ -31,20 +31,16 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import os
-import sys 
 import unittest
-import time
 import yaml
-        
-from contextlib import contextmanager
+
 
 class TestRostopicUnit(unittest.TestCase):
 
     def test_sub_str_plot_fields(self):
         from rostopic import _str_plot_fields
-        from std_msgs.msg import String, Int32, Header
-        from test_ros.msg import Simple, TVals, Floats, Arrays, Embed
+        from std_msgs.msg import String
+        from test_rostopic.msg import Arrays, Embed, Simple, TVals
 
         from genpy import Time, Duration
         from rostopic import create_field_filter
@@ -53,7 +49,7 @@ class TestRostopicUnit(unittest.TestCase):
         import rospy.rostime
         rospy.rostime.set_rostime_initialized(True)
         rospy.rostime._set_rostime(Time(0, 1234))
-        r_time = Time(0, 5678)
+        Time(0, 5678)
 
         # prepare test values
         simple_v = Simple(1, -2, 3, -4, 'a', 7, 8, 9, 'bar')
@@ -69,13 +65,13 @@ class TestRostopicUnit(unittest.TestCase):
         embed_nostr = simple_nostr.replace('field.', 'field.simple.')+','+arrays_nostr.replace('field.', 'field.arrays.')[5:]
         embed_noarr = simple_d.replace('field.', 'field.simple.')
         embed_nostr_noarr = simple_nostr.replace('field.', 'field.simple.')
-        
+
         # test over all combinations of field filters
         f = create_field_filter(echo_nostr=False, echo_noarr=False)
         m = String()
-        self.assertEquals("time,field.data", _str_plot_fields(m, 'field',f))
+        self.assertEquals("time,field.data", _str_plot_fields(m, 'field', f))
         m = String('foo')
-        self.assertEquals('time,field.data', _str_plot_fields(m, 'field',f))
+        self.assertEquals('time,field.data', _str_plot_fields(m, 'field', f))
         m = TVals(Time(123, 456), Duration(78, 90))
         v = _str_plot_fields(m, 'field', f)
         self.assertEquals('time,field.t,field.d', v)
@@ -88,9 +84,9 @@ class TestRostopicUnit(unittest.TestCase):
 
         f = create_field_filter(echo_nostr=True, echo_noarr=False)
         m = String()
-        self.assertEquals("time,", _str_plot_fields(m, 'field',f))
+        self.assertEquals("time,", _str_plot_fields(m, 'field', f))
         m = String('foo')
-        self.assertEquals('time,', _str_plot_fields(m, 'field',f))
+        self.assertEquals('time,', _str_plot_fields(m, 'field', f))
         m = TVals(Time(123, 456), Duration(78, 90))
         v = _str_plot_fields(m, 'field', f)
         self.assertEquals('time,field.t,field.d', v)
@@ -103,9 +99,9 @@ class TestRostopicUnit(unittest.TestCase):
 
         f = create_field_filter(echo_nostr=False, echo_noarr=True)
         m = String()
-        self.assertEquals("time,field.data", _str_plot_fields(m, 'field',f))
+        self.assertEquals("time,field.data", _str_plot_fields(m, 'field', f))
         m = String('foo')
-        self.assertEquals("time,field.data", _str_plot_fields(m, 'field',f))
+        self.assertEquals("time,field.data", _str_plot_fields(m, 'field', f))
         m = TVals(Time(123, 456), Duration(78, 90))
         v = _str_plot_fields(m, 'field', f)
         self.assertEquals('time,field.t,field.d', v)
@@ -130,11 +126,11 @@ class TestRostopicUnit(unittest.TestCase):
         self.assertEquals('time,', _str_plot_fields(m, 'field', f))
         m = embed_v
         self.assertEquals(embed_nostr_noarr, _str_plot_fields(m, 'field', f))
-        
+
     def test_str_plot(self):
         from rostopic import _str_plot
-        from std_msgs.msg import String, Int32, Header
-        from test_ros.msg import Simple, TVals, Floats, Arrays, Embed
+        from std_msgs.msg import String
+        from test_rostopic.msg import Arrays, Embed, Simple, TVals
 
         from genpy import Time, Duration
         from rostopic import create_field_filter
@@ -227,8 +223,8 @@ class TestRostopicUnit(unittest.TestCase):
         # rostopic's field filters.  It's also the case that
         # roslib.messages cannot be unit tested within the ROS stack
         # -- part of the reason it needs to be moved elsewhere.
-        from std_msgs.msg import String, Int32, Header
-        from test_ros.msg import Simple, TVals, Floats, Arrays, Embed
+        from std_msgs.msg import String
+        from test_rostopic.msg import Arrays, Embed, Simple, TVals
 
         from genpy import Time, Duration
         from roslib.message import strify_message
@@ -315,10 +311,10 @@ class TestRostopicUnit(unittest.TestCase):
         m = embed_v
         v = yaml.load(strify_message(m, field_filter=f))
         self.assertEquals({'simple': simple_nostr, 'arrays': None}, v)
-        
+
     def test_create_field_filter(self):
-        from std_msgs.msg import String, Int32, Header
-        from test_ros.msg import Simple, TVals, Floats, Arrays, Embed
+        from std_msgs.msg import Header, Int32, String
+        from test_rostopic.msg import Arrays, Embed, Floats, Simple, TVals
 
         from rostopic import create_field_filter
         f = create_field_filter(echo_nostr=False, echo_noarr=False)
@@ -329,7 +325,7 @@ class TestRostopicUnit(unittest.TestCase):
         m = Arrays()
         self.assertEquals(['int8_arr', 'uint8_arr', 'int32_arr', 'uint32_arr', 'string_arr', 'time_arr'], list(f(m)))
         m = Embed()
-        self.assertEquals(['simple', 'arrays'], list(f(m)))        
+        self.assertEquals(['simple', 'arrays'], list(f(m)))
         m = Simple()
         self.assertEquals(['b', 'int16', 'int32', 'int64', 'c', 'uint16', 'uint32', 'uint64', 'str'], list(f(m)))
         m = Floats()
@@ -365,7 +361,7 @@ class TestRostopicUnit(unittest.TestCase):
         m = Arrays()
         self.assertEquals([], list(f(m)))
         m = Embed()
-        self.assertEquals(['simple', 'arrays'], list(f(m)))        
+        self.assertEquals(['simple', 'arrays'], list(f(m)))
         m = Simple()
         self.assertEquals(['b', 'int16', 'int32', 'int64', 'c', 'uint16', 'uint32', 'uint64', 'str'], list(f(m)))
         m = Floats()
@@ -374,7 +370,7 @@ class TestRostopicUnit(unittest.TestCase):
         self.assertEquals(['t', 'd'], list(f(m)))
         m = Header()
         self.assertEquals(['seq', 'stamp', 'frame_id'], list(f(m)))
-        
+
         f = create_field_filter(echo_nostr=True, echo_noarr=True)
         m = String()
         self.assertEquals([], list(f(m)))
@@ -383,7 +379,7 @@ class TestRostopicUnit(unittest.TestCase):
         m = Arrays()
         self.assertEquals([], list(f(m)))
         m = Embed()
-        self.assertEquals(['simple', 'arrays'], list(f(m)))        
+        self.assertEquals(['simple', 'arrays'], list(f(m)))
         m = Simple()
         self.assertEquals(['b', 'int16', 'int32', 'int64', 'c', 'uint16', 'uint32', 'uint64'], list(f(m)))
         m = Floats()
@@ -392,3 +388,52 @@ class TestRostopicUnit(unittest.TestCase):
         self.assertEquals(['t', 'd'], list(f(m)))
         m = Header()
         self.assertEquals(['seq', 'stamp'], list(f(m)))
+
+    def test_slicing(self):
+        from test_rostopic.msg import ArrayVal, Val
+        from rostopic import msgevalgen as f
+
+        # prepare a sliceable msg
+        msg = ArrayVal()
+        for v in ['ABCDEFG', 'abcdefg', '1234567', 'short']:
+            msg.vals.append(Val(val=v))
+
+        self.assertEqual(f(''), None)
+        self.assertEqual(f('/'), None)
+        self.assertListEqual(f('/vals')(msg), msg.vals)
+        self.assertListEqual(f('/vals/')(msg), msg.vals)
+        # first-level slicing
+        self.assertListEqual(f('/vals[:]')(msg), msg.vals)
+        self.assertListEqual(f('/vals[0:2]')(msg), msg.vals[0:2])
+        # element access
+        self.assertEqual(f('/vals[0]')(msg), msg.vals[0])
+        self.assertEqual(f('/vals[1]')(msg), msg.vals[1])
+        self.assertEqual(f('/vals['), None)
+        self.assertEqual(f('/vals[]'), None)
+        self.assertEqual(f('/vals[0'), None)
+        # element access continued
+        self.assertEqual(f('/vals[0]/val')(msg), msg.vals[0].val)
+        self.assertEqual(f('/vals[1]/val')(msg), msg.vals[1].val)
+        self.assertEqual(f('/vals[/val'), None)
+        self.assertEqual(f('/vals[]/val'), None)
+        self.assertEqual(f('/vals[0/val'), None)
+        # second-level slicing
+        self.assertEqual(f('/vals[0]/val[:]')(msg), msg.vals[0].val)
+        self.assertEqual(f('/vals[0]/val[0:2]')(msg), msg.vals[0].val[0:2])
+        self.assertEqual(f('/vals[0]/val[:-3]')(msg), msg.vals[0].val[:-3])
+        self.assertEqual(f('/vals[0]/val[2]')(msg), msg.vals[0].val[2])
+        # first-level slicing + second-level access
+        self.assertListEqual(f('/vals[:3]/val[0]')(msg), ['A', 'a', '1'])
+        self.assertListEqual(f('/vals[:3]/val[0]')(msg), ['A', 'a', '1'])
+        self.assertListEqual(f('/vals[1:3]/val[0]')(msg), ['a', '1'])
+        self.assertListEqual(f('/vals[:]/val[-1]')(msg), ['G', 'g', '7', 't'])
+        # multiple slicing
+        self.assertListEqual(f('/vals[:3]/val[1:3]')(msg), ['BC', 'bc', '23'])
+        # out-of-range errors
+        self.assertEqual(f('/vals[5]/val')(msg), None)
+        self.assertListEqual(f('/vals[:]/val[6]')(msg), ['G', 'g', '7', None])
+        # invalid descriptions
+        self.assertEqual(f('/vals[:]/val[]'), None)
+        self.assertEqual(f('/unknown[:]/val[0]')(msg), None)
+        self.assertListEqual(f('/vals[:]/unknown[0]')(msg), [None, None, None, None])
+        self.assertEqual(f('/vals/unknown[0]')(msg), None)
