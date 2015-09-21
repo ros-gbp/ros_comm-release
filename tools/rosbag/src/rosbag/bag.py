@@ -62,7 +62,14 @@ import genpy.message
 
 import roslib.names # still needed for roslib.names.canonicalize_name()
 import rospy
-import roslz4
+try:
+    import roslz4
+    found_lz4 = True
+except ImportError:
+    rospy.logwarn(
+        'Failed to load Python extension for LZ4 support. '
+        'LZ4 compression will not be available.')
+    found_lz4 = False
 
 class ROSBagException(Exception):
     """
@@ -137,7 +144,9 @@ class Bag(object):
         self._filename = None
         self._version  = None
 
-        allowed_compressions = [Compression.NONE, Compression.BZ2, Compression.LZ4]
+        allowed_compressions = [Compression.NONE, Compression.BZ2]
+        if found_lz4:
+            allowed_compressions.append(Compression.LZ4)
         if compression not in allowed_compressions:
             raise ValueError('compression must be one of: %s' % ', '.join(allowed_compressions))  
         self._compression = compression      
@@ -212,7 +221,9 @@ class Bag(object):
     
     def _set_compression(self, compression):
         """Set the compression method to use for writing."""
-        allowed_compressions = [Compression.NONE, Compression.BZ2, Compression.LZ4]
+        allowed_compressions = [Compression.NONE, Compression.BZ2]
+        if found_lz4:
+            allowed_compressions.append(Compression.LZ4)
         if compression not in allowed_compressions:
             raise ValueError('compression must be one of: %s' % ', '.join(allowed_compressions))        
         
@@ -240,7 +251,7 @@ class Bag(object):
     def read_messages(self, topics=None, start_time=None, end_time=None, connection_filter=None, raw=False):
         """
         Read messages from the bag, optionally filtered by topic, timestamp and connection details.
-        @param topics: list of topics or a single topic [optional]
+        @param topics: list of topics or a single topic. if an empty list is given all topics will be read [optional]
         @type  topics: list(str) or str
         @param start_time: earliest timestamp of message to return [optional]
         @type  start_time: U{genpy.Time}
@@ -481,6 +492,8 @@ class Bag(object):
         if self._chunks:
             start_stamp = self._chunks[0].start_time.to_sec()
         else:
+            if not self._connection_indexes:
+                raise ROSBagException('Bag contains no message')
             start_stamp = min([index[0].time.to_sec() for index in self._connection_indexes.values()])
         
         return start_stamp
@@ -495,6 +508,8 @@ class Bag(object):
         if self._chunks:
             end_stamp = self._chunks[-1].end_time.to_sec()
         else:
+            if not self._connection_indexes:
+                raise ROSBagException('Bag contains no message')
             end_stamp = max([index[-1].time.to_sec() for index in self._connection_indexes.values()])
         
         return end_stamp
@@ -1315,7 +1330,7 @@ class Bag(object):
         # Create the compressor
         if compression == Compression.BZ2:
             self._output_file = _CompressorFileFacade(self._file, bz2.BZ2Compressor())
-        elif compression == Compression.LZ4:
+        elif compression == Compression.LZ4 and found_lz4:
             self._output_file = _CompressorFileFacade(self._file, roslz4.LZ4Compressor())
         elif compression == Compression.NONE:
             self._output_file = self._file
@@ -1475,6 +1490,8 @@ class _ChunkHeader(object):
             return 'compression: %s, size: %d, uncompressed: %d' % (self.compression, self.compressed_size, self.uncompressed_size)
 
 class ComparableMixin(object):
+    __slots__ = []
+
     def _compare(self, other, method):
         try:
             return method(self._cmpkey(), other._cmpkey())
@@ -1502,6 +1519,8 @@ class ComparableMixin(object):
         return self._compare(other, lambda s, o: s != o)
 
 class _IndexEntry(ComparableMixin):
+    __slots__ = ['time']
+
     def __init__(self, time):
         self.time = time
 
@@ -1509,6 +1528,8 @@ class _IndexEntry(ComparableMixin):
         return self.time
 
 class _IndexEntry102(_IndexEntry):
+    __slots__ = ['offset']
+
     def __init__(self, time, offset):
         self.time   = time
         self.offset = offset
@@ -1521,6 +1542,8 @@ class _IndexEntry102(_IndexEntry):
         return '%d.%d: %d' % (self.time.secs, self.time.nsecs, self.offset)
 
 class _IndexEntry200(_IndexEntry):
+    __slots__ = ['chunk_pos', 'offset']
+
     def __init__(self, time, chunk_pos, offset):
         self.time      = time
         self.chunk_pos = chunk_pos
@@ -2106,7 +2129,7 @@ class _BagReader200(_BagReader):
             # Decompress it
             if chunk_header.compression == Compression.BZ2:
                 self.decompressed_chunk = bz2.decompress(compressed_chunk)
-            elif chunk_header.compression == Compression.LZ4:
+            elif chunk_header.compression == Compression.LZ4 and found_lz4:
                 self.decompressed_chunk = roslz4.decompress(compressed_chunk)
             else:
                 raise ROSBagException('unsupported compression type: %s' % chunk_header.compression)
@@ -2409,7 +2432,7 @@ class _BagReader200(_BagReader):
 
                 if chunk_header.compression == Compression.BZ2:
                     self.decompressed_chunk = bz2.decompress(compressed_chunk)
-                elif chunk_header.compression == Compression.LZ4:
+                elif chunk_header.compression == Compression.LZ4 and found_lz4:
                     self.decompressed_chunk = roslz4.decompress(compressed_chunk)
                 else:
                     raise ROSBagException('unsupported compression type: %s' % chunk_header.compression)
