@@ -2,6 +2,9 @@
 Changelog for package rostest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.11.15 (2015-10-13)
+--------------------
+
 1.11.14 (2015-09-19)
 --------------------
 * add --local option to rostest (`#137 <https://github.com/ros/ros_comm/issues/137>`_)
