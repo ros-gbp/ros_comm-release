@@ -1,0 +1,12 @@
+Source: ros-indigo-rostest
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), libboost-all-dev, ros-indigo-catkin (>= 0.5.78), ros-indigo-rosunit
+Homepage: http://ros.org/wiki/rostest
+Standards-Version: 3.9.2
+
+Package: ros-indigo-rostest
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-all-dev, ros-indigo-rosgraph, ros-indigo-roslaunch, ros-indigo-rosmaster, ros-indigo-rospy, ros-indigo-rosunit
+Description: Integration test suite based on roslaunch that is compatible with xUnit frameworks.
