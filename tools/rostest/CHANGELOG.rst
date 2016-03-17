@@ -2,6 +2,16 @@
 Changelog for package rostest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.11.18 (2016-03-17)
+--------------------
+
+1.11.17 (2016-03-11)
+--------------------
+* rostest.rosrun now generates coverage reports (`#558 <https://github.com/ros/ros_comm/issues/558>`_)
+* rostest can load tests from a dotted name (`#722 <https://github.com/ros/ros_comm/issues/722>`_)
+* include GTEST_INCLUDE_DIRS so that the proper gtest headers are found (`#727 <https://github.com/ros/ros_comm/issues/727>`_)
+* rostest: move replacement of slashes after ARGS handling (`#721 <https://github.com/ros/ros_comm/pull/721>`_)
+
 1.11.16 (2015-11-09)
 --------------------
 
