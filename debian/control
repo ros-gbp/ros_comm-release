@@ -1,0 +1,13 @@
+Source: ros-indigo-roslz4
+Section: misc
+Priority: extra
+Maintainer: Ben Charrow <bcharrow@seas.upenn.edu>
+Build-Depends: debhelper (>= 9.0.0), liblz4-dev, ros-indigo-catkin, ros-indigo-rosunit
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-indigo-roslz4
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, liblz4-dev
+Description: A Python and C++ implementation of the LZ4 streaming format.
+ Large data streams are split into blocks which are compressed using the very fast LZ4 compression algorithm.
