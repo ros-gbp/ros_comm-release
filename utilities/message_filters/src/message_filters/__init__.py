@@ -34,7 +34,7 @@ import itertools
 import threading
 import rospy
 
-class SimpleFilter:
+class SimpleFilter(object):
 
     def __init__(self):
         self.callbacks = {}
@@ -76,8 +76,9 @@ class Subscriber(SimpleFilter):
     def getTopic(self):
         return self.topic
 
-    def unregister(self):
-        self.sub.unregister()
+    def __getattr__(self, key):
+        """Serve same API as rospy.Subscriber"""
+        return self.sub.__getattribute__(key)
 
 class Cache(SimpleFilter):
 
