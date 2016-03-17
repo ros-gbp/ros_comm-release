@@ -2,6 +2,15 @@
 Changelog for package message_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.11.18 (2016-03-17)
+--------------------
+* fix compiler warnings
+
+1.11.17 (2016-03-11)
+--------------------
+* use boost::make_shared instead of new for constructing boost::shared_ptr (`#740 <https://github.com/ros/ros_comm/issues/740>`_)
+* add __getattr_\_ to handle sub in message_filters as standard one (`#700 <https://github.com/ros/ros_comm/pull/700>`_)
+
 1.11.16 (2015-11-09)
 --------------------
 
