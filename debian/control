@@ -1,0 +1,13 @@
+Source: ros-jade-roscpp
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), pkg-config, ros-jade-catkin (>= 0.5.78), ros-jade-cpp-common (>= 0.3.17), ros-jade-message-generation, ros-jade-rosconsole, ros-jade-roscpp-serialization, ros-jade-roscpp-traits (>= 0.3.17), ros-jade-rosgraph-msgs (>= 1.10.3), ros-jade-roslang, ros-jade-rostime, ros-jade-std-msgs, ros-jade-xmlrpcpp
+Homepage: http://ros.org/wiki/roscpp
+Standards-Version: 3.9.2
+
+Package: ros-jade-roscpp
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-jade-cpp-common (>= 0.3.17), ros-jade-message-runtime, ros-jade-rosconsole, ros-jade-roscpp-serialization, ros-jade-roscpp-traits (>= 0.3.17), ros-jade-rosgraph-msgs (>= 1.10.3), ros-jade-rostime, ros-jade-std-msgs, ros-jade-xmlrpcpp
+Description: roscpp is a C++ implementation of ROS.
+ It provides a client library that enables C++ programmers to quickly interface with ROS Topics, Services, and Parameters. roscpp is the most widely used ROS client library and is designed to be the high-performance library for ROS.
