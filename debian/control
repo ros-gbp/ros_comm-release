@@ -1,0 +1,12 @@
+Source: ros-jade-rostest
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), libboost-all-dev, ros-jade-catkin (>= 0.5.78), ros-jade-rosunit
+Homepage: http://ros.org/wiki/rostest
+Standards-Version: 3.9.2
+
+Package: ros-jade-rostest
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-all-dev, ros-jade-rosgraph, ros-jade-roslaunch, ros-jade-rosmaster, ros-jade-rospy, ros-jade-rosunit
+Description: Integration test suite based on roslaunch that is compatible with xUnit frameworks.
