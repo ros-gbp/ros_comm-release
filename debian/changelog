@@ -1,0 +1,146 @@
+ros-jade-rosbag-storage (1.11.18-0vivid) vivid; urgency=high
+
+  * fix compiler warnings
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 17 Mar 2016 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.17-0vivid) vivid; urgency=high
+
+  * use boost::make_shared instead of new for constructing boost::shared_ptr (#740 <https://github.com/ros/ros_comm/issues/740>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 11 Mar 2016 08:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.16-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 09 Nov 2015 08:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.15-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 13 Oct 2015 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.14-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 19 Sep 2015 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.13-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 28 Apr 2015 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.12-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Apr 2015 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.11-0vivid) vivid; urgency=high
+
+  * support large bagfiles (>2GB) on 32-bit systems (#464 <https://github.com/ros/ros_comm/issues/464>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 16 Apr 2015 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.10-0vivid) vivid; urgency=high
+
+  * fix various defects reported by coverity
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 22 Dec 2014 08:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.9-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 18 Aug 2014 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.8-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 04 Aug 2014 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.7-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 18 Jul 2014 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.6-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 10 Jul 2014 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.5-0vivid) vivid; urgency=high
+
+  * convert to use console bridge from upstream debian package (ros/rosdistro#4633 <https://github.com/ros/rosdistro/issues/4633>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 24 Jun 2014 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.4-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Jun 2014 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.3-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 May 2014 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.2-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 08 May 2014 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.1-0vivid) vivid; urgency=high
+
+  * add lz4 compression to rosbag (Python and C++) (#356 <https://github.com/ros/ros_comm/issues/356>)
+  * move rosbag dox to rosbag_storage (#389 <https://github.com/ros/ros_comm/issues/389>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 07 May 2014 07:00:00 -0000
+
+ros-jade-rosbag-storage (1.11.0-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 04 Mar 2014 08:00:00 -0000
+
+ros-jade-rosbag-storage (1.10.0-0vivid) vivid; urgency=high
+
+  * remove use of __connection header
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 11 Feb 2014 08:00:00 -0000
+
+ros-jade-rosbag-storage (1.9.54-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Jan 2014 08:00:00 -0000
+
+ros-jade-rosbag-storage (1.9.53-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 14 Jan 2014 08:00:00 -0000
+
+ros-jade-rosbag-storage (1.9.52-0vivid) vivid; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 08 Jan 2014 08:00:00 -0000
+
+ros-jade-rosbag-storage (1.9.51-0vivid) vivid; urgency=high
+
+  * move several client library independent parts from ros_comm into roscpp_core, split rosbag storage specific stuff from client library usage (#299 <https://github.com/ros/ros_comm/issues/299>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 07 Jan 2014 08:00:00 -0000
+
+
