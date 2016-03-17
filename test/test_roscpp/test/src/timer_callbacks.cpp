@@ -333,7 +333,7 @@ TEST(RoscppTimerCallbacks, stopWallTimer)
 }
 
 int32_t g_count = 0;
-void timerCallback(const ros::WallTimerEvent& evt)
+void timerCallback(const ros::WallTimerEvent&)
 {
   ++g_count;
 }
@@ -387,7 +387,7 @@ public:
     timer_ = n.createTimer(r, &TimerHelper::callback, this, oneshot);
   }
 
-  void callback(const TimerEvent& e)
+  void callback(const TimerEvent&)
   {
     ++total_calls_;
   }
@@ -594,7 +594,7 @@ public:
     g_count = 0;
   }
 
-  void callback(const TimerEvent& e)
+  void callback(const TimerEvent&)
   {
     ++g_count;
   }
@@ -606,7 +606,7 @@ TEST(RoscppTimerCallbacks, trackedObject)
   Time now(1, 0);
   Time::setNow(now);
 
-  boost::shared_ptr<Tracked> tracked(new Tracked);
+  boost::shared_ptr<Tracked> tracked(boost::make_shared<Tracked>());
   Timer timer = n.createTimer(Duration(0.001), &Tracked::callback, tracked);
 
   now += Duration(0.1);
