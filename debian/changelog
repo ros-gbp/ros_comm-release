@@ -1,0 +1,244 @@
+ros-jade-roslaunch (1.11.18-0utopic) utopic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 17 Mar 2016 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.17-0utopic) utopic; urgency=high
+
+  * improve roslaunch-check to not fail if recursive dependencies lack dependencies (#730 <https://github.com/ros/ros_comm/pull/730>)
+  * add "pass_all_args" attribute to roslaunch "include" tag (#710 <https://github.com/ros/ros_comm/pull/710>)
+  * fix a typo in unknown host error message (#735 <https://github.com/ros/ros_comm/pull/735>)
+  * wait for param server to be available before trying to get param (#711 <https://github.com/ros/ros_comm/pull/711>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 11 Mar 2016 08:00:00 -0000
+
+ros-jade-roslaunch (1.11.16-0utopic) utopic; urgency=high
+
+  * add -w and -t options (#687 <https://github.com/ros/ros_comm/pull/687>)
+  * fix missing minimum version for rospkg dependency (#693 <https://github.com/ros/ros_comm/issues/693>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 09 Nov 2015 08:00:00 -0000
+
+ros-jade-roslaunch (1.11.15-0utopic) utopic; urgency=high
+
+  * improve performance by reusing the rospack instance across nodes with the same default environment (#682 <https://github.com/ros/ros_comm/pull/682>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 13 Oct 2015 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.14-0utopic) utopic; urgency=high
+
+  * add more information when test times out
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 19 Sep 2015 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.13-0utopic) utopic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 28 Apr 2015 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.12-0utopic) utopic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Apr 2015 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.11-0utopic) utopic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 16 Apr 2015 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.10-0utopic) utopic; urgency=high
+
+  * fix exception at roscore startup if python has IPv6 disabled (#515 <https://github.com/ros/ros_comm/issues/515>)
+  * fix error handling (#516 <https://github.com/ros/ros_comm/pull/516>)
+  * fix compatibility with paramiko 1.10.0 (#498 <https://github.com/ros/ros_comm/pull/498>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 22 Dec 2014 08:00:00 -0000
+
+ros-jade-roslaunch (1.11.9-0utopic) utopic; urgency=high
+
+  * fix usage of logger before it is initialized (#490 <https://github.com/ros/ros_comm/issues/490>) (regression from 1.11.6)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 18 Aug 2014 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.8-0utopic) utopic; urgency=high
+
+  * remove implicit rostest dependency and use rosunit instead (#475 <https://github.com/ros/ros_comm/issues/475>)
+  * accept stdin input alongside files (#472 <https://github.com/ros/ros_comm/issues/472>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 04 Aug 2014 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.7-0utopic) utopic; urgency=high
+
+  * fix the ROS_MASTER_URI environment variable logic on Windows (#2 <https://github.com/windows/ros_comm/issues/2>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 18 Jul 2014 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.6-0utopic) utopic; urgency=high
+
+  * fix printing of non-ascii roslaunch parameters (#454 <https://github.com/ros/ros_comm/issues/454>)
+  * add respawn_delay attribute to node tag in roslaunch (#446 <https://github.com/ros/ros_comm/issues/446>)
+  * write traceback for exceptions in roslaunch to log file
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 10 Jul 2014 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.5-0utopic) utopic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 24 Jun 2014 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.4-0utopic) utopic; urgency=high
+
+  * fix handling of if/unless attributes on args (#437 <https://github.com/ros/ros_comm/issues/437>)
+  * improve parameter printing in roslaunch (#89 <https://github.com/ros/ros_comm/issues/89>)
+  * Python 3 compatibility (#426 <https://github.com/ros/ros_comm/issues/426>, #427 <https://github.com/ros/ros_comm/issues/427>, #429 <https://github.com/ros/ros_comm/issues/429>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Jun 2014 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.3-0utopic) utopic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 May 2014 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.2-0utopic) utopic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 08 May 2014 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.1-0utopic) utopic; urgency=high
+
+  * fix roslaunch anonymous function to generate the same output for the same input (#297 <https://github.com/ros/ros_comm/issues/297>)
+  * add doc attribute to roslaunch arg tags (#379 <https://github.com/ros/ros_comm/issues/379>)
+  * print parameter values in roslaunch (#89 <https://github.com/ros/ros_comm/issues/89>)
+  * add architecture_independent flag in package.xml (#391 <https://github.com/ros/ros_comm/issues/391>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 07 May 2014 07:00:00 -0000
+
+ros-jade-roslaunch (1.11.0-0utopic) utopic; urgency=high
+
+  * use catkin_install_python() to install Python scripts (#361 <https://github.com/ros/ros_comm/issues/361>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 04 Mar 2014 08:00:00 -0000
+
+ros-jade-roslaunch (1.10.0-0utopic) utopic; urgency=high
+
+  * add optional DEPENDENCIES argument to roslaunch_add_file_check()
+  * add explicit run dependency (#347 <https://github.com/ros/ros_comm/issues/347>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 11 Feb 2014 08:00:00 -0000
+
+ros-jade-roslaunch (1.9.54-0utopic) utopic; urgency=high
+
+  * add missing run/test dependencies on rosbuild to get ROS_ROOT environment variable
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Jan 2014 08:00:00 -0000
+
+ros-jade-roslaunch (1.9.53-0utopic) utopic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 14 Jan 2014 08:00:00 -0000
+
+ros-jade-roslaunch (1.9.52-0utopic) utopic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 08 Jan 2014 08:00:00 -0000
+
+ros-jade-roslaunch (1.9.51-0utopic) utopic; urgency=high
+
+  * fix roslaunch-check for unreleased wet dependencies (#332 <https://github.com/ros/ros_comm/issues/332>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 07 Jan 2014 08:00:00 -0000
+
+ros-jade-roslaunch (1.9.50-0utopic) utopic; urgency=high
+
+  * add option to disable terminal title setting
+  * fix roslaunch-check to handle more complex launch files
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 04 Oct 2013 07:00:00 -0000
+
+ros-jade-roslaunch (1.9.49-0utopic) utopic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Sep 2013 07:00:00 -0000
+
+ros-jade-roslaunch (1.9.48-0utopic) utopic; urgency=high
+
+  * update roslaunch to support ROS_NAMESPACE (#58 <https://github.com/ros/ros_comm/issues/58>)
+  * make roslaunch relocatable (ros/catkin#490 <https://github.com/ros/catkin/issues/490>)
+  * change roslaunch resolve order (#256 <https://github.com/ros/ros_comm/issues/256>)
+  * fix roslaunch check script in install space (#257 <https://github.com/ros/ros_comm/issues/257>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 Aug 2013 07:00:00 -0000
+
+ros-jade-roslaunch (1.9.47-0utopic) utopic; urgency=high
+
+  * improve roslaunch completion to include launch file arguments (#230 <https://github.com/ros/ros_comm/issues/230>)
+  * check for CATKIN_ENABLE_TESTING to enable configure without tests
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 03 Jul 2013 07:00:00 -0000
+
+ros-jade-roslaunch (1.9.46-0utopic) utopic; urgency=high
+
+  * add CMake function roslaunch_add_file_check() (#241 <https://github.com/ros/ros_comm/issues/241>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 18 Jun 2013 07:00:00 -0000
+
+ros-jade-roslaunch (1.9.45-0utopic) utopic; urgency=high
+
+  * modified roslaunch $(find PKG) to consider path behind it for resolve strategy (#233 <https://github.com/ros/ros_comm/pull/233>)
+  * add boolean attribute 'subst_value' to rosparam tag in launch files (#218 <https://github.com/ros/ros_comm/issues/218>)
+  * add command line parameter to print out launch args
+  * fix missing import in arg_dump.py
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 06 Jun 2013 07:00:00 -0000
+
+ros-jade-roslaunch (1.9.44-0utopic) utopic; urgency=high
+
+  * fix 'roslaunch --files' with non-unique anononymous ids (#186 <https://github.com/ros/ros_comm/issues/186>)
+  * fix ROS_MASTER_URI for Windows
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 21 Mar 2013 07:00:00 -0000
+
+ros-jade-roslaunch (1.9.43-0utopic) utopic; urgency=high
+
+  * implement process killer for Windows
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 13 Mar 2013 07:00:00 -0000
+
+ros-jade-roslaunch (1.9.42-0utopic) utopic; urgency=high
+
+  * add option --skip-log-check (#133 <https://github.com/ros/ros_comm/issues/133>)
+  * update API doc to list raised exceptions in config.py
+  * fix invocation of Python scripts under Windows (#54 <https://github.com/ros/ros_comm/issues/54>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 08 Mar 2013 08:00:00 -0000
+
+ros-jade-roslaunch (1.9.41-0utopic) utopic; urgency=high
+
+  * improve performance of $(find ...)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 24 Jan 2013 08:00:00 -0000
+
+ros-jade-roslaunch (1.9.40-0utopic) utopic; urgency=high
+
+  * fix 'roslaunch --pid=' when pointing to ROS_HOME but folder does not exist (#43 <https://github.com/ros/ros_comm/issues/43>)
+  * fix 'roslaunch --pid=' to use shell expansion for the pid value (#44 <https://github.com/ros/ros_comm/issues/44>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sun, 13 Jan 2013 08:00:00 -0000
+
+ros-jade-roslaunch (1.9.39-0utopic) utopic; urgency=high
+
+  * first public release for Groovy
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 29 Dec 2012 08:00:00 -0000
+
+
