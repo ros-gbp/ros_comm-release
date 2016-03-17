@@ -1,0 +1,244 @@
+ros-jade-rospy (1.11.18-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 17 Mar 2016 07:00:00 -0000
+
+ros-jade-rospy (1.11.17-0trusty) trusty; urgency=high
+
+  * preserve identity of numpy_msg(T) (#758 <https://github.com/ros/ros_comm/pull/758>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 11 Mar 2016 08:00:00 -0000
+
+ros-jade-rospy (1.11.16-0trusty) trusty; urgency=high
+
+  * catch ROSInterruptException from rospy timers when shutting down (#690 <https://github.com/ros/ros_comm/pull/690>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 09 Nov 2015 08:00:00 -0000
+
+ros-jade-rospy (1.11.15-0trusty) trusty; urgency=high
+
+  * validate name after remapping (#669 <https://github.com/ros/ros_comm/pull/669>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 13 Oct 2015 07:00:00 -0000
+
+ros-jade-rospy (1.11.14-0trusty) trusty; urgency=high
+
+  * fix memory/thread leak with QueuedConnection (#661 <https://github.com/ros/ros_comm/pull/661>)
+  * fix signaling already shutdown to client hooks with the appropriate signature (#651 <https://github.com/ros/ros_comm/issues/651>)
+  * fix bug with missing current logger levels (#631 <https://github.com/ros/ros_comm/pull/631>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 19 Sep 2015 07:00:00 -0000
+
+ros-jade-rospy (1.11.13-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 28 Apr 2015 07:00:00 -0000
+
+ros-jade-rospy (1.11.12-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Apr 2015 07:00:00 -0000
+
+ros-jade-rospy (1.11.11-0trusty) trusty; urgency=high
+
+  * add rosconsole command line tool to change logger levels (#576 <https://github.com/ros/ros_comm/pull/576>)
+  * add accessor for remaining time of the Rate class (#588 <https://github.com/ros/ros_comm/pull/588>)
+  * fix high latency when using asynchronous publishing (#547 <https://github.com/ros/ros_comm/issues/547>)
+  * fix error handling when publishing on Empty topic (#566 <https://github.com/ros/ros_comm/pull/566>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 16 Apr 2015 07:00:00 -0000
+
+ros-jade-rospy (1.11.10-0trusty) trusty; urgency=high
+
+  * add specific exception for time jumping backwards (#485 <https://github.com/ros/ros_comm/issues/485>)
+  * make param functions thread-safe (#523 <https://github.com/ros/ros_comm/pull/523>)
+  * fix infinitely retrying subscriber (#533 <https://github.com/ros/ros_comm/issues/533>)
+  * fix removal of QueuedConnection leading to wrong subscriber count (#526 <https://github.com/ros/ros_comm/issues/526>)
+  * fix TCPROS header validation when callerid header is not set (#522 <https://github.com/ros/ros_comm/issues/522>, regression from 1.11.1)
+  * fix memory leak when using subcriber statistics (#520 <https://github.com/ros/ros_comm/issues/520>)
+  * fix reported traffic in bytes from Python nodes (#501 <https://github.com/ros/ros_comm/issues/501>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 22 Dec 2014 08:00:00 -0000
+
+ros-jade-rospy (1.11.9-0trusty) trusty; urgency=high
+
+  * populate delivered_msgs field of TopicStatistics message (#486 <https://github.com/ros/ros_comm/issues/486>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 18 Aug 2014 07:00:00 -0000
+
+ros-jade-rospy (1.11.8-0trusty) trusty; urgency=high
+
+  * fix topic/connection statistics reporting code (#482 <https://github.com/ros/ros_comm/issues/482>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 04 Aug 2014 07:00:00 -0000
+
+ros-jade-rospy (1.11.7-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 18 Jul 2014 07:00:00 -0000
+
+ros-jade-rospy (1.11.6-0trusty) trusty; urgency=high
+
+  * make MasterProxy thread-safe (#459 <https://github.com/ros/ros_comm/issues/459>)
+  * check ROS_HOSTNAME for localhost / ROS_IP for 127./::1 and prevent connections from other hosts in that case (#452 <https://github.com/ros/ros_comm/issues/452>)_
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 10 Jul 2014 07:00:00 -0000
+
+ros-jade-rospy (1.11.5-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 24 Jun 2014 07:00:00 -0000
+
+ros-jade-rospy (1.11.4-0trusty) trusty; urgency=high
+
+  * Python 3 compatibility (#426 <https://github.com/ros/ros_comm/issues/426>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Jun 2014 07:00:00 -0000
+
+ros-jade-rospy (1.11.3-0trusty) trusty; urgency=high
+
+  * allow shutdown hooks to be any callable object (#410 <https://github.com/ros/ros_comm/issues/410>)
+  * add demux program and related scripts (#407 <https://github.com/ros/ros_comm/issues/407>)
+  * add publisher queue_size to rostopic
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 May 2014 07:00:00 -0000
+
+ros-jade-rospy (1.11.2-0trusty) trusty; urgency=high
+
+  * use publisher queue_size for statistics (#398 <https://github.com/ros/ros_comm/issues/398>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 08 May 2014 07:00:00 -0000
+
+ros-jade-rospy (1.11.1-0trusty) trusty; urgency=high
+
+  * improve asynchonous publishing performance (#373 <https://github.com/ros/ros_comm/issues/373>)
+  * add warning when queue_size is omitted for rospy publisher (#346 <https://github.com/ros/ros_comm/issues/346>)
+  * add optional topic/connection statistics (#398 <https://github.com/ros/ros_comm/issues/398>)
+  * add transport information in SlaveAPI::getBusInfo() for roscpp & rospy (#328 <https://github.com/ros/ros_comm/issues/328>)
+  * allow custom error handlers for services (#375 <https://github.com/ros/ros_comm/issues/375>)
+  * add architecture_independent flag in package.xml (#391 <https://github.com/ros/ros_comm/issues/391>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 07 May 2014 07:00:00 -0000
+
+ros-jade-rospy (1.11.0-0trusty) trusty; urgency=high
+
+  * fix exception handling for queued connections (#369 <https://github.com/ros/ros_comm/issues/369>)
+  * use catkin_install_python() to install Python scripts (#361 <https://github.com/ros/ros_comm/issues/361>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 04 Mar 2014 08:00:00 -0000
+
+ros-jade-rospy (1.10.0-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 11 Feb 2014 08:00:00 -0000
+
+ros-jade-rospy (1.9.54-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Jan 2014 08:00:00 -0000
+
+ros-jade-rospy (1.9.53-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 14 Jan 2014 08:00:00 -0000
+
+ros-jade-rospy (1.9.52-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 08 Jan 2014 08:00:00 -0000
+
+ros-jade-rospy (1.9.51-0trusty) trusty; urgency=high
+
+  * implement optional queueing for rospy publications (#169 <https://github.com/ros/ros_comm/issues/169>)
+  * overwrite __repr__ for rospy.Duration and Time (ros/genpy#24 <https://github.com/ros/genpy/issues/24>)
+  * add missing dependency on roscpp
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 07 Jan 2014 08:00:00 -0000
+
+ros-jade-rospy (1.9.50-0trusty) trusty; urgency=high
+
+  * add support for python coverage tool to work in callbacks
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 04 Oct 2013 07:00:00 -0000
+
+ros-jade-rospy (1.9.49-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Sep 2013 07:00:00 -0000
+
+ros-jade-rospy (1.9.48-0trusty) trusty; urgency=high
+
+  * make rospy nodes killable while waiting for master (#262 <https://github.com/ros/ros_comm/issues/262>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 Aug 2013 07:00:00 -0000
+
+ros-jade-rospy (1.9.47-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 03 Jul 2013 07:00:00 -0000
+
+ros-jade-rospy (1.9.46-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 18 Jun 2013 07:00:00 -0000
+
+ros-jade-rospy (1.9.45-0trusty) trusty; urgency=high
+
+  * add missing run_depend on python-yaml
+  * allow configuration of ports for XML RPCs and TCP ROS
+  * fix race condition where rospy subscribers do not connect to all publisher
+  * fix closing and deregistering connection when connect fails (#128 <https://github.com/ros/ros_comm/issues/128>)
+  * fix log level of RosOutHandler (#210 <https://github.com/ros/ros_comm/issues/210>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 06 Jun 2013 07:00:00 -0000
+
+ros-jade-rospy (1.9.44-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 21 Mar 2013 07:00:00 -0000
+
+ros-jade-rospy (1.9.43-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 13 Mar 2013 07:00:00 -0000
+
+ros-jade-rospy (1.9.42-0trusty) trusty; urgency=high
+
+  * make dependencies on rospy optional by refactoring RosStreamHandler to rosgraph (#179 <https://github.com/ros/ros_comm/issues/179>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 08 Mar 2013 08:00:00 -0000
+
+ros-jade-rospy (1.9.41-0trusty) trusty; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 24 Jan 2013 08:00:00 -0000
+
+ros-jade-rospy (1.9.40-0trusty) trusty; urgency=high
+
+  * add colorization for rospy log output (#3691 <https://code.ros.org/trac/ros/ticket/3691>)
+  * fix socket polling under Windows (#3959 <https://code.ros.org/trac/ros/ticket/3959>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sun, 13 Jan 2013 08:00:00 -0000
+
+ros-jade-rospy (1.9.39-0trusty) trusty; urgency=high
+
+  * first public release for Groovy
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 29 Dec 2012 08:00:00 -0000
+
+
