@@ -2,6 +2,9 @@
 Changelog for package topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.0 (2016-03-18)
+-------------------
+
 1.11.18 (2016-03-17)
 --------------------
 * fix CMake warning about non-existing targets
