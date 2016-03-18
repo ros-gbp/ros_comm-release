@@ -2,6 +2,12 @@
 Changelog for package rostopic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.0 (2016-03-18)
+-------------------
+
+1.11.18 (2016-03-17)
+--------------------
+
 1.11.17 (2016-03-11)
 --------------------
 * add "rostopic delay" to measure message delay compared to the input from real world (`#719 <https://github.com/ros/ros_comm/pull/719>`_)
