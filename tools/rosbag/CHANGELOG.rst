@@ -2,6 +2,13 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.0 (2016-03-18)
+-------------------
+* add missing parameter to AdvertiseOptions::createAdvertiseOptions (`#733 <https://github.com/ros/ros_comm/issues/733>`_)
+
+1.11.18 (2016-03-17)
+--------------------
+
 1.11.17 (2016-03-11)
 --------------------
 * use boost::make_shared instead of new for constructing boost::shared_ptr (`#740 <https://github.com/ros/ros_comm/issues/740>`_)
