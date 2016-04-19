@@ -1,0 +1,12 @@
+Source: ros-indigo-rosmaster
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-indigo-catkin (>= 0.5.68)
+Homepage: http://ros.org/wiki/rosmaster
+Standards-Version: 3.9.2
+
+Package: ros-indigo-rosmaster
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-indigo-rosgraph
+Description: ROS Master implementation.
