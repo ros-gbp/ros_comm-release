@@ -601,22 +601,20 @@ ROSCPP_DECL bool getParamNames(std::vector<std::string>& keys);
  * \param[out] param_val Storage for the retrieved value.
  * \param default_val Value to use if the server doesn't contain this
  * parameter.
- * \return true if the parameter was retrieved from the server, false otherwise.
  * \throws InvalidNameException if the key is not a valid graph resource name
  */
 template<typename T>
-bool param(const std::string& param_name, T& param_val, const T& default_val)
+void param(const std::string& param_name, T& param_val, const T& default_val)
 {
   if (has(param_name))
   {
     if (get(param_name, param_val))
     {
-      return true;
+      return;
     }
   }
 
   param_val = default_val;
-  return false;
 }
 
 /**

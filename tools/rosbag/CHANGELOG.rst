@@ -2,9 +2,10 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.12.0 (2016-03-18)
--------------------
-* add missing parameter to AdvertiseOptions::createAdvertiseOptions (`#733 <https://github.com/ros/ros_comm/issues/733>`_)
+1.11.19 (2016-04-18)
+--------------------
+* promote the result of read_messages to a namedtuple (`#777 <https://github.com/ros/ros_comm/pull/777>`_)
+* use directory specific compiler flags (`#785 <https://github.com/ros/ros_comm/pull/785>`_)
 
 1.11.18 (2016-03-17)
 --------------------
