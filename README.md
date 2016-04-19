@@ -1,3 +1,60 @@
+## ros_comm (indigo) - 1.11.19-0
+
+The packages in the `ros_comm` repository were released into the `indigo` distro by running `/usr/bin/bloom-release -r indigo -t indigo ros_comm` on `Tue, 19 Apr 2016 17:19:47 -0000`
+
+These packages were released:
+- `message_filters`
+- `ros_comm`
+- `rosbag`
+- `rosbag_storage`
+- `rosconsole`
+- `roscpp`
+- `rosgraph`
+- `roslaunch`
+- `roslz4`
+- `rosmaster`
+- `rosmsg`
+- `rosnode`
+- `rosout`
+- `rosparam`
+- `rospy`
+- `rosservice`
+- `rostest`
+- `rostopic`
+- `roswtf`
+- `topic_tools`
+- `xmlrpcpp`
+
+These packages were explicitly ignored:
+- `test_rosbag`
+- `test_rosbag_storage`
+- `test_roscpp`
+- `test_rosgraph`
+- `test_roslaunch`
+- `test_roslib_comm`
+- `test_rosmaster`
+- `test_rosparam`
+- `test_rospy`
+- `test_rosservice`
+- `test_rostopic`
+
+Version of package(s) in repository `ros_comm`:
+
+- upstream repository: git@github.com:ros/ros_comm.git
+- release repository: https://github.com/ros-gbp/ros_comm-release.git
+- rosdistro version: `1.11.18-0`
+- old version: `1.11.18-0`
+- new version: `1.11.19-0`
+
+Versions of tools used:
+
+- bloom version: `0.5.21`
+- catkin_pkg version: `0.2.10`
+- rosdep version: `0.11.4`
+- rosdistro version: `0.4.7`
+- vcstools version: `0.1.38`
+
+
 ## ros_comm (kinetic) - 1.12.0-0
 
 The packages in the `ros_comm` repository were released into the `kinetic` distro by running `/usr/bin/bloom-release -r kinetic -t kinetic ros_comm` on `Fri, 18 Mar 2016 20:16:37 -0000`
