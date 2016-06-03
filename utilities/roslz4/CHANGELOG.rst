@@ -2,6 +2,13 @@
 Changelog for package roslz4
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.2 (2016-06-03)
+-------------------
+
+1.12.1 (2016-04-18)
+-------------------
+* use directory specific compiler flags (`#785 <https://github.com/ros/ros_comm/pull/785>`_)
+
 1.12.0 (2016-03-18)
 -------------------
 
