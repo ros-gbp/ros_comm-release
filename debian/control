@@ -1,0 +1,13 @@
+Source: ros-kinetic-rosmsg
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-kinetic-catkin
+Homepage: http://ros.org/wiki/rosmsg
+Standards-Version: 3.9.2
+
+Package: ros-kinetic-rosmsg
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-rospkg, ros-kinetic-catkin (>= 0.6.4), ros-kinetic-genmsg, ros-kinetic-rosbag, ros-kinetic-roslib
+Description: rosmsg contains two command-line tools: rosmsg and rossrv.
+ rosmsg is a command-line tool for displaying information about ROS Message types. rossrv is a command-line tool for displaying information about ROS Service types.
