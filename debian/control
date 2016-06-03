@@ -1,0 +1,12 @@
+Source: ros-kinetic-message-filters
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), libboost-all-dev, ros-kinetic-catkin (>= 0.5.68), ros-kinetic-rosconsole, ros-kinetic-roscpp, ros-kinetic-rostest, ros-kinetic-rosunit, ros-kinetic-xmlrpcpp
+Homepage: http://ros.org/wiki/message_filters
+Standards-Version: 3.9.2
+
+Package: ros-kinetic-message-filters
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-kinetic-rosconsole, ros-kinetic-roscpp, ros-kinetic-xmlrpcpp
+Description: A set of message filters which take in messages and may output those messages at a later time, based on the conditions that filter needs met.
