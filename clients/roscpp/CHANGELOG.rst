@@ -2,9 +2,19 @@
 Changelog for package roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.11.19 (2016-04-18)
---------------------
+1.12.2 (2016-06-03)
+-------------------
+* improve stacktrace for exceptions thrown in callbacks (`#811 <https://github.com/ros/ros_comm/pull/811>`_)
+* fix segfault if creating outgoing UDP transport fails (`#807 <https://github.com/ros/ros_comm/pull/807>`_)
+
+1.12.1 (2016-04-18)
+-------------------
 * use directory specific compiler flags (`#785 <https://github.com/ros/ros_comm/pull/785>`_)
+
+1.12.0 (2016-03-18)
+-------------------
+* improve TopicManager::instance (`#770 <https://github.com/ros/ros_comm/issues/770>`_)
+* change return value of param() to bool (`#753 <https://github.com/ros/ros_comm/issues/753>`_)
 
 1.11.18 (2016-03-17)
 --------------------
