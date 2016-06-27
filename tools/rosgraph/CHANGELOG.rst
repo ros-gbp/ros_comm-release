@@ -2,16 +2,13 @@
 Changelog for package rosgraph
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.12.2 (2016-06-03)
--------------------
-* avoid creating a latest symlink for the root of the log dir (`#795 <https://github.com/ros/ros_comm/pull/795>`_)
+1.11.20 (2016-06-27)
+--------------------
+* fix symlink of the log dir itself as latest (`#795 <https://github.com/ros/ros_comm/pull/795>`_)
 
-1.12.1 (2016-04-18)
--------------------
+1.11.19 (2016-04-18)
+--------------------
 * fix str conversion in encode_ros_handshake_header (`#792 <https://github.com/ros/ros_comm/pull/792>`_)
-
-1.12.0 (2016-03-18)
--------------------
 
 1.11.18 (2016-03-17)
 --------------------

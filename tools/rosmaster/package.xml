@@ -1,6 +1,6 @@
 <package>
   <name>rosmaster</name>
-  <version>1.12.2</version>
+  <version>1.11.20</version>
   <description>
     ROS <a href="http://ros.org/wiki/Master">Master</a> implementation.
   </description>
@@ -13,7 +13,6 @@
   <buildtool_depend version_gte="0.5.68">catkin</buildtool_depend>
 
   <run_depend>rosgraph</run_depend>
-  <run_depend>python-defusedxml</run_depend>
 
   <export>
     <rosdoc config="rosdoc.yaml"/>

@@ -57,7 +57,6 @@ from .timer import sleep, Rate, Timer
 from .core import is_shutdown, signal_shutdown, \
     get_node_uri, get_ros_root, \
     logdebug, logwarn, loginfo, logout, logerr, logfatal, \
-    logdebug_throttle, logwarn_throttle, loginfo_throttle, logerr_throttle, logfatal_throttle, \
     parse_rosrpc_uri
 from .exceptions import *
 from .msg import AnyMsg
@@ -102,9 +101,6 @@ __all__ = [
     'logdebug',
     'logwarn', 'loginfo',
     'logout', 'logerr', 'logfatal',
-    'logdebug_throttle',
-    'logwarn_throttle', 'loginfo_throttle',
-    'logerr_throttle', 'logfatal_throttle',
     'parse_rosrpc_uri',
     'MasterProxy',
     'NodeProxy',    

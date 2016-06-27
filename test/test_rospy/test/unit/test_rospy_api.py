@@ -118,11 +118,6 @@ class TestRospyApi(unittest.TestCase):
         rospy.loginfo        
         rospy.logout #deprecated
         rospy.logwarn
-        rospy.logdebug_throttle
-        rospy.logerr_throttle
-        rospy.logfatal_throttle
-        rospy.loginfo_throttle
-        rospy.logwarn_throttle
         rospy.myargv
         rospy.on_shutdown
         rospy.parse_rosrpc_uri
