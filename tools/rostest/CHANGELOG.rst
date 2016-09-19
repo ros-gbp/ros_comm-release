@@ -2,6 +2,15 @@
 Changelog for package rostest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.4 (2016-09-19)
+-------------------
+* fix test type handling (`#722 <https://github.com/ros/ros_comm/issues/722>`_)
+
+1.12.3 (2016-09-17)
+-------------------
+* add test node if topic message is published at least once (`#863 <https://github.com/ros/ros_comm/issues/863>`_)
+* add_rostest_gtest does now add the created gtest-target as a dependeny to the created rostest (`#830 <https://github.com/ros/ros_comm/pull/830>`_)
+
 1.12.2 (2016-06-03)
 -------------------
 
