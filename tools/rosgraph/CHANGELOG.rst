@@ -2,13 +2,25 @@
 Changelog for package rosgraph
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.11.20 (2016-06-27)
---------------------
-* fix symlink of the log dir itself as latest (`#795 <https://github.com/ros/ros_comm/pull/795>`_)
+1.12.4 (2016-09-19)
+-------------------
 
-1.11.19 (2016-04-18)
---------------------
+1.12.3 (2016-09-17)
+-------------------
+* add 'Darwin' to unix-like platforms improving address resolution (`#846 <https://github.com/ros/ros_comm/pull/846>`_)
+* use logging Formatter, enabling printing exception info with exc_info=1 (`#828 <https://github.com/ros/ros_comm/pull/828>`_)
+* add `__contains_\_`, which is a better spelling of `has` (`#754 <https://github.com/ros/ros_comm/pull/754>`_)
+
+1.12.2 (2016-06-03)
+-------------------
+* avoid creating a latest symlink for the root of the log dir (`#795 <https://github.com/ros/ros_comm/pull/795>`_)
+
+1.12.1 (2016-04-18)
+-------------------
 * fix str conversion in encode_ros_handshake_header (`#792 <https://github.com/ros/ros_comm/pull/792>`_)
+
+1.12.0 (2016-03-18)
+-------------------
 
 1.11.18 (2016-03-17)
 --------------------

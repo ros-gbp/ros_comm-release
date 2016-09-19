@@ -2,12 +2,23 @@
 Changelog for package message_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.11.20 (2016-06-27)
---------------------
+1.12.4 (2016-09-19)
+-------------------
 
-1.11.19 (2016-04-18)
---------------------
+1.12.3 (2016-09-17)
+-------------------
+* add fast approximate time synchronization in message_filters (in pure Python) (`#802 <https://github.com/ros/ros_comm/issues/802>`_)
+
+1.12.2 (2016-06-03)
+-------------------
+* allow saving timestamp-less messages to Cache, add getLast method (`#806 <https://github.com/ros/ros_comm/pull/806>`_)
+
+1.12.1 (2016-04-18)
+-------------------
 * use directory specific compiler flags (`#785 <https://github.com/ros/ros_comm/pull/785>`_)
+
+1.12.0 (2016-03-18)
+-------------------
 
 1.11.18 (2016-03-17)
 --------------------

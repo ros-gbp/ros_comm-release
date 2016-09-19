@@ -2,12 +2,22 @@
 Changelog for package roslz4
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.11.20 (2016-06-27)
---------------------
+1.12.4 (2016-09-19)
+-------------------
 
-1.11.19 (2016-04-18)
---------------------
+1.12.3 (2016-09-17)
+-------------------
+* set lz4_FOUND in order to continue using it with catkin_package(DEPENDS) (`ros/catkin#813 <https://github.com/ros/catkin/issues/813>`_)
+
+1.12.2 (2016-06-03)
+-------------------
+
+1.12.1 (2016-04-18)
+-------------------
 * use directory specific compiler flags (`#785 <https://github.com/ros/ros_comm/pull/785>`_)
+
+1.12.0 (2016-03-18)
+-------------------
 
 1.11.18 (2016-03-17)
 --------------------
