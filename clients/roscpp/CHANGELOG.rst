@@ -2,6 +2,16 @@
 Changelog for package roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.4 (2016-09-19)
+-------------------
+
+1.12.3 (2016-09-17)
+-------------------
+* fix multi-threaded spinning (`#867 <https://github.com/ros/ros_comm/pull/867>`_)
+* fix static destruction order (`#871 <https://github.com/ros/ros_comm/pull/871>`_)
+* throw exception on ros::init with empty node name (`#894 <https://github.com/ros/ros_comm/pull/894>`_)
+* improve debug message when queue is full (`#818 <https://github.com/ros/ros_comm/issues/818>`_)
+
 1.12.2 (2016-06-03)
 -------------------
 * improve stacktrace for exceptions thrown in callbacks (`#811 <https://github.com/ros/ros_comm/pull/811>`_)
