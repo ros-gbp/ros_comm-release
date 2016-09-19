@@ -2,6 +2,15 @@
 Changelog for package rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.4 (2016-09-19)
+-------------------
+
+1.12.3 (2016-09-17)
+-------------------
+* raise error on rospy.init_node with None or empty node name string (`#895 <https://github.com/ros/ros_comm/pull/895>`_)
+* fix wrong type in docstring for rospy.Timer (`#878 <https://github.com/ros/ros_comm/pull/878>`_)
+* fix order of init and publisher in example (`#873 <https://github.com/ros/ros_comm/pull/873>`_)
+
 1.12.2 (2016-06-03)
 -------------------
 * add logXXX_throttle functions (`#812 <https://github.com/ros/ros_comm/pull/812>`_)
