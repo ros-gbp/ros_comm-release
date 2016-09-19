@@ -2,6 +2,16 @@
 Changelog for package roslaunch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.4 (2016-09-19)
+-------------------
+
+1.12.3 (2016-09-17)
+-------------------
+* better naming for roslaunch check test results (`#897 <https://github.com/ros/ros_comm/pull/897>`_)
+* support use_test_depends option for roslaunch-check (`#887 <https://github.com/ros/ros_comm/pull/887>`_)
+* allow empty include (`#882 <https://github.com/ros/ros_comm/pull/882>`_)
+* fix param command for Python 3 (`#840 <https://github.com/ros/ros_comm/pull/840>`_)
+
 1.12.2 (2016-06-03)
 -------------------
 * support registering the same test multiple times with different arguments (`#814 <https://github.com/ros/ros_comm/pull/814>`_)
