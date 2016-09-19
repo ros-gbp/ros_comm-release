@@ -17,6 +17,7 @@ find_library(lz4_LIBRARIES NAMES lz4)
 if (NOT lz4_LIBRARIES)
   message(FATAL_ERROR "lz4 library not found")
 endif()
+set(lz4_FOUND TRUE)
 
 catkin_python_setup()
 
@@ -41,7 +42,7 @@ include_directories(${PYTHON_INCLUDE_PATH})
 add_library(roslz4_py src/_roslz4module.c)
 set_source_files_properties(
   src/_roslz4module.c
-PROPERTIES COMPILE_FLAGS "-Wno-missing-field-initializers -Wno-unused-variable")
+PROPERTIES COMPILE_FLAGS "-Wno-missing-field-initializers -Wno-unused-variable -Wno-strict-aliasing")
 set_target_properties(
   roslz4_py PROPERTIES OUTPUT_NAME roslz4 PREFIX "_" SUFFIX ".so"
   LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${PYTHON_INSTALL_DIR}/roslz4)
