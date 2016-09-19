@@ -38,6 +38,7 @@ from __future__ import division, print_function
 
 NAME='rostopic'
 
+import argparse
 import os
 import sys
 import math
@@ -99,11 +100,16 @@ class ROSTopicHz(object):
     """
     def __init__(self, window_size, filter_expr=None, use_wtime=False):
         import threading
+        from collections import defaultdict
         self.lock = threading.Lock()
         self.last_printed_tn = 0
-        self.msg_t0 = -1.
+        self.msg_t0 = -1
         self.msg_tn = 0
-        self.times =[]
+        self.times = []
+        self._last_printed_tn = defaultdict(int)
+        self._msg_t0 = defaultdict(lambda: -1)
+        self._msg_tn = defaultdict(int)
+        self._times = defaultdict(list)
         self.filter_expr = filter_expr
         self.use_wtime = use_wtime
         
@@ -111,11 +117,52 @@ class ROSTopicHz(object):
         if window_size < 0:
             window_size = 50000
         self.window_size = window_size
-                
-    def callback_hz(self, m):
+
+    def get_last_printed_tn(self, topic=None):
+        if topic is None:
+            return self.last_printed_tn
+        return self._last_printed_tn[topic]
+
+    def set_last_printed_tn(self, value, topic=None):
+        if topic is None:
+            self.last_printed_tn = value
+        self._last_printed_tn[topic] = value
+
+    def get_msg_t0(self, topic=None):
+        if topic is None:
+            return self.msg_t0
+        return self._msg_t0[topic]
+
+    def set_msg_t0(self, value, topic=None):
+        if topic is None:
+            self.msg_t0 = value
+        self._msg_t0[topic] = value
+
+    def get_msg_tn(self, topic=None):
+        if topic is None:
+            return self.msg_tn
+        return self._msg_tn[topic]
+
+    def set_msg_tn(self, value, topic=None):
+        if topic is None:
+            self.msg_tn = value
+        self._msg_tn[topic] = value
+
+    def get_times(self, topic=None):
+        if topic is None:
+            return self.times
+        return self._times[topic]
+
+    def set_times(self, value, topic=None):
+        if topic is None:
+            self.times = value
+        self._times[topic] = value
+
+    def callback_hz(self, m, topic=None):
         """
         ros sub callback
         :param m: Message instance
+        :param topic: Topic name
         """
         # #694: ignore messages that don't match filter
         if self.filter_expr is not None and not self.filter_expr(m):
@@ -126,33 +173,36 @@ class ROSTopicHz(object):
 
             # time reset
             if curr_rostime.is_zero():
-                if len(self.times) > 0:
+                if len(self.get_times(topic=topic)) > 0:
                     print("time has reset, resetting counters")
-                    self.times = []
+                    self.set_times([], topic=topic)
                 return
             
             curr = curr_rostime.to_sec() if not self.use_wtime else \
                     rospy.Time.from_sec(time.time()).to_sec()
-            if self.msg_t0 < 0 or self.msg_t0 > curr:
-                self.msg_t0 = curr
-                self.msg_tn = curr
-                self.times = []
+            if self.get_msg_t0(topic=topic) < 0 or self.get_msg_t0(topic=topic) > curr:
+                self.set_msg_t0(curr, topic=topic)
+                self.set_msg_tn(curr, topic=topic)
+                self.set_times([], topic=topic)
             else:
-                self.times.append(curr - self.msg_tn)
-                self.msg_tn = curr
+                self.get_times(topic=topic).append(curr - self.get_msg_tn(topic=topic))
+                self.set_msg_tn(curr, topic=topic)
 
             #only keep statistics for the last 10000 messages so as not to run out of memory
-            if len(self.times) > self.window_size - 1:
-                self.times.pop(0)
+            if len(self.get_times(topic=topic)) > self.window_size - 1:
+                self.get_times(topic=topic).pop(0)
 
-    def print_hz(self):
+    def get_hz(self, topic=None):
         """
-        print the average publishing rate to screen
+        calculate the average publising rate
+
+        @returns: tuple of stat results
+            (rate, min_delta, max_delta, standard deviation, window number)
+            None when waiting for the first message or there is no new one
         """
-        if not self.times:
+        if not self.get_times(topic=topic):
             return
-        elif self.msg_tn == self.last_printed_tn:
-            print("no new messages")
+        elif self.get_msg_tn(topic=topic) == self.get_last_printed_tn(topic=topic):
             return
         with self.lock:
             #frequency
@@ -164,53 +214,106 @@ class ROSTopicHz(object):
             # makes it easier for users to see when a publisher dies,
             # so the decay is no longer necessary.
             
-            n = len(self.times)
+            n = len(self.get_times(topic=topic))
             #rate = (n - 1) / (rospy.get_time() - self.msg_t0)
-            mean = sum(self.times) / n
+            mean = sum(self.get_times(topic=topic)) / n
             rate = 1./mean if mean > 0. else 0
 
             #std dev
-            std_dev = math.sqrt(sum((x - mean)**2 for x in self.times) /n)
+            std_dev = math.sqrt(sum((x - mean)**2 for x in self.get_times(topic=topic)) /n)
 
             # min and max
-            max_delta = max(self.times)
-            min_delta = min(self.times)
+            max_delta = max(self.get_times(topic=topic))
+            min_delta = min(self.get_times(topic=topic))
 
-            self.last_printed_tn = self.msg_tn
-        print("average rate: %.3f\n\tmin: %.3fs max: %.3fs std dev: %.5fs window: %s"%(rate, min_delta, max_delta, std_dev, n+1))
+            self.set_last_printed_tn(self.get_msg_tn(topic=topic), topic=topic)
+
+        return rate, min_delta, max_delta, std_dev, n+1
+
+    def print_hz(self, topics=(None,)):
+        """
+        print the average publishing rate to screen
+        """
+        if len(topics) == 1:
+            ret = self.get_hz(topics[0])
+            if ret is None:
+                print("no new messages")
+                return
+            rate, min_delta, max_delta, std_dev, window = ret
+            print("average rate: %.3f\n\tmin: %.3fs max: %.3fs std dev: %.5fs window: %s"%(rate, min_delta, max_delta, std_dev, window))
+            return
+
+        # monitoring multiple topics' hz
+        header = ['topic', 'rate', 'min_delta', 'max_delta', 'std_dev', 'window']
+        stats = {h: [] for h in header}
+        for topic in topics:
+            hz_stat = self.get_hz(topic)
+            if hz_stat is None:
+                continue
+            rate, min_delta, max_delta, std_dev, window = hz_stat
+            stats['window'].append(str(window))
+            stats['topic'].append(topic)
+            stats['rate'].append('{:.4}'.format(rate))
+            stats['min_delta'].append('{:.4}'.format(min_delta))
+            stats['max_delta'].append('{:.4}'.format(max_delta))
+            stats['std_dev'].append('{:.4}'.format(std_dev))
+            stats['window'].append(str(window))
+        if not stats['topic']:
+            print('no new messages')
+            return
+        print(_get_ascii_table(header, stats))
+
+def _get_ascii_table(header, cols):
+    # compose table with left alignment
+    header_aligned = []
+    col_widths = []
+    for h in header:
+        col_width = max(len(h), max(len(el) for el in cols[h]))
+        col_widths.append(col_width)
+        header_aligned.append(h.center(col_width))
+        for i, el in enumerate(cols[h]):
+            cols[h][i] = str(cols[h][i]).ljust(col_width)
+    # sum of col and each 3 spaces width
+    table_width = sum(col_widths) + 3 * (len(header) - 1)
+    n_rows = len(cols[header[0]])
+    body = '\n'.join('   '.join(cols[h][i] for h in header) for i in xrange(n_rows))
+    table = '{header}\n{hline}\n{body}\n'.format(
+        header='   '.join(header_aligned), hline='=' * table_width, body=body)
+    return table
 
 def _sleep(duration):
     rospy.rostime.wallsleep(duration)
 
-def _rostopic_hz(topic, window_size=-1, filter_expr=None, use_wtime=False):
+def _rostopic_hz(topics, window_size=-1, filter_expr=None, use_wtime=False):
     """
     Periodically print the publishing rate of a topic to console until
     shutdown
-    :param topic: topic name, ``str``
+    :param topics: topic names, ``list`` of ``str``
     :param window_size: number of messages to average over, -1 for infinite, ``int``
     :param filter_expr: Python filter expression that is called with m, the message instance
     """
-    msg_class, real_topic, _ = get_topic_class(topic, blocking=True) #pause hz until topic is published
+    _check_master()
     if rospy.is_shutdown():
         return
     rospy.init_node(NAME, anonymous=True)
     rt = ROSTopicHz(window_size, filter_expr=filter_expr, use_wtime=use_wtime)
-    # we use a large buffer size as we don't know what sort of messages we're dealing with.
-    # may parameterize this in the future
-    if filter_expr is not None:
-        # have to subscribe with topic_type
-        sub = rospy.Subscriber(real_topic, msg_class, rt.callback_hz)
-    else:
-        sub = rospy.Subscriber(real_topic, rospy.AnyMsg, rt.callback_hz)        
-    print("subscribed to [%s]"%real_topic)
+    for topic in topics:
+        msg_class, real_topic, _ = get_topic_class(topic, blocking=True) # pause hz until topic is published
+        # we use a large buffer size as we don't know what sort of messages we're dealing with.
+        # may parameterize this in the future
+        if filter_expr is not None:
+            # have to subscribe with topic_type
+            rospy.Subscriber(real_topic, msg_class, rt.callback_hz, callback_args=topic)
+        else:
+            rospy.Subscriber(real_topic, rospy.AnyMsg, rt.callback_hz, callback_args=topic)
+        print("subscribed to [%s]" % real_topic)
 
     if rospy.get_param('use_sim_time', False):
         print("WARNING: may be using simulated time",file=sys.stderr)
 
     while not rospy.is_shutdown():
         _sleep(1.0)
-        rt.print_hz()
-
+        rt.print_hz(topics)
 
 class ROSTopicDelay(object):
 
@@ -619,14 +722,15 @@ def _sub_str_plot_fields(val, f, field_filter):
     return None
 
 
-def _str_plot(val, time_offset=None, current_time=None, field_filter=None, type_information=None, fixed_numeric_width=None):
+def _str_plot(val, time_offset=None, current_time=None, field_filter=None, type_information=None, fixed_numeric_width=None, value_transform_fn=None):
     """
     Convert value to matlab/octave-friendly CSV string representation.
 
     :param val: message
     :param current_time: current :class:`genpy.Time` to use if message does not contain its own timestamp.
     :param time_offset: (optional) for time printed for message, print as offset against this :class:`genpy.Time`
-    :param field_filter: filter the fields that are strified for Messages, ``fn(Message)->iter(str)``
+    :param field_filter: filter the fields that are stringified for Messages, ``fn(Message)->iter(str)``
+    :param value_transform_fn: Not used but for same API as CallbackEcho.custom_strify_message
     :returns: comma-separated list of field values in val, ``str``
     """
         
@@ -711,15 +815,17 @@ class CallbackEcho(object):
     def __init__(self, topic, msg_eval, plot=False, filter_fn=None,
                  echo_clear=False, echo_all_topics=False,
                  offset_time=False, count=None,
-                 field_filter_fn=None, fixed_numeric_width=None):
+                 field_filter_fn=None, fixed_numeric_width=None,
+                 value_transform_fn=None):
         """
-        :param plot: if ``True``, echo in plotting-friendly format, ``bool``
+        :param plot: if ``True``, echo in plotting-friendly format (csv), ``bool``
         :param filter_fn: function that evaluates to ``True`` if message is to be echo'd, ``fn(topic, msg)``
         :param echo_all_topics: (optional) if ``True``, echo all messages in bag, ``bool``
         :param offset_time: (optional) if ``True``, display time as offset from current time, ``bool``
         :param count: number of messages to echo, ``None`` for infinite, ``int``
-        :param field_filter_fn: filter the fields that are strified for Messages, ``fn(Message)->iter(str)``
+        :param field_filter_fn: filter the fields that are stringified for Messages, ``fn(Message)->iter(str)``
         :param fixed_numeric_width: fixed width for numeric values, ``None`` for automatic, ``int``
+        :param value_transform_fn: transform the values of Messages, ``fn(Message)->Message``
         """
         if topic and topic[-1] == '/':
             topic = topic[:-1]
@@ -752,6 +858,7 @@ class CallbackEcho(object):
                 self.prefix = '\033[2J\033[;H'
 
         self.field_filter=field_filter_fn
+        self.value_transform=value_transform_fn
         
         # first tracks whether or not we've printed anything yet. Need this for printing plot fields.
         self.first = True
@@ -760,10 +867,13 @@ class CallbackEcho(object):
         self.last_topic = None
         self.last_msg_eval = None
 
-    def custom_strify_message(self, val, indent='', time_offset=None, current_time=None, field_filter=None, type_information=None, fixed_numeric_width=None):
+    def custom_strify_message(self, val, indent='', time_offset=None, current_time=None, field_filter=None,
+                              type_information=None, fixed_numeric_width=None, value_transform=None):
         # ensure to print uint8[] as array of numbers instead of string
         if type_information and type_information.startswith('uint8['):
             val = [ord(x) for x in val]
+        if value_transform is not None:
+            val = value_transform(val)
         return genpy.message.strify_message(val, indent=indent, time_offset=time_offset, current_time=current_time, field_filter=field_filter, fixed_numeric_width=fixed_numeric_width)
 
     def callback(self, data, callback_args, current_time=None):
@@ -817,12 +927,16 @@ class CallbackEcho(object):
                 if self.offset_time:
                     sys.stdout.write(self.prefix+\
                                      self.str_fn(data, time_offset=rospy.get_rostime(),
-                                                 current_time=current_time, field_filter=self.field_filter, type_information=type_information, fixed_numeric_width=self.fixed_numeric_width) + \
+                                                 current_time=current_time, field_filter=self.field_filter,
+                                                 type_information=type_information, fixed_numeric_width=self.fixed_numeric_width,
+                                                 value_transform=self.value_transform) + \
                                      self.suffix + '\n')
                 else:
                     sys.stdout.write(self.prefix+\
                                      self.str_fn(data,
-                                                 current_time=current_time, field_filter=self.field_filter, type_information=type_information, fixed_numeric_width=self.fixed_numeric_width) + \
+                                                 current_time=current_time, field_filter=self.field_filter,
+                                                 type_information=type_information, fixed_numeric_width=self.fixed_numeric_width,
+                                                 value_transform=self.value_transform) + \
                                      self.suffix + '\n')
 
                 # we have to flush in order before piping to work
@@ -843,12 +957,19 @@ def _rostopic_type(topic):
     Print ROS message type of topic to screen
     :param topic: topic name, ``str``
     """
-    t, _, _ = get_topic_type(topic, blocking=False)
-    if t:
-        print(t)
-    else:
+    topic_type, topic_real_name, _ = get_topic_type(topic, blocking=False)
+    if topic_type is None:
         sys.stderr.write('unknown topic type [%s]\n'%topic)
         sys.exit(1)
+    elif topic == topic_real_name:
+        print(topic_type)
+    else:
+        field = topic[len(topic_real_name)+1:]
+        field_type = topic_type
+        for current_field in field.split('/'):
+            msg_class = roslib.message.get_message_class(field_type)
+            field_type = msg_class._slot_types[msg_class.__slots__.index(current_field)]
+        print('%s %s %s'%(topic_type, field, field_type))
 
 def _rostopic_echo_bag(callback_echo, bag_file):
     """
@@ -1247,16 +1368,58 @@ def _rostopic_cmd_echo(argv):
     except ValueError:
         parser.error("NUM_WIDTH must be an integer")
 
-    field_filter_fn = create_field_filter(options.nostr, options.noarr)
+    if options.plot:
+        field_filter_fn = create_field_filter(options.nostr, options.noarr)
+        value_transform_fn = None
+    else:
+        field_filter_fn = None
+        value_transform_fn = create_value_transform(options.nostr, options.noarr)
+
     callback_echo = CallbackEcho(topic, None, plot=options.plot,
                                  filter_fn=filter_fn,
                                  echo_clear=options.clear, echo_all_topics=options.all_topics,
                                  offset_time=options.offset_time, count=msg_count,
-                                 field_filter_fn=field_filter_fn, fixed_numeric_width=fixed_numeric_width)
+                                 field_filter_fn=field_filter_fn,
+                                 value_transform_fn=value_transform_fn,
+                                 fixed_numeric_width=fixed_numeric_width)
     try:
         _rostopic_echo(topic, callback_echo, bag_file=options.bag)
     except socket.error:
         sys.stderr.write("Network communication failed. Most likely failed to communicate with master.\n")
+
+def create_value_transform(echo_nostr, echo_noarr):
+    def value_transform(val):
+
+        class TransformedMessage(genpy.Message):
+            # These should be copy because changing these variables
+            # in transforming is problematic without its untransforming.
+            __slots__ = val.__slots__[:]
+            _slot_types = val._slot_types[:]
+
+        val_trans = TransformedMessage()
+
+        fields = val.__slots__
+        field_types = val._slot_types
+        for index, (f, t) in enumerate(zip(fields, field_types)):
+            f_val = getattr(val, f)
+            if echo_noarr and '[' in t:
+                setattr(val_trans, f, '<array type: %s, length: %s>' %
+                                      (t.rstrip('[]'), len(f_val)))
+                val_trans._slot_types[index] = 'string'
+            elif echo_nostr and 'string' in t:
+                setattr(val_trans, f, '<string length: %s>' % len(f_val))
+            else:
+                try:
+                    msg_class = genpy.message.get_message_class(t)
+                    if msg_class is None:
+                        # happens for list of ROS messages like std_msgs/String[]
+                        raise ValueError
+                    nested_transformed = value_transform(f_val)
+                    setattr(val_trans, f, nested_transformed)
+                except ValueError:
+                    setattr(val_trans, f, f_val)
+        return val_trans
+    return value_transform
 
 def create_field_filter(echo_nostr, echo_noarr):
     def field_filter(val):
@@ -1282,12 +1445,15 @@ def _optparse_topic_only(cmd, argv):
     return rosgraph.names.script_resolve_name('rostopic', args[0])
 
 def _rostopic_cmd_type(argv):
-    _rostopic_type(_optparse_topic_only('type', argv))
-    
+    parser = argparse.ArgumentParser(prog='%s type' % NAME)
+    parser.add_argument('topic_or_field', help='Topic or field name')
+    args = parser.parse_args(argv[2:])
+    _rostopic_type(rosgraph.names.script_resolve_name('rostopic', args.topic_or_field))
+
 def _rostopic_cmd_hz(argv):
     args = argv[2:]
     from optparse import OptionParser
-    parser = OptionParser(usage="usage: %prog hz /topic", prog=NAME)
+    parser = OptionParser(usage="usage: %prog hz [options] /topic_0 [/topic_1 [topic_2 [..]]]", prog=NAME)
     parser.add_option("-w", "--window",
                       dest="window_size", default=-1,
                       help="window size, in # of messages, for calculating rate", metavar="WINDOW")
@@ -1301,8 +1467,6 @@ def _rostopic_cmd_hz(argv):
     (options, args) = parser.parse_args(args)
     if len(args) == 0:
         parser.error("topic must be specified")        
-    if len(args) > 1:
-        parser.error("you may only specify one input topic")
     try:
         if options.window_size != -1:
             import string
@@ -1311,7 +1475,8 @@ def _rostopic_cmd_hz(argv):
             window_size = options.window_size
     except:
         parser.error("window size must be an integer")
-    topic = rosgraph.names.script_resolve_name('rostopic', args[0])
+
+    topics = [rosgraph.names.script_resolve_name('rostopic', t) for t in args]
 
     # #694
     if options.filter_expr:
@@ -1322,7 +1487,7 @@ def _rostopic_cmd_hz(argv):
         filter_expr = expr_eval(options.filter_expr)
     else:
         filter_expr = None
-    _rostopic_hz(topic, window_size=window_size, filter_expr=filter_expr,
+    _rostopic_hz(topics, window_size=window_size, filter_expr=filter_expr,
                  use_wtime=options.use_wtime)
 
 
@@ -1894,7 +2059,7 @@ Commands:
 \trostopic info\tprint information about active topic
 \trostopic list\tlist active topics
 \trostopic pub\tpublish data to topic
-\trostopic type\tprint topic type
+\trostopic type\tprint topic or field type
 
 Type rostopic <command> -h for more detailed usage, e.g. 'rostopic echo -h'
 """)
