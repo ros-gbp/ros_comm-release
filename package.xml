@@ -1,6 +1,6 @@
 <package>
   <name>rosmsg</name>
-  <version>1.12.2</version>
+  <version>1.12.4</version>
   <description>
     rosmsg contains two command-line tools: <tt>rosmsg</tt> and
     <tt>rossrv</tt>. <tt>rosmsg</tt> is a command-line tool for
@@ -24,6 +24,8 @@
   <run_depend>python-rospkg</run_depend>
   <run_depend>rosbag</run_depend>
   <run_depend>roslib</run_depend>
+
+  <test_depend>std_msgs</test_depend>
 
   <export>
     <rosdoc config="rosdoc.yaml"/>
