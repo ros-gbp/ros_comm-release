@@ -1,0 +1,13 @@
+Source: ros-kinetic-rosbag
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), libboost-all-dev, python-imaging, ros-kinetic-catkin (>= 0.5.78), ros-kinetic-cpp-common, ros-kinetic-rosbag-storage, ros-kinetic-rosconsole, ros-kinetic-roscpp, ros-kinetic-roscpp-serialization, ros-kinetic-topic-tools, ros-kinetic-xmlrpcpp
+Homepage: http://ros.org/wiki/rosbag
+Standards-Version: 3.9.2
+
+Package: ros-kinetic-rosbag
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-all-dev, python-rospkg, ros-kinetic-genmsg, ros-kinetic-genpy, ros-kinetic-rosbag-storage, ros-kinetic-rosconsole, ros-kinetic-roscpp, ros-kinetic-roslib, ros-kinetic-rospy, ros-kinetic-topic-tools, ros-kinetic-xmlrpcpp
+Description: This is a set of tools for recording from and playing back to ROS topics.
+ It is intended to be high performance and avoids deserialization and reserialization of the messages.
