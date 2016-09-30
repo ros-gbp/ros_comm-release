@@ -2,6 +2,9 @@
 Changelog for package rostest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.5 (2016-09-30)
+-------------------
+
 1.12.4 (2016-09-19)
 -------------------
 * fix test type handling (`#722 <https://github.com/ros/ros_comm/issues/722>`_)
