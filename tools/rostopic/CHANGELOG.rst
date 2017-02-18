@@ -2,6 +2,9 @@
 Changelog for package rostopic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.7 (2017-02-17)
+-------------------
+
 1.12.6 (2016-10-26)
 -------------------
 * fix typo of arg for _str_plot function (`#915 <https://github.com/ros/ros_comm/issues/915>`_)
