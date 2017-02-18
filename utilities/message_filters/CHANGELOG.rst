@@ -2,6 +2,9 @@
 Changelog for package message_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.7 (2017-02-17)
+-------------------
+
 1.12.6 (2016-10-26)
 -------------------
 * use boost::bind to bind the callback function (`#906 <https://github.com/ros/ros_comm/pull/906>`_)
