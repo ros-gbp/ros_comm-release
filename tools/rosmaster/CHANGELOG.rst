@@ -2,6 +2,10 @@
 Changelog for package rosmaster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.7 (2017-02-17)
+-------------------
+* add more logging to publisher update calls (`#979 <https://github.com/ros/ros_comm/issues/979>`_)
+
 1.12.6 (2016-10-26)
 -------------------
 
