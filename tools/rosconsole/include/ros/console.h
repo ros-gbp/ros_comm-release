@@ -101,8 +101,6 @@ class LogAppender
 {
 public:
 
-  virtual ~LogAppender() {}
-
   virtual void log(::ros::console::Level level, const char* str, const char* file, const char* function, int line) = 0;
 
 };
@@ -111,7 +109,6 @@ ROSCONSOLE_DECL void register_appender(LogAppender* appender);
 
 struct Token
 {
-  virtual ~Token() {}
   /*
    * @param level
    * @param message

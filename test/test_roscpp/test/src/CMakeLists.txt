@@ -125,10 +125,6 @@ target_link_libraries(${PROJECT_NAME}-namespaces ${GTEST_LIBRARIES} ${catkin_LIB
 add_executable(${PROJECT_NAME}-params EXCLUDE_FROM_ALL params.cpp)
 target_link_libraries(${PROJECT_NAME}-params ${GTEST_LIBRARIES} ${catkin_LIBRARIES})
 
-# Test spinners
-add_executable(${PROJECT_NAME}-spinners EXCLUDE_FROM_ALL spinners.cpp)
-target_link_libraries(${PROJECT_NAME}-spinners ${GTEST_LIBRARIES} ${catkin_LIBRARIES})
-
 # Test getting information from the master
 add_executable(${PROJECT_NAME}-get_master_information EXCLUDE_FROM_ALL get_master_information.cpp)
 target_link_libraries(${PROJECT_NAME}-get_master_information ${GTEST_LIBRARIES} ${catkin_LIBRARIES})
@@ -255,7 +251,6 @@ if(TARGET tests)
     ${PROJECT_NAME}-name_remapping_with_ns
     ${PROJECT_NAME}-namespaces
     ${PROJECT_NAME}-params
-    ${PROJECT_NAME}-spinners
     ${PROJECT_NAME}-get_master_information
     ${PROJECT_NAME}-multiple_subscriptions
     ${PROJECT_NAME}-check_master
@@ -321,7 +316,6 @@ add_dependencies(${PROJECT_NAME}-name_remapping ${${PROJECT_NAME}_EXPORTED_TARGE
 add_dependencies(${PROJECT_NAME}-name_remapping_with_ns ${${PROJECT_NAME}_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}-namespaces ${${PROJECT_NAME}_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}-params ${${PROJECT_NAME}_EXPORTED_TARGETS})
-add_dependencies(${PROJECT_NAME}-spinners ${${PROJECT_NAME}_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}-get_master_information ${${PROJECT_NAME}_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}-multiple_subscriptions ${${PROJECT_NAME}_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}-check_master ${${PROJECT_NAME}_EXPORTED_TARGETS})

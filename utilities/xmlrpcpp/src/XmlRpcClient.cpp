@@ -1,8 +1,8 @@
 
-#include "xmlrpcpp/XmlRpcClient.h"
+#include "XmlRpcClient.h"
 
-#include "xmlrpcpp/XmlRpcSocket.h"
-#include "xmlrpcpp/XmlRpc.h"
+#include "XmlRpcSocket.h"
+#include "XmlRpc.h"
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,8 +1,8 @@
 
-#include "xmlrpcpp/XmlRpcServerConnection.h"
+#include "XmlRpcServerConnection.h"
 
-#include "xmlrpcpp/XmlRpcSocket.h"
-#include "xmlrpcpp/XmlRpc.h"
+#include "XmlRpcSocket.h"
+#include "XmlRpc.h"
 #ifndef MAKEDEPEND
 # include <stdio.h>
 # include <stdlib.h>

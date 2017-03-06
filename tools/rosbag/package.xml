@@ -1,6 +1,6 @@
 <package>
   <name>rosbag</name>
-  <version>1.13.0</version>
+  <version>1.11.21</version>
   <description>
     This is a set of tools for recording from and playing back to ROS
     topics.  It is intended to be high performance and avoids
@@ -23,7 +23,6 @@
   <build_depend>rosconsole</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>roscpp_serialization</build_depend>
-  <build_depend>std_srvs</build_depend>
   <build_depend>topic_tools</build_depend>
   <build_depend>xmlrpcpp</build_depend>
 
@@ -36,7 +35,6 @@
   <run_depend>roscpp</run_depend>
   <run_depend>roslib</run_depend>
   <run_depend>rospy</run_depend>
-  <run_depend>std_srvs</run_depend>
   <run_depend>topic_tools</run_depend>
   <run_depend>xmlrpcpp</run_depend>
 

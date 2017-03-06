@@ -2,42 +2,17 @@
 Changelog for package rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.13.0 (2017-02-22)
--------------------
-
-1.12.7 (2017-02-17)
--------------------
+1.11.21 (2017-03-06)
+--------------------
 * make get_published_topics threadsafe (`#958 <https://github.com/ros/ros_comm/issues/958>`_)
-* use poll in write_header() if available to support higher numbered fileno (`#929 <https://github.com/ros/ros_comm/pull/929>`_)
-* use epoll instead of poll if available to gracefully close hung connections (`#831 <https://github.com/ros/ros_comm/issues/831>`_)
-* fix Python 3 compatibility issues (`#565 <https://github.com/ros/ros_comm/issues/565>`_)
-
-1.12.6 (2016-10-26)
--------------------
-* improve reconnection logic on timeout and other common errors (`#851 <https://github.com/ros/ros_comm/pull/851>`_)
-* remove duplicated function (`#783 <https://github.com/ros/ros_comm/pull/783>`_)
-
-1.12.5 (2016-09-30)
--------------------
-
-1.12.4 (2016-09-19)
--------------------
-
-1.12.3 (2016-09-17)
--------------------
-* raise error on rospy.init_node with None or empty node name string (`#895 <https://github.com/ros/ros_comm/pull/895>`_)
 * fix wrong type in docstring for rospy.Timer (`#878 <https://github.com/ros/ros_comm/pull/878>`_)
-* fix order of init and publisher in example (`#873 <https://github.com/ros/ros_comm/pull/873>`_)
-
-1.12.2 (2016-06-03)
--------------------
 * add logXXX_throttle functions (`#812 <https://github.com/ros/ros_comm/pull/812>`_)
 
-1.12.1 (2016-04-18)
--------------------
+1.11.20 (2016-06-27)
+--------------------
 
-1.12.0 (2016-03-18)
--------------------
+1.11.19 (2016-04-18)
+--------------------
 
 1.11.18 (2016-03-17)
 --------------------

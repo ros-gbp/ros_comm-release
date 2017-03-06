@@ -93,8 +93,7 @@ public:
   template<typename P>
   Connection registerCallback(void(*callback)(P))
   {
-    typename CallbackHelper1<M>::Ptr helper = signal_.template addCallback<P>(boost::bind(callback, _1));
-    return Connection(boost::bind(&Signal::removeCallback, &signal_, helper));
+    return Connection(boost::bind(&Signal::removeCallback, &signal_, signal_.addCallback(callback)));
   }
 
   /**

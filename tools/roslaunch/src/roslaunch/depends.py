@@ -146,15 +146,7 @@ def _parse_launch(tags, launch_file, file_deps, verbose, context):
                 sub_launch_file = resolve_args(tag.attributes['file'].value, context)
             except KeyError as e:
                 raise RoslaunchDepsException("Cannot load roslaunch <%s> tag: missing required attribute %s.\nXML is %s"%(tag.tagName, str(e), tag.toxml()))
-
-            # Check if an empty file is included, and skip if so.
-            # This will allow a default-empty <include> inside a conditional to pass
-            if sub_launch_file == '':
-                if verbose:
-                    print("Empty <include> in %s. Skipping <include> of %s" %
-                          (launch_file, tag.attributes['file'].value))
-                continue
-
+                
             if verbose:
                 print("processing included launch %s"%sub_launch_file)
 
@@ -253,7 +245,7 @@ def print_deps(base_pkg, file_deps, verbose):
     # print space-separated to be friendly to rosmake
     print(' '.join([p for p in set(pkgs)]))
 
-def calculate_missing(base_pkg, missing, file_deps, use_test_depends=False):
+def calculate_missing(base_pkg, missing, file_deps):
     """
     Calculate missing package dependencies in the manifest. This is
     mainly used as a subroutine of roslaunch_deps().
@@ -264,8 +256,6 @@ def calculate_missing(base_pkg, missing, file_deps, use_test_depends=False):
     @type  missing: { str: set(str) }
     @param file_deps: dictionary mapping launch file names to RoslaunchDeps of each file
     @type  file_deps: { str: RoslaunchDeps}
-    @param use_test_depends [bool]: use test_depends as installed package
-    @type  use_test_depends: [bool]
     @return: missing (see parameter)
     @rtype: { str: set(str) }
     """
@@ -285,9 +275,6 @@ def calculate_missing(base_pkg, missing, file_deps, use_test_depends=False):
             from catkin_pkg.package import parse_package
             p = parse_package(os.path.dirname(m.filename))
             d_pkgs = set([d.name for d in p.run_depends])
-            if use_test_depends:
-                for d in p.test_depends:
-                    d_pkgs.add(d.name)
         # make sure we don't count ourselves as a dep
         d_pkgs.add(pkg)
 
@@ -298,15 +285,13 @@ def calculate_missing(base_pkg, missing, file_deps, use_test_depends=False):
     return missing
         
     
-def roslaunch_deps(files, verbose=False, use_test_depends=False):
+def roslaunch_deps(files, verbose=False):
     """
     @param packages: list of packages to check
     @type  packages: [str]
     @param files [str]: list of roslaunch files to check. Must be in
       same package.
     @type  files: [str]
-    @param use_test_depends [bool]: use test_depends as installed package
-    @type  use_test_depends: [bool]
     @return: base_pkg, file_deps, missing.
       base_pkg is the package of all files
       file_deps is a { filename : RoslaunchDeps } dictionary of
@@ -330,7 +315,7 @@ def roslaunch_deps(files, verbose=False, use_test_depends=False):
         base_pkg = pkg
         rl_file_deps(file_deps, launch_file, verbose)
 
-    calculate_missing(base_pkg, missing, file_deps, use_test_depends=use_test_depends)
+    calculate_missing(base_pkg, missing, file_deps)
     return base_pkg, file_deps, missing            
     
 def roslaunch_deps_main(argv=sys.argv):

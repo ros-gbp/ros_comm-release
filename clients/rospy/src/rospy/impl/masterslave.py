@@ -437,22 +437,20 @@ class ROSHandler(XmlRpcHandler):
         #    individual socket timeouts, but this could potentially
         #    affect user code.
         socket.setdefaulttimeout(60.)
+        tries = 0
+        max_num_tries = 3
         success = False
-        interval = 0.5  # seconds
-        # while the ROS node is not shutdown try to get the topic information
-        # and retry on connections problems after some wait
-        while not success and not is_shutdown():
+        while not success:
+            tries += 1
             try:
                 code, msg, result = \
                       xmlrpcapi(pub_uri).requestTopic(caller_id, topic, protocols)
                 success = True
             except Exception as e:
-                if not is_shutdown():
+                if tries >= max_num_tries:
+                    return 0, "unable to requestTopic: %s"%str(e), 0
+                else:
                     _logger.debug("Retrying for %s" % topic)
-                    if interval < 30.0:
-                        # exponential backoff (maximum 32 seconds)
-                        interval = interval * 2
-                    time.sleep(interval)
 
         #Create the connection (if possible)
         if code <= 0:

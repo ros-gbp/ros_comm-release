@@ -49,43 +49,17 @@ void init(const M_string& remappings);
 namespace this_node
 {
 
-// collect all static variables into a singleton to ensure proper destruction order
-class ThisNode
-{
-  std::string name_;
-  std::string namespace_;
-
-  ThisNode() : name_("empty") {}
-
-public:
-  static ThisNode& instance()
-  {
-    static ThisNode singleton;
-    return singleton;
-  }
-
-  const std::string& getName() const
-  {
-    return name_;
-  }
-
-  const std::string& getNamespace() const
-  {
-    return namespace_;
-  }
-
-  void init(const std::string& name, const M_string& remappings, uint32_t options);
-};
-
+std::string g_name = "empty";
+std::string g_namespace;
 
 const std::string& getName()
 {
-  return ThisNode::instance().getName();
+  return g_name;
 }
 
 const std::string& getNamespace()
 {
-  return ThisNode::instance().getNamespace();
+  return g_namespace;
 }
 
 void getAdvertisedTopics(V_string& topics)
@@ -100,11 +74,6 @@ void getSubscribedTopics(V_string& topics)
 
 void init(const std::string& name, const M_string& remappings, uint32_t options)
 {
-  ThisNode::instance().init(name, remappings, options);
-}
-
-void ThisNode::init(const std::string& name, const M_string& remappings, uint32_t options)
-{
   char *ns_env = NULL;
 #ifdef _MSC_VER
   _dupenv_s(&ns_env, NULL, "ROS_NAMESPACE");
@@ -114,48 +83,44 @@ void ThisNode::init(const std::string& name, const M_string& remappings, uint32_
 
   if (ns_env)
   {
-    namespace_ = ns_env;
+    g_namespace = ns_env;
 #ifdef _MSC_VER
     free(ns_env);
 #endif
   }
 
-  if (name.empty()) {
-    throw InvalidNameException("The node name must not be empty");
-  }
-
-  name_ = name;
+  g_name = name;
 
   bool disable_anon = false;
   M_string::const_iterator it = remappings.find("__name");
   if (it != remappings.end())
   {
-    name_ = it->second;
+    g_name = it->second;
     disable_anon = true;
   }
 
   it = remappings.find("__ns");
   if (it != remappings.end())
   {
-    namespace_ = it->second;
+    g_namespace = it->second;
   }
 
-  if (namespace_.empty())
+  if (g_namespace.empty())
   {
-    namespace_ = "/";
+    g_namespace = "/";
   }
 
-  namespace_ = (namespace_ == "/")
+  g_namespace = (g_namespace == "/")
     ? std::string("/") 
-    : ("/" + namespace_)
+    : ("/" + g_namespace)
     ;
 
 
   std::string error;
-  if (!names::validate(namespace_, error))
+  if (!names::validate(g_namespace, error))
   {
     std::stringstream ss;
-    ss << "Namespace [" << namespace_ << "] is invalid: " << error;
+    ss << "Namespace [" << g_namespace << "] is invalid: " << error;
     throw InvalidNameException(ss.str());
   }
 
@@ -163,25 +128,25 @@ void ThisNode::init(const std::string& name, const M_string& remappings, uint32_
   // It must be done before we resolve g_name, because otherwise the name will not get remapped.
   names::init(remappings);
 
-  if (name_.find("/") != std::string::npos)
+  if (g_name.find("/") != std::string::npos)
   {
-    throw InvalidNodeNameException(name_, "node names cannot contain /");
+    throw InvalidNodeNameException(g_name, "node names cannot contain /");
   }
-  if (name_.find("~") != std::string::npos)
+  if (g_name.find("~") != std::string::npos)
   {
-    throw InvalidNodeNameException(name_, "node names cannot contain ~");
+    throw InvalidNodeNameException(g_name, "node names cannot contain ~");
   }
 
-  name_ = names::resolve(namespace_, name_);
+  g_name = names::resolve(g_namespace, g_name);
 
   if (options & init_options::AnonymousName && !disable_anon)
   {
     char buf[200];
     snprintf(buf, sizeof(buf), "_%llu", (unsigned long long)WallTime::now().toNSec());
-    name_ += buf;
+    g_name += buf;
   }
 
-  ros::console::setFixedFilterToken("node", name_);
+  ros::console::setFixedFilterToken("node", g_name);
 }
 
 } // namespace this_node

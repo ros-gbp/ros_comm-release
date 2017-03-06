@@ -36,7 +36,7 @@
 #include <boost/enable_shared_from_this.hpp>
 
 #include "common.h"
-#include "xmlrpcpp/XmlRpc.h"
+#include "XmlRpc.h"
 
 #include <ros/time.h>
 

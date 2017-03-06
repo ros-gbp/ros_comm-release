@@ -1,6 +1,6 @@
 // HelloServer.cpp : Simple XMLRPC server example. Usage: HelloServer serverPort
 //
-#include "xmlrpcpp/XmlRpc.h"
+#include "XmlRpc.h"
 
 #include <iostream>
 #include <stdlib.h>

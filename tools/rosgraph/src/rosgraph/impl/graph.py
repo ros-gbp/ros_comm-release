@@ -104,9 +104,6 @@ class EdgeList(object):
         return itertools.chain(*[v for v in self.edges_by_start.values()])
     
     def has(self, edge):
-        return edge in self
-
-    def __contains__(self, edge):
         """
         @return: True if edge is in edge list
         @rtype: bool

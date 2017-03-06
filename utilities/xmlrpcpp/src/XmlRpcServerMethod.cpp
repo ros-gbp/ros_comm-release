@@ -1,6 +1,6 @@
 
-#include "xmlrpcpp/XmlRpcServerMethod.h"
-#include "xmlrpcpp/XmlRpcServer.h"
+#include "XmlRpcServerMethod.h"
+#include "XmlRpcServer.h"
 
 namespace XmlRpc {
 

@@ -125,7 +125,6 @@ void TransportPublisherLink::onHeaderWritten(const ConnectionPtr& conn)
 
 bool TransportPublisherLink::onHeaderReceived(const ConnectionPtr& conn, const Header& header)
 {
-  (void)conn;
   ROS_ASSERT(conn == connection_);
 
   if (!setHeader(header))
@@ -147,8 +146,6 @@ bool TransportPublisherLink::onHeaderReceived(const ConnectionPtr& conn, const H
 
 void TransportPublisherLink::onMessageLength(const ConnectionPtr& conn, const boost::shared_array<uint8_t>& buffer, uint32_t size, bool success)
 {
-  (void)conn;
-  (void)size;
   if (retry_timer_handle_ != -1)
   {
     getInternalTimerManager()->remove(retry_timer_handle_);
@@ -223,7 +220,7 @@ void TransportPublisherLink::onRetryTimer(const ros::WallTimerEvent&)
       const std::string& host = old_transport->getConnectedHost();
       int port = old_transport->getConnectedPort();
 
-      ROSCPP_CONN_LOG_DEBUG("Retrying connection to [%s:%d] for topic [%s]", host.c_str(), port, topic.c_str());
+      ROSCPP_LOG_DEBUG("Retrying connection to [%s:%d] for topic [%s]", host.c_str(), port, topic.c_str());
 
       TransportTCPPtr transport(boost::make_shared<TransportTCP>(&PollManager::instance()->getPollSet()));
       if (transport->connect(host, port))
@@ -236,7 +233,7 @@ void TransportPublisherLink::onRetryTimer(const ros::WallTimerEvent&)
       }
       else
       {
-        ROSCPP_CONN_LOG_DEBUG("connect() failed when retrying connection to [%s:%d] for topic [%s]", host.c_str(), port, topic.c_str());
+        ROSCPP_LOG_DEBUG("connect() failed when retrying connection to [%s:%d] for topic [%s]", host.c_str(), port, topic.c_str());
       }
     }
     else if (parent)
@@ -250,7 +247,6 @@ CallbackQueuePtr getInternalCallbackQueue();
 
 void TransportPublisherLink::onConnectionDropped(const ConnectionPtr& conn, Connection::DropReason reason)
 {
-  (void)conn;
   if (dropping_)
   {
     return;
@@ -264,7 +260,7 @@ void TransportPublisherLink::onConnectionDropped(const ConnectionPtr& conn, Conn
   {
     std::string topic = parent ? parent->getName() : "unknown";
 
-    ROSCPP_CONN_LOG_DEBUG("Connection to publisher [%s] to topic [%s] dropped", connection_->getTransport()->getTransportInfo().c_str(), topic.c_str());
+    ROSCPP_LOG_DEBUG("Connection to publisher [%s] to topic [%s] dropped", connection_->getTransport()->getTransportInfo().c_str(), topic.c_str());
 
     ROS_ASSERT(!needs_retry_);
     needs_retry_ = true;

@@ -2,42 +2,17 @@
 Changelog for package roslaunch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.13.0 (2017-02-22)
--------------------
-
-1.12.7 (2017-02-17)
--------------------
+1.11.21 (2017-03-06)
+--------------------
 * improve error message for invalid tags (`#989 <https://github.com/ros/ros_comm/pull/989>`_)
 * fix caching logic to improve performance (`#931 <https://github.com/ros/ros_comm/pull/931>`_)
 
-1.12.6 (2016-10-26)
--------------------
-* add USE_TEST_DEPENDENCIES option to roslaunch_add_file_check() (`#910 <https://github.com/ros/ros_comm/pull/910>`_)
+1.11.20 (2016-06-27)
+--------------------
+* fix roslaunch check for multiple tests with multiple args (`#814 <https://github.com/ros/ros_comm/pull/814>`_)
 
-1.12.5 (2016-09-30)
--------------------
-
-1.12.4 (2016-09-19)
--------------------
-
-1.12.3 (2016-09-17)
--------------------
-* better naming for roslaunch check test results (`#897 <https://github.com/ros/ros_comm/pull/897>`_)
-* support use_test_depends option for roslaunch-check (`#887 <https://github.com/ros/ros_comm/pull/887>`_)
-* allow empty include (`#882 <https://github.com/ros/ros_comm/pull/882>`_)
-* fix param command for Python 3 (`#840 <https://github.com/ros/ros_comm/pull/840>`_)
-
-1.12.2 (2016-06-03)
--------------------
-* support registering the same test multiple times with different arguments (`#814 <https://github.com/ros/ros_comm/pull/814>`_)
-* fix passing multiple args to roslaunch_add_file_check (`#814 <https://github.com/ros/ros_comm/pull/814>`_)
-
-1.12.1 (2016-04-18)
--------------------
-* add support for Python expressions (`#784 <https://github.com/ros/ros_comm/pull/784>`_, `#793 <https://github.com/ros/ros_comm/pull/793>`_)
-
-1.12.0 (2016-03-18)
--------------------
+1.11.19 (2016-04-18)
+--------------------
 
 1.11.18 (2016-03-17)
 --------------------

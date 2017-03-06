@@ -101,7 +101,8 @@ def _is_unix_like_platform():
     :returns: true if the platform conforms to UNIX/POSIX-style APIs
     @rtype: bool
     """
-    return platform.system() in ['Linux', 'FreeBSD', 'Darwin']
+    #return platform.system() in ['Linux', 'Mac OS X', 'Darwin']
+    return platform.system() in ['Linux', 'FreeBSD']
 
 def get_address_override():
     """

@@ -1,7 +1,7 @@
 
-#include "xmlrpcpp/XmlRpcDispatch.h"
-#include "xmlrpcpp/XmlRpcSource.h"
-#include "xmlrpcpp/XmlRpcUtil.h"
+#include "XmlRpcDispatch.h"
+#include "XmlRpcSource.h"
+#include "XmlRpcUtil.h"
 
 #include <math.h>
 #include <errno.h>

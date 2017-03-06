@@ -42,7 +42,7 @@
 #include "ros/connection.h"
 #include "ros/file_log.h"
 
-#include "xmlrpcpp/XmlRpc.h"
+#include "XmlRpc.h"
 
 #include <ros/console.h>
 
@@ -52,10 +52,20 @@ using namespace std; // sigh
 namespace ros
 {
 
+ServiceManagerPtr g_service_manager;
+boost::mutex g_service_manager_mutex;
 const ServiceManagerPtr& ServiceManager::instance()
 {
-  static ServiceManagerPtr service_manager = boost::make_shared<ServiceManager>();
-  return service_manager;
+  if (!g_service_manager)
+  {
+    boost::mutex::scoped_lock lock(g_service_manager_mutex);
+    if (!g_service_manager)
+    {
+      g_service_manager = boost::make_shared<ServiceManager>();
+    }
+  }
+
+  return g_service_manager;
 }
 
 ServiceManager::ServiceManager()

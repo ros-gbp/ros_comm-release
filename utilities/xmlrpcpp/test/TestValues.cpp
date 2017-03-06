@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-#include "xmlrpcpp/XmlRpcValue.h"
+#include "XmlRpcValue.h"
 
 
 #include <assert.h>

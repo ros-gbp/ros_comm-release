@@ -11,7 +11,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include "xmlrpcpp/XmlRpcUtil.h"
+#include "XmlRpcUtil.h"
 
 using namespace XmlRpc;
 

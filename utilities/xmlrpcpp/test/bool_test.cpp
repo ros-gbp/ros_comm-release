@@ -1,5 +1,5 @@
 // bool_test.cpp : make sure bool variables copy around ok
-#include "xmlrpcpp/XmlRpc.h"
+#include "XmlRpc.h"
 #include <iostream>
 #include <stdlib.h>
 

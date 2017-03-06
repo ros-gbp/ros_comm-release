@@ -41,7 +41,7 @@
 #include "ros/file_log.h"
 #include "ros/subscribe_options.h"
 
-#include "xmlrpcpp/XmlRpc.h"
+#include "XmlRpc.h"
 
 #include <ros/console.h>
 
@@ -53,10 +53,20 @@ using namespace std; // sigh
 namespace ros
 {
 
+TopicManagerPtr g_topic_manager;
+boost::mutex g_topic_manager_mutex;
 const TopicManagerPtr& TopicManager::instance()
 {
-  static TopicManagerPtr topic_manager = boost::make_shared<TopicManager>();
-  return topic_manager;
+  if (!g_topic_manager)
+  {
+    boost::mutex::scoped_lock lock(g_topic_manager_mutex);
+    if (!g_topic_manager)
+    {
+      g_topic_manager = boost::make_shared<TopicManager>();
+    }
+  }
+
+  return g_topic_manager;
 }
 
 TopicManager::TopicManager()
@@ -101,9 +111,6 @@ void TopicManager::shutdown()
     boost::mutex::scoped_lock lock2(subs_mutex_);
     shutting_down_ = true;
   }
-
-  // actually one should call poll_manager_->removePollThreadListener(), but the connection is not stored above
-  poll_manager_->shutdown();
 
   xmlrpc_manager_->unbind("publisherUpdate");
   xmlrpc_manager_->unbind("requestTopic");
