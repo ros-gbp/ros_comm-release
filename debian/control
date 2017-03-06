@@ -1,0 +1,12 @@
+Source: ros-indigo-ros-comm
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-indigo-catkin
+Homepage: http://www.ros.org/wiki/ros_comm
+Standards-Version: 3.9.2
+
+Package: ros-indigo-ros-comm
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-indigo-message-filters, ros-indigo-ros, ros-indigo-rosbag, ros-indigo-rosconsole, ros-indigo-roscpp, ros-indigo-rosgraph, ros-indigo-rosgraph-msgs, ros-indigo-roslaunch, ros-indigo-roslisp, ros-indigo-rosmaster, ros-indigo-rosmsg, ros-indigo-rosnode, ros-indigo-rosout, ros-indigo-rosparam, ros-indigo-rospy, ros-indigo-rosservice, ros-indigo-rostest, ros-indigo-rostopic, ros-indigo-roswtf, ros-indigo-std-srvs, ros-indigo-topic-tools, ros-indigo-xmlrpcpp
+Description: ROS communications-related packages, including core client libraries (roscpp, rospy) and graph introspection tools (rostopic, rosnode, rosservice, rosparam).
