@@ -84,6 +84,7 @@ def record_cmd(argv):
     parser.add_option("-o", "--output-prefix", dest="prefix",        default=None,  action="store",               help="prepend PREFIX to beginning of bag name (name will always end with date stamp)")
     parser.add_option("-O", "--output-name",   dest="name",          default=None,  action="store",               help="record to bag with name NAME.bag")
     parser.add_option(      "--split",         dest="split",         default=False, callback=handle_split, action="callback",    help="split the bag when maximum size or duration is reached")
+    parser.add_option(      "--max-splits",    dest="max_splits",                   type='int',   action="store", help="Keep a maximum of N bag files, when reaching the maximum erase the oldest one to keep a constant number of files.", metavar="MAX_SPLITS")
     parser.add_option(      "--size",          dest="size",                         type='int',   action="store", help="record a bag of maximum size SIZE MB. (Default: infinite)", metavar="SIZE")
     parser.add_option(      "--duration",      dest="duration",                     type='string',action="store", help="record a bag of maximum duration DURATION in seconds, unless 'm', or 'h' is appended.", metavar="DURATION")
     parser.add_option("-b", "--buffsize",      dest="buffsize",      default=256,   type='int',   action="store", help="use an internal buffer of SIZE MB (Default: %default, 0 = infinite)", metavar="SIZE")
@@ -121,6 +122,8 @@ def record_cmd(argv):
         if not options.duration and not options.size:
             parser.error("Split specified without giving a maximum duration or size")
         cmd.extend(["--split"])
+        if options.max_splits:
+            cmd.extend(["--max-splits", str(options.max_splits)])
     if options.duration:    cmd.extend(["--duration", options.duration])
     if options.size:        cmd.extend(["--size", str(options.size)])
     if options.node:
@@ -218,6 +221,9 @@ def play_cmd(argv):
     parser.add_option("--topics", dest="topics", default=[],  callback=handle_topics, action="callback", help="topics to play back")
     parser.add_option("--pause-topics", dest="pause_topics", default=[],  callback=handle_pause_topics, action="callback", help="topics to pause on during playback")
     parser.add_option("--bags",  help="bags files to play back from")
+    parser.add_option("--wait-for-subscribers",  dest="wait_for_subscribers", default=False, action="store_true", help="wait for at least one subscriber on each topic before publishing")
+    parser.add_option("--rate-control-topic", dest="rate_control_topic", default='', type='str', help="watch the given topic, and if the last publish was more than <rate-control-max-delay> ago, wait until the topic publishes again to continue playback")
+    parser.add_option("--rate-control-max-delay", dest="rate_control_max_delay", default=1.0, type='float', help="maximum time difference from <rate-control-topic> before pausing")
 
     (options, args) = parser.parse_args(argv)
 
@@ -241,6 +247,7 @@ def play_cmd(argv):
     if options.loop:       cmd.extend(["--loop"])
     if options.keep_alive: cmd.extend(["--keep-alive"])
     if options.try_future: cmd.extend(["--try-future-version"])
+    if options.wait_for_subscribers: cmd.extend(["--wait-for-subscribers"])
 
     if options.clock:
         cmd.extend(["--clock", "--hz", str(options.freq)])
@@ -263,6 +270,12 @@ def play_cmd(argv):
     # prevent bag files to be passed as --topics or --pause-topics
     if options.topics or options.pause_topics:
         cmd.extend(['--bags'])
+
+    if options.rate_control_topic:
+        cmd.extend(['--rate-control-topic', str(options.rate_control_topic)])
+
+    if options.rate_control_max_delay:
+        cmd.extend(['--rate-control-max-delay', str(options.rate_control_max_delay)])
 
     cmd.extend(args)
 
@@ -472,7 +485,7 @@ def check_cmd(argv):
     migrations = checkbag(mm, args[0])
        
     if len(migrations) == 0:
-        print('Bag file is up to date.')
+        print('Bag file does not need any migrations.')
         exit(0)
         
     print('The following migrations need to occur:')

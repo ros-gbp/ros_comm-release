@@ -34,6 +34,7 @@ import itertools
 import threading
 import rospy
 
+
 class SimpleFilter(object):
 
     def __init__(self):
@@ -87,10 +88,13 @@ class Cache(SimpleFilter):
 
     Given a stream of messages, the most recent ``cache_size`` messages
     are cached in a ring buffer, from which time intervals of the cache
-    can then be retrieved by the client.
+    can then be retrieved by the client. The ``allow_headerless``
+    option specifies whether to allow storing headerless messages with
+    current ROS time instead of timestamp. You should avoid this as
+    much as you can, since the delays are unpredictable.
     """
 
-    def __init__(self, f, cache_size = 1):
+    def __init__(self, f, cache_size=1, allow_headerless=False):
         SimpleFilter.__init__(self)
         self.connectInput(f)
         self.cache_size = cache_size
@@ -99,18 +103,25 @@ class Cache(SimpleFilter):
         # Array to store msgs times, auxiliary structure to facilitate
         # sorted insertion
         self.cache_times = []
+        # Whether to allow storing headerless messages with current ROS
+        # time instead of timestamp.
+        self.allow_headerless = allow_headerless
 
     def connectInput(self, f):
         self.incoming_connection = f.registerCallback(self.add)
 
     def add(self, msg):
-        # Cannot use message filters with non-stamped messages
         if not hasattr(msg, 'header') or not hasattr(msg.header, 'stamp'):
-            rospy.logwarn("Cannot use message filters with non-stamped messages")
-            return
+            if not self.allow_headerless:
+                rospy.logwarn("Cannot use message filters with non-stamped messages. "
+                              "Use the 'allow_headerless' constructor option to "
+                              "auto-assign ROS time to headerless messages.")
+                return
+            stamp = rospy.Time.now()
+        else:
+            stamp = msg.header.stamp
 
         # Insert sorted
-        stamp = msg.header.stamp
         self.cache_times.append(stamp)
         self.cache_msgs.append(msg)
 
@@ -125,19 +136,22 @@ class Cache(SimpleFilter):
     def getInterval(self, from_stamp, to_stamp):
         """Query the current cache content between from_stamp to to_stamp."""
         assert from_stamp <= to_stamp
-        return [m for m in self.cache_msgs
-                if m.header.stamp >= from_stamp and m.header.stamp <= to_stamp]
+
+        return [msg for (msg, time) in zip(self.cache_msgs, self.cache_times)
+                if from_stamp <= time <= to_stamp]
 
     def getElemAfterTime(self, stamp):
         """Return the oldest element after or equal the passed time stamp."""
-        newer = [m for m in self.cache_msgs if m.header.stamp >= stamp]
+        newer = [msg for (msg, time) in zip(self.cache_msgs, self.cache_times)
+                 if time >= stamp]
         if not newer:
             return None
         return newer[0]
 
     def getElemBeforeTime(self, stamp):
         """Return the newest element before or equal the passed time stamp."""
-        older = [m for m in self.cache_msgs if m.header.stamp <= stamp]
+        older = [msg for (msg, time) in zip(self.cache_msgs, self.cache_times)
+                 if time <= stamp]
         if not older:
             return None
         return older[-1]
@@ -153,6 +167,11 @@ class Cache(SimpleFilter):
         if not self.cache_times:
             return None
         return self.cache_times[0]
+        
+    def getLast(self):
+        if self.getLastestTime() is None:
+            return None
+        return self.getElemAfterTime(self.getLastestTime())
 
 
 class TimeSynchronizer(SimpleFilter):
@@ -184,9 +203,11 @@ class TimeSynchronizer(SimpleFilter):
 
     def connectInput(self, fs):
         self.queues = [{} for f in fs]
-        self.input_connections = [f.registerCallback(self.add, q) for (f, q) in zip(fs, self.queues)]
+        self.input_connections = [
+            f.registerCallback(self.add, q, i_q)
+            for i_q, (f, q) in enumerate(zip(fs, self.queues))]
 
-    def add(self, msg, my_queue):
+    def add(self, msg, my_queue, my_queue_index=None):
         self.lock.acquire()
         my_queue[msg.header.stamp] = msg
         while len(my_queue) > self.queue_size:
@@ -209,19 +230,56 @@ class ApproximateTimeSynchronizer(TimeSynchronizer):
     :class:`ApproximateTimeSynchronizer` synchronizes incoming message filters by the
     timestamps contained in their messages' headers. The API is the same as TimeSynchronizer
     except for an extra `slop` parameter in the constructor that defines the delay (in seconds)
-    with which messages can be synchronized
+    with which messages can be synchronized. The ``allow_headerless`` option specifies whether
+    to allow storing headerless messages with current ROS time instead of timestamp. You should
+    avoid this as much as you can, since the delays are unpredictable.
     """
 
-    def __init__(self, fs, queue_size, slop):
+    def __init__(self, fs, queue_size, slop, allow_headerless=False):
         TimeSynchronizer.__init__(self, fs, queue_size)
         self.slop = rospy.Duration.from_sec(slop)
+        self.allow_headerless = allow_headerless
 
-    def add(self, msg, my_queue):
+    def add(self, msg, my_queue, my_queue_index=None):
+        if not hasattr(msg, 'header') or not hasattr(msg.header, 'stamp'):
+            if not self.allow_headerless:
+                rospy.logwarn("Cannot use message filters with non-stamped messages. "
+                              "Use the 'allow_headerless' constructor option to "
+                              "auto-assign ROS time to headerless messages.")
+                return
+            stamp = rospy.Time.now()
+        else:
+            stamp = msg.header.stamp
+
         self.lock.acquire()
-        my_queue[msg.header.stamp] = msg
+        my_queue[stamp] = msg
         while len(my_queue) > self.queue_size:
             del my_queue[min(my_queue)]
-        for vv in itertools.product(*[list(q.keys()) for q in self.queues]):
+        # self.queues = [topic_0 {stamp: msg}, topic_1 {stamp: msg}, ...]
+        if my_queue_index is None:
+            search_queues = self.queues
+        else:
+            search_queues = self.queues[:my_queue_index] + \
+                self.queues[my_queue_index+1:]
+        # sort and leave only reasonable stamps for synchronization
+        stamps = []
+        for queue in search_queues:
+            topic_stamps = []
+            for s in queue:
+                stamp_delta = abs(s - stamp)
+                if stamp_delta > self.slop:
+                    continue  # far over the slop
+                topic_stamps.append((s, stamp_delta))
+            if not topic_stamps:
+                self.lock.release()
+                return
+            topic_stamps = sorted(topic_stamps, key=lambda x: x[1])
+            stamps.append(topic_stamps)
+        for vv in itertools.product(*[zip(*s)[0] for s in stamps]):
+            vv = list(vv)
+            # insert the new message
+            if my_queue_index is not None:
+                vv.insert(my_queue_index, stamp)
             qt = list(zip(self.queues, vv))
             if ( ((max(vv) - min(vv)) < self.slop) and
                 (len([1 for q,t in qt if t not in q]) == 0) ):
@@ -229,4 +287,5 @@ class ApproximateTimeSynchronizer(TimeSynchronizer):
                 self.signalMessage(*msgs)
                 for q,t in qt:
                     del q[t]
+                break  # fast finish after the synchronization
         self.lock.release()

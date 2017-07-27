@@ -2,15 +2,41 @@
 Changelog for package rosbag_storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.11.21 (2017-03-06)
---------------------
+1.13.1 (2017-07-27)
+-------------------
+* fix buffer overflow vulnerability (`#1092 <https://github.com/ros/ros_comm/issues/1092>`_)
+* fix rosbag::View::iterator copy assignment operator (`#1017 <https://github.com/ros/ros_comm/issues/1017>`_)
+* fix open mode on Windows (`#1005 <https://github.com/ros/ros_comm/pull/1005>`_)
+* add swap function instead of copy constructor / assignment operator for rosbag::Bag (`#1000 <https://github.com/ros/ros_comm/issues/1000>`_)
 
-1.11.20 (2016-06-27)
---------------------
+1.13.0 (2017-02-22)
+-------------------
 
-1.11.19 (2016-04-18)
---------------------
+1.12.7 (2017-02-17)
+-------------------
+
+1.12.6 (2016-10-26)
+-------------------
+
+1.12.5 (2016-09-30)
+-------------------
+
+1.12.4 (2016-09-19)
+-------------------
+
+1.12.3 (2016-09-17)
+-------------------
+* make Bag constructor explicit (`#835 <https://github.com/ros/ros_comm/pull/835>`_)
+
+1.12.2 (2016-06-03)
+-------------------
+
+1.12.1 (2016-04-18)
+-------------------
 * use directory specific compiler flags (`#785 <https://github.com/ros/ros_comm/pull/785>`_)
+
+1.12.0 (2016-03-18)
+-------------------
 
 1.11.18 (2016-03-17)
 --------------------

@@ -95,8 +95,8 @@ def test_resolve_args():
     assert roslaunch_dir
 
     anon_context = {'foo': 'bar'}
-    arg_context = {'fuga': 'hoge', 'car': 'cdr'}
-    context = {'anon': anon_context, 'arg': arg_context }
+    arg_context = {'fuga': 'hoge', 'car': 'cdr', 'arg': 'foo', 'True': 'False'}
+    context = {'anon': anon_context, 'arg': arg_context, 'filename': '/path/to/file.launch'}
         
     tests = [
         ('$(find roslaunch)', roslaunch_dir),
@@ -119,6 +119,7 @@ def test_resolve_args():
         ('$(optenv NOT_ROS_ROOT)more stuff', 'more stuff'),
         ('$(optenv NOT_ROS_ROOT alternate)', 'alternate'),
         ('$(optenv NOT_ROS_ROOT alternate text)', 'alternate text'),
+        ('$(dirname)/foo', '/path/to/foo'),
 
         # #1776
         ('$(anon foo)', 'bar'),
@@ -130,9 +131,31 @@ def test_resolve_args():
         ('$(arg fuga)$(arg fuga)', 'hogehoge'),
         ('$(arg car)$(arg fuga)', 'cdrhoge'),
         ('$(arg fuga)hoge', 'hogehoge'),
-        ]
+
+        # $(eval ...) versions of those tests
+        ("$(eval find('roslaunch'))", roslaunch_dir),
+        ("$(eval env('ROS_ROOT'))", os.environ['ROS_ROOT']),
+        ("$(eval optenv('ROS_ROOT', 'alternate text'))", os.environ['ROS_ROOT']),
+        ("$(eval optenv('NOT_ROS_ROOT', 'alternate text'))", "alternate text"),
+        ("$(eval optenv('NOT_ROS_ROOT'))", ""),
+        ("$(eval anon('foo'))", 'bar'),
+        ("$(eval arg('fuga'))", 'hoge'),
+        ('$(eval arg("fuga"))', 'hoge'),
+        ('$(eval arg("arg"))', 'foo'),
+        ('$(eval arg("True"))', 'False'),
+        ('$(eval 1==1)', 'True'),
+        ('$(eval [0,1,2][1])', '1'),
+        # test implicit arg access
+        ('$(eval fuga)', 'hoge'),
+        ('$(eval True)', 'True'),
+        # math expressions
+        ('$(eval round(sin(pi),1))', '0.0'),
+        ('$(eval cos(0))', '1.0'),
+        # str, map
+        ("$(eval ''.join(map(str, [4,2])))", '42'),
+    ]
     for arg, val in tests:
-        assert val == resolve_args(arg, context=context)
+        assert val == resolve_args(arg, context=context), arg
 
     # more #1776
     r = resolve_args('$(anon foo)/bar')
@@ -155,6 +178,8 @@ def test_resolve_args():
         '$(optenv)',
         '$(anon)',
         '$(anon foo bar)',            
+        # Should fail without the supplied context.
+        '$(dirname)'
         ]
     for f in failures:
         try:

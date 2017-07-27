@@ -2,21 +2,54 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.11.21 (2017-03-06)
---------------------
+1.13.1 (2017-07-27)
+-------------------
+* fix handling connections without indices (`#1109 <https://github.com/ros/ros_comm/pull/1109>`_)
+* improve message of check command (`#1067 <https://github.com/ros/ros_comm/pull/1067>`_)
+* fix BZip2 inclusion (`#1016 <https://github.com/ros/ros_comm/pull/1016>`_)
+* expose rate-control-topic and rate-control-max-delay args to command line tool (`#1015 <https://github.com/ros/ros_comm/pull/1015>`_)
+* improve migration rule generation (`#1009 <https://github.com/ros/ros_comm/pull/1009>`_, `#1010 <https://github.com/ros/ros_comm/pull/1010>`_, `#1011 <https://github.com/ros/ros_comm/pull/1011>`_)
+
+1.13.0 (2017-02-22)
+-------------------
+
+1.12.7 (2017-02-17)
+-------------------
 * throw exception instead of accessing invalid memory (`#971 <https://github.com/ros/ros_comm/pull/971>`_)
+* move headers to include/xmlrpcpp (`#962 <https://github.com/ros/ros_comm/issues/962>`_)
+* added option wait-for-subscriber to rosbag play (`#959 <https://github.com/ros/ros_comm/issues/959>`_)
 * terminate underlying rosbag play, record  on SIGTERM (`#951 <https://github.com/ros/ros_comm/issues/951>`_)
+* add pause service for rosbag player (`#949 <https://github.com/ros/ros_comm/issues/949>`_)
+* add rate-control-topic and rate-control-max-delay. (`#947 <https://github.com/ros/ros_comm/issues/947>`_)
+
+1.12.6 (2016-10-26)
+-------------------
 * fix BagMigrationException in migrate_raw (`#917 <https://github.com/ros/ros_comm/issues/917>`_)
+
+1.12.5 (2016-09-30)
+-------------------
+
+1.12.4 (2016-09-19)
+-------------------
+
+1.12.3 (2016-09-17)
+-------------------
 * set default values for min_space and min_space_str (`#883 <https://github.com/ros/ros_comm/issues/883>`_)
+* record a maximum number of splits and then begin deleting old files (`#866 <https://github.com/ros/ros_comm/issues/866>`_)
+* allow 64-bit sizes to be passed to robag max_size (`#865 <https://github.com/ros/ros_comm/issues/865>`_)
 * update rosbag filter progress meter to use raw uncompressed input size (`#857 <https://github.com/ros/ros_comm/issues/857>`_)
 
-1.11.20 (2016-06-27)
---------------------
+1.12.2 (2016-06-03)
+-------------------
 
-1.11.19 (2016-04-18)
---------------------
+1.12.1 (2016-04-18)
+-------------------
 * promote the result of read_messages to a namedtuple (`#777 <https://github.com/ros/ros_comm/pull/777>`_)
 * use directory specific compiler flags (`#785 <https://github.com/ros/ros_comm/pull/785>`_)
+
+1.12.0 (2016-03-18)
+-------------------
+* add missing parameter to AdvertiseOptions::createAdvertiseOptions (`#733 <https://github.com/ros/ros_comm/issues/733>`_)
 
 1.11.18 (2016-03-17)
 --------------------

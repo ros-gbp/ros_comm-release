@@ -69,6 +69,7 @@ class TestRoswtfOffline(unittest.TestCase):
         pkgs = ['roswtf',
             'rosgraph', 'roslaunch', 'roslib', 'rosnode', 'rosservice',
             'rosbag', 'rosbag_storage', 'roslz4', 'rosconsole', 'roscpp', 'rosgraph_msgs', 'roslang', 'rosmaster', 'rosmsg', 'rosout', 'rosparam', 'rospy', 'rostest', 'rostopic', 'topic_tools', 'xmlrpcpp',
+            'std_srvs',  # ros_comm_msgs
             'cpp_common', 'roscpp_serialization', 'roscpp_traits', 'rostime',  # roscpp_core
             'rosbuild', 'rosclean', 'rosunit',  # ros
             'rospack', 'std_msgs', 'message_runtime', 'message_generation', 'gencpp', 'genlisp', 'genpy', 'genmsg', 'catkin',
@@ -82,6 +83,12 @@ class TestRoswtfOffline(unittest.TestCase):
             paths.append(path)
         try:
             path = rospack.get_path('geneus')
+        except rospkg.ResourceNotFound:
+            pass
+        else:
+            paths.append(path)
+        try:
+            path = rospack.get_path('gennodejs')
         except rospkg.ResourceNotFound:
             pass
         else:

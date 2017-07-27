@@ -2,17 +2,40 @@
 Changelog for package rostest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.11.21 (2017-03-06)
---------------------
+1.13.1 (2017-07-27)
+-------------------
+* check clock publication neatly in publishtest (`#973 <https://github.com/ros/ros_comm/issues/973>`_)
+
+1.13.0 (2017-02-22)
+-------------------
+
+1.12.7 (2017-02-17)
+-------------------
+
+1.12.6 (2016-10-26)
+-------------------
+
+1.12.5 (2016-09-30)
+-------------------
+
+1.12.4 (2016-09-19)
+-------------------
 * fix test type handling (`#722 <https://github.com/ros/ros_comm/issues/722>`_)
+
+1.12.3 (2016-09-17)
+-------------------
+* add test node if topic message is published at least once (`#863 <https://github.com/ros/ros_comm/issues/863>`_)
 * add_rostest_gtest does now add the created gtest-target as a dependeny to the created rostest (`#830 <https://github.com/ros/ros_comm/pull/830>`_)
 
-1.11.20 (2016-06-27)
---------------------
+1.12.2 (2016-06-03)
+-------------------
 
-1.11.19 (2016-04-18)
---------------------
+1.12.1 (2016-04-18)
+-------------------
 * fix passing multiple args to add_rostest (fix `#790 <https://github.com/ros/ros_comm/issues/790>`_)
+
+1.12.0 (2016-03-18)
+-------------------
 
 1.11.18 (2016-03-17)
 --------------------

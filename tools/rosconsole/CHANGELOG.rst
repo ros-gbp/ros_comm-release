@@ -2,16 +2,41 @@
 Changelog for package rosconsole
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.11.21 (2017-03-06)
---------------------
+1.13.1 (2017-07-27)
+-------------------
+* remove extra semicolon in definition of macro ROSCONSOLE_PRINTF_ATTRIBUTE(a, b) (`#1056 <https://github.com/ros/ros_comm/pull/1056>`_)
+* add ROSCONSOLE_STDOUT_LINE_BUFFERED env var to force flushing stdout in Formatter::print (`#1012 <https://github.com/ros/ros_comm/issues/1012>`_)
+
+1.13.0 (2017-02-22)
+-------------------
+
+1.12.7 (2017-02-17)
+-------------------
+
+1.12.6 (2016-10-26)
+-------------------
+* add missing walltime to roscpp logging (`#879 <https://github.com/ros/ros_comm/pull/879>`_)
 * fix building on GCC-6 (`#911 <https://github.com/ros/ros_comm/pull/911>`_)
 
-1.11.20 (2016-06-27)
---------------------
+1.12.5 (2016-09-30)
+-------------------
 
-1.11.19 (2016-04-18)
---------------------
+1.12.4 (2016-09-19)
+-------------------
+
+1.12.3 (2016-09-17)
+-------------------
+
+1.12.2 (2016-06-03)
+-------------------
+
+1.12.1 (2016-04-18)
+-------------------
 * use directory specific compiler flags (`#785 <https://github.com/ros/ros_comm/pull/785>`_)
+
+1.12.0 (2016-03-18)
+-------------------
+* make LogAppender and Token destructor virtual (`#729 <https://github.com/ros/ros_comm/issues/729>`_)
 
 1.11.18 (2016-03-17)
 --------------------

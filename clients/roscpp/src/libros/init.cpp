@@ -48,7 +48,7 @@
 #include "ros/subscribe_options.h"
 #include "ros/transport/transport_tcp.h"
 #include "ros/internal_timer_manager.h"
-#include "XmlRpcSocket.h"
+#include "xmlrpcpp/XmlRpcSocket.h"
 
 #include "roscpp/GetLoggers.h"
 #include "roscpp/SetLoggerLevel.h"
@@ -148,6 +148,7 @@ void atexitCallback()
   if (ok() && !isShuttingDown())
   {
     ROSCPP_LOG_DEBUG("shutting down due to exit() or end of main() without cleanup of all NodeHandles");
+    g_started = false; // don't shutdown singletons, because they are already destroyed
     shutdown();
   }
 }

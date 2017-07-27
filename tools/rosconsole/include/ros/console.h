@@ -60,7 +60,7 @@
 
 #ifdef __GNUC__
 #if __GNUC__ >= 3
-#define ROSCONSOLE_PRINTF_ATTRIBUTE(a, b) __attribute__ ((__format__ (__printf__, a, b)));
+#define ROSCONSOLE_PRINTF_ATTRIBUTE(a, b) __attribute__ ((__format__ (__printf__, a, b)))
 #endif
 #endif
 
@@ -101,6 +101,8 @@ class LogAppender
 {
 public:
 
+  virtual ~LogAppender() {}
+
   virtual void log(::ros::console::Level level, const char* str, const char* file, const char* function, int line) = 0;
 
 };
@@ -109,6 +111,7 @@ ROSCONSOLE_DECL void register_appender(LogAppender* appender);
 
 struct Token
 {
+  virtual ~Token() {}
   /*
    * @param level
    * @param message
