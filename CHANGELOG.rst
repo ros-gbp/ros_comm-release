@@ -2,6 +2,9 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.13.2 (2017-08-15)
+-------------------
+
 1.13.1 (2017-07-27)
 -------------------
 * fix handling connections without indices (`#1109 <https://github.com/ros/ros_comm/pull/1109>`_)
