@@ -1,3 +1,60 @@
+## ros_comm (lunar) - 1.13.2-0
+
+The packages in the `ros_comm` repository were released into the `lunar` distro by running `/usr/bin/bloom-release -r lunar -t lunar ros_comm` on `Tue, 15 Aug 2017 19:38:49 -0000`
+
+These packages were released:
+- `message_filters`
+- `ros_comm`
+- `rosbag`
+- `rosbag_storage`
+- `rosconsole`
+- `roscpp`
+- `rosgraph`
+- `roslaunch`
+- `roslz4`
+- `rosmaster`
+- `rosmsg`
+- `rosnode`
+- `rosout`
+- `rosparam`
+- `rospy`
+- `rosservice`
+- `rostest`
+- `rostopic`
+- `roswtf`
+- `topic_tools`
+- `xmlrpcpp`
+
+These packages were explicitly ignored:
+- `test_rosbag`
+- `test_rosbag_storage`
+- `test_roscpp`
+- `test_rosgraph`
+- `test_roslaunch`
+- `test_roslib_comm`
+- `test_rosmaster`
+- `test_rosparam`
+- `test_rospy`
+- `test_rosservice`
+- `test_rostopic`
+
+Version of package(s) in repository `ros_comm`:
+
+- upstream repository: git@github.com:ros/ros_comm.git
+- release repository: https://github.com/ros-gbp/ros_comm-release.git
+- rosdistro version: `1.13.1-0`
+- old version: `1.13.1-0`
+- new version: `1.13.2-0`
+
+Versions of tools used:
+
+- bloom version: `0.5.26`
+- catkin_pkg version: `0.3.6`
+- rosdep version: `0.11.8`
+- rosdistro version: `0.6.2`
+- vcstools version: `0.1.39`
+
+
 ## ros_comm (lunar) - 1.13.1-0
 
 The packages in the `ros_comm` repository were released into the `lunar` distro by running `/usr/bin/bloom-release -r lunar -t lunar ros_comm` on `Thu, 27 Jul 2017 14:57:22 -0000`
