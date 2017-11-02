@@ -1,0 +1,13 @@
+Source: ros-lunar-roswtf
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-lunar-catkin (>= 0.5.68), ros-lunar-cmake-modules, ros-lunar-rosbag, ros-lunar-rostest, ros-lunar-std-srvs
+Homepage: http://ros.org/wiki/roswtf
+Standards-Version: 3.9.2
+
+Package: ros-lunar-roswtf
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-paramiko, python-rospkg, ros-lunar-rosbuild, ros-lunar-rosgraph, ros-lunar-roslaunch, ros-lunar-roslib, ros-lunar-rosnode, ros-lunar-rosservice
+Description: roswtf is a tool for diagnosing issues with a running ROS system.
+ Think of it as a FAQ implemented in code.
