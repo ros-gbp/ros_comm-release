@@ -2,6 +2,9 @@
 Changelog for package rosnode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.9 (2017-11-06)
+-------------------
+
 1.12.8 (2017-11-06)
 -------------------
 * return exit code 1 in case of errors (`#1178 <https://github.com/ros/ros_comm/issues/1178>`_)
