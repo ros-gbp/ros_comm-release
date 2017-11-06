@@ -140,11 +140,16 @@ void ThisNode::init(const std::string& name, const M_string& remappings, uint32_
     namespace_ = it->second;
   }
 
-  namespace_ = names::clean(namespace_);
-  if (namespace_.empty() || (namespace_[0] != '/'))
+  if (namespace_.empty())
   {
-    namespace_ = "/" + namespace_;
+    namespace_ = "/";
   }
+
+  namespace_ = (namespace_ == "/")
+    ? std::string("/") 
+    : ("/" + namespace_)
+    ;
+
 
   std::string error;
   if (!names::validate(namespace_, error))

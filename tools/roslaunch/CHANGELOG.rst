@@ -2,32 +2,14 @@
 Changelog for package roslaunch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.13.4 (2017-11-02)
+1.12.8 (2017-11-06)
 -------------------
-
-1.13.3 (2017-10-25)
--------------------
-* add --set-master-logger-level option for 'rosmaster' to output LOG_API (`#1180 <https://github.com/ros/ros_comm/issues/1180>`_)
-* use defined error codes rather than hardcoded integers (`#1174 <https://github.com/ros/ros_comm/issues/1174>`_, `#1181 <https://github.com/ros/ros_comm/issues/1181>`_)
 * fix parameter leaking into sibling scopes (`#1158 <https://github.com/ros/ros_comm/issues/1158>`_)
-* avoid full stack trace for ResourceNotFound (`#1147 <https://github.com/ros/ros_comm/issues/1147>`_)
 * remove mention of rosmake from error message (`#1140 <https://github.com/ros/ros_comm/issues/1140>`_)
-
-1.13.2 (2017-08-15)
--------------------
-
-1.13.1 (2017-07-27)
--------------------
-* add $(dirname) to get directory of current launch file (`#1103 <https://github.com/ros/ros_comm/pull/1103>`_)
-* clean the namespace to get rid of double or trailing forward slashes (`#1100 <https://github.com/ros/ros_comm/issues/1100>`_)
 * only launch core nodes if master was launched by roslaunch (`#1098 <https://github.com/ros/ros_comm/pull/1098>`_)
 * ensure pid file is removed on exit (`#1057 <https://github.com/ros/ros_comm/pull/1057>`_, `#1084 <https://github.com/ros/ros_comm/pull/1084>`_)
-* add yaml type for param tag (`#1045 <https://github.com/ros/ros_comm/issues/1045>`_)
 * ensure cwd exists (`#1031 <https://github.com/ros/ros_comm/pull/1031>`_)
 * respect if/unless for roslaunch-check (`#998 <https://github.com/ros/ros_comm/pull/998>`_)
-
-1.13.0 (2017-02-22)
--------------------
 
 1.12.7 (2017-02-17)
 -------------------

@@ -185,8 +185,6 @@ void TransportTCP::setKeepAlive(bool use, uint32_t idle, uint32_t interval, uint
     {
       ROS_DEBUG("setsockopt failed to set TCP_KEEPIDLE on socket [%d] [%s]", sock_, cached_remote_host_.c_str());
     }
-#else
-    (void)idle;
 #endif
 
 #if defined(SOL_TCP) && defined(TCP_KEEPINTVL)
@@ -195,8 +193,6 @@ void TransportTCP::setKeepAlive(bool use, uint32_t idle, uint32_t interval, uint
     {
       ROS_DEBUG("setsockopt failed to set TCP_KEEPINTVL on socket [%d] [%s]", sock_, cached_remote_host_.c_str());
     }
-#else
-    (void)interval;
 #endif
 
 #if defined(SOL_TCP) && defined(TCP_KEEPCNT)
@@ -205,8 +201,6 @@ void TransportTCP::setKeepAlive(bool use, uint32_t idle, uint32_t interval, uint
     {
       ROS_DEBUG("setsockopt failed to set TCP_KEEPCNT on socket [%d] [%s]", sock_, cached_remote_host_.c_str());
     }
-#else
-    (void)count;
 #endif
   }
   else

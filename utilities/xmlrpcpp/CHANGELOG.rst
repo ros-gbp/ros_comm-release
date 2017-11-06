@@ -2,24 +2,9 @@
 Changelog for package xmlrpcpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.13.4 (2017-11-02)
--------------------
-
-1.13.3 (2017-10-25)
--------------------
-* fix problem when configuring tests without gtest being available (`#1197 <https://github.com/ros/ros_comm/issues/1197>`_)
-
-1.13.2 (2017-08-15)
+1.12.8 (2017-11-06)
 -------------------
 * use poll() in favor of select() in the XmlRPCDispatcher (`#833 <https://github.com/ros/ros_comm/issues/833>`_)
-* fix fall through warnings with g++ 7 (`#1139 <https://github.com/ros/ros_comm/issues/1139>`_)
-
-1.13.1 (2017-07-27)
--------------------
-* switch to libb64 for base64 encoding/decoding (`#1046 <https://github.com/ros/ros_comm/issues/1046>`_)
-
-1.13.0 (2017-02-22)
--------------------
 
 1.12.7 (2017-02-17)
 -------------------

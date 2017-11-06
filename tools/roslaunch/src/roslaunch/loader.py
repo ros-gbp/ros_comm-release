@@ -36,17 +36,15 @@
 General routines and representations for loading roslaunch model.
 """
 
-import errno
 import os
 from copy import deepcopy
-
-import yaml
 
 from roslaunch.core import Param, RosbinExecutable, RLException, PHASE_SETUP
 
 from rosgraph.names import make_global_ns, ns_join, PRIV_NAME, load_mappings, is_legal_name, canonicalize_name
 
 #lazy-import global for yaml and rosparam
+yaml = None
 rosparam = None
 
 class LoadException(RLException):
@@ -90,17 +88,12 @@ def convert_value(value, type_):
     elif type_ == 'double':
         return float(value)
     elif type_ == 'bool' or type_ == 'boolean':
-        value = value.lower().strip()
+        value = value.lower()
         if value == 'true' or value == '1':
             return True
         elif value == 'false' or value == '0':
             return False
         raise ValueError("%s is not a '%s' type"%(value, type_))
-    elif type_ == 'yaml':
-        try:
-            return yaml.load(value)
-        except yaml.parser.ParserError as e:
-            raise ValueError(e)
     else:
         raise ValueError("Unknown type '%s'"%type_)        
 
@@ -402,6 +395,10 @@ class Loader(object):
                     text = f.read()
                     
             # parse YAML text
+            # - lazy import
+            global yaml
+            if yaml is None:
+                import yaml
             # - lazy import: we have to import rosparam in oder to to configure the YAML constructors
             global rosparam
             if rosparam is None:
@@ -471,7 +468,7 @@ class Loader(object):
             return convert_value(value.strip(), ptype)
         elif textfile is not None:
             with open(textfile, 'r') as f:
-                return convert_value(f.read(), ptype)
+                return f.read()
         elif binfile is not None:
             try:
                 from xmlrpc.client import Binary
@@ -496,12 +493,12 @@ class Loader(object):
                 if p.returncode != 0:
                     raise ValueError("Cannot load command parameter [%s]: command [%s] returned with code [%s]"%(name, command, p.returncode))
             except OSError as e:
-                if e.errno == errno.ENOENT:
+                if e.errno == 2:
                     raise ValueError("Cannot load command parameter [%s]: no such command [%s]"%(name, command))
                 raise
             if c_value is None:
                 raise ValueError("parameter: unable to get output of command [%s]"%command)
-            return convert_value(c_value, ptype)
+            return c_value
         else: #_param_tag prevalidates, so this should not be reachable
             raise ValueError("unable to determine parameter value")
 
