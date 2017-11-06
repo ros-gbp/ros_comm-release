@@ -2,6 +2,9 @@
 Changelog for package rosmsg
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.9 (2017-11-06)
+-------------------
+
 1.12.8 (2017-11-06)
 -------------------
 * fix rosmsg show from bag (`#1006 <https://github.com/ros/ros_comm/pull/1006>`_)
