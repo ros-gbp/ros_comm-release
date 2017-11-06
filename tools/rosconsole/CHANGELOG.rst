@@ -2,6 +2,9 @@
 Changelog for package rosconsole
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.9 (2017-11-06)
+-------------------
+
 1.12.8 (2017-11-06)
 -------------------
 * replace 'while(0)' with 'while(false)' to avoid warnings (`#1179 <https://github.com/ros/ros_comm/issues/1179>`_)
