@@ -2,6 +2,9 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.9 (2017-11-06)
+-------------------
+
 1.12.8 (2017-11-06)
 -------------------
 * fix Python 3 compatibility (`#1150 <https://github.com/ros/ros_comm/issues/1150>`_)
