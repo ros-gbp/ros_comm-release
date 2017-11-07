@@ -1,0 +1,13 @@
+Source: ros-kinetic-rosservice
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-kinetic-catkin (>= 0.5.78)
+Homepage: http://ros.org/wiki/rosservice
+Standards-Version: 3.9.2
+
+Package: ros-kinetic-rosservice
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-kinetic-genpy, ros-kinetic-rosgraph, ros-kinetic-roslib, ros-kinetic-rosmsg, ros-kinetic-rospy
+Description: rosservice contains the rosservice command-line tool for listing and querying ROS Services.
+ It also contains a Python library for retrieving information about Services and dynamically invoking them. The Python library is experimental and is for internal-use only.
