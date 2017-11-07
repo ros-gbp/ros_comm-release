@@ -1,0 +1,12 @@
+Source: ros-kinetic-rosconsole
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), libapr1-dev, libaprutil1-dev, libboost-all-dev, liblog4cxx10-dev, ros-kinetic-catkin, ros-kinetic-cpp-common, ros-kinetic-rostime, ros-kinetic-rosunit
+Homepage: http://www.ros.org/wiki/rosconsole
+Standards-Version: 3.9.2
+
+Package: ros-kinetic-rosconsole
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libapr1-dev, libaprutil1-dev, liblog4cxx10-dev, ros-kinetic-cpp-common, ros-kinetic-rosbuild, ros-kinetic-rostime
+Description: ROS console output library.
