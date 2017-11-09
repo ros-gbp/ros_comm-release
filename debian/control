@@ -1,0 +1,12 @@
+Source: ros-lunar-rosout
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-lunar-catkin, ros-lunar-roscpp, ros-lunar-rosgraph-msgs
+Homepage: http://ros.org/wiki/rosout
+Standards-Version: 3.9.2
+
+Package: ros-lunar-rosout
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-lunar-roscpp, ros-lunar-rosgraph-msgs
+Description: System-wide logging mechanism for messages sent to the /rosout topic.
