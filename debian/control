@@ -1,0 +1,12 @@
+Source: ros-lunar-rosmaster
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-lunar-catkin (>= 0.5.68)
+Homepage: http://ros.org/wiki/rosmaster
+Standards-Version: 3.9.2
+
+Package: ros-lunar-rosmaster
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-defusedxml, ros-lunar-rosgraph
+Description: ROS Master implementation.
