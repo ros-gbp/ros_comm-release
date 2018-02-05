@@ -170,10 +170,13 @@ def info_cmd(argv):
         except ROSBagUnindexedException as ex:
             print('ERROR bag unindexed: %s.  Run rosbag reindex.' % arg,
                   file=sys.stderr)
+            sys.exit(1)
         except ROSBagException as ex:
             print('ERROR reading %s: %s' % (arg, str(ex)), file=sys.stderr)
+            sys.exit(1)
         except IOError as ex:
             print('ERROR reading %s: %s' % (arg, str(ex)), file=sys.stderr)
+            sys.exit(1)
 
 
 def handle_topics(option, opt_str, value, parser):
@@ -222,6 +225,8 @@ def play_cmd(argv):
     parser.add_option("--pause-topics", dest="pause_topics", default=[],  callback=handle_pause_topics, action="callback", help="topics to pause on during playback")
     parser.add_option("--bags",  help="bags files to play back from")
     parser.add_option("--wait-for-subscribers",  dest="wait_for_subscribers", default=False, action="store_true", help="wait for at least one subscriber on each topic before publishing")
+    parser.add_option("--rate-control-topic", dest="rate_control_topic", default='', type='str', help="watch the given topic, and if the last publish was more than <rate-control-max-delay> ago, wait until the topic publishes again to continue playback")
+    parser.add_option("--rate-control-max-delay", dest="rate_control_max_delay", default=1.0, type='float', help="maximum time difference from <rate-control-topic> before pausing")
 
     (options, args) = parser.parse_args(argv)
 
@@ -270,6 +275,12 @@ def play_cmd(argv):
         cmd.extend(['--bags'])
 
     cmd.extend(args)
+
+    if options.rate_control_topic:
+        cmd.extend(['--rate-control-topic', str(options.rate_control_topic)])
+
+    if options.rate_control_max_delay:
+        cmd.extend(['--rate-control-max-delay', str(options.rate_control_max_delay)])
 
     old_handler = signal.signal(
         signal.SIGTERM,
@@ -326,7 +337,7 @@ The following variables are available:
         inbag = Bag(inbag_filename)
     except ROSBagUnindexedException as ex:
         print('ERROR bag unindexed: %s.  Run rosbag reindex.' % inbag_filename, file=sys.stderr)
-        return
+        sys.exit(1)
 
     try:
         meter = ProgressMeter(outbag_filename, inbag._uncompressed_size)
@@ -424,7 +435,7 @@ def fix_cmd(argv):
     except ROSBagUnindexedException as ex:
         print('ERROR bag unindexed: %s.  Run rosbag reindex.' % inbag_filename,
               file=sys.stderr)
-        return
+        sys.exit(1)
 
     if len(migrations) == 0:
         os.rename(outname, outbag_filename)
@@ -441,6 +452,7 @@ def fix_cmd(argv):
                     
         print('Try running \'rosbag check\' to create the necessary rule files or run \'rosbag fix\' with the \'--force\' option.')
         os.remove(outname)
+        sys.exit(1)
 
 def check_cmd(argv):
     parser = optparse.OptionParser(usage='rosbag check BAG [-g RULEFILE] [EXTRARULES1 EXTRARULES2 ...]', description='Determine whether a bag is playable in the current system, or if it can be migrated.')
@@ -470,7 +482,7 @@ def check_cmd(argv):
         Bag(args[0])
     except ROSBagUnindexedException as ex:
         print('ERROR bag unindexed: %s.  Run rosbag reindex.' % args[0], file=sys.stderr)
-        return
+        sys.exit(1)
 
     mm = MessageMigrator(args[1:] + append_rule, not options.noplugins)
 
