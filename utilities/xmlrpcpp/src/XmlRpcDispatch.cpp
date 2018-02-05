@@ -3,6 +3,8 @@
 #include "xmlrpcpp/XmlRpcSource.h"
 #include "xmlrpcpp/XmlRpcUtil.h"
 
+#include "ros/time.h"
+
 #include <math.h>
 #include <errno.h>
 #include <sys/timeb.h>
@@ -62,7 +64,7 @@ XmlRpcDispatch::removeSource(XmlRpcSource* source)
 
 
 // Modify the types of events to watch for on this source
-void 
+void
 XmlRpcDispatch::setSourceEvents(XmlRpcSource* source, unsigned eventMask)
 {
   for (SourceList::iterator it=_sources.begin(); it!=_sources.end(); ++it)
@@ -85,7 +87,8 @@ XmlRpcDispatch::work(double timeout)
   const unsigned POLLIN_CHK = (POLLIN | POLLHUP | POLLERR); // Readable or connection lost
   const unsigned POLLOUT_REQ = POLLOUT; // Request write
   const unsigned POLLOUT_CHK = (POLLOUT | POLLERR); // Writable or connection lost
-  const unsigned POLLEX_CHK = (POLLPRI | POLLNVAL); // Exception or invalid fd
+  const unsigned POLLEX_REQ = POLLPRI; // Out-of-band data received
+  const unsigned POLLEX_CHK = (POLLPRI | POLLNVAL); // Out-of-band data or invalid fd
 
   // Compute end time
   _endTime = (timeout < 0.0) ? -1.0 : (getTime() + timeout);
@@ -110,6 +113,7 @@ XmlRpcDispatch::work(double timeout)
       fds[i].events = 0;
       if (it->getMask() & ReadableEvent) fds[i].events |= POLLIN_REQ;
       if (it->getMask() & WritableEvent) fds[i].events |= POLLOUT_REQ;
+      if (it->getMask() & Exception) fds[i].events |= POLLEX_REQ;
     }
 
     // Check for events
@@ -132,11 +136,12 @@ XmlRpcDispatch::work(double timeout)
       // Only handle requested events to avoid being prematurely removed from dispatch
       bool readable = (pfd.events & POLLIN_REQ) == POLLIN_REQ;
       bool writable = (pfd.events & POLLOUT_REQ) == POLLOUT_REQ;
+      bool oob = (pfd.events & POLLEX_REQ) == POLLEX_REQ;
       if (readable && (pfd.revents & POLLIN_CHK))
         newMask &= src->handleEvent(ReadableEvent);
       if (writable && (pfd.revents & POLLOUT_CHK))
         newMask &= src->handleEvent(WritableEvent);
-      if (pfd.revents & POLLEX_CHK)
+      if (oob && (pfd.revents & POLLEX_CHK))
         newMask &= src->handleEvent(Exception);
 
       // Find the source iterator. It may have moved as a result of the way
@@ -219,11 +224,10 @@ XmlRpcDispatch::getTime()
   return ((double) tbuff.time + ((double)tbuff.millitm / 1000.0) +
 	  ((double) tbuff.timezone * 60));
 #else
-  struct timeval	tv;
-  struct timezone	tz;
+  uint32_t sec, nsec;
 
-  gettimeofday(&tv, &tz);
-  return (tv.tv_sec + tv.tv_usec / 1000000.0);
+  ros::ros_steadytime(sec, nsec);
+  return ((double)sec + (double)nsec / 1e9);
 #endif /* USE_FTIME */
 }
 
