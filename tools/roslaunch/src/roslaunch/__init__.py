@@ -36,7 +36,6 @@ from __future__ import print_function
 
 import os
 import logging
-import rospkg
 import sys
 import traceback
 
@@ -181,9 +180,6 @@ def _get_optparse():
     parser.add_option("-t", "--timeout",
                       dest="timeout",
                       help="override the socket connection timeout (in seconds). Only valid for core services.", metavar="TIMEOUT")
-    parser.add_option("--master-logger-level",
-                      dest="master_logger_level", default=False, type=str,
-                      help="set rosmaster.master logger level ('debug', 'info', 'warn', 'error', 'fatal')")
 
     return parser
     
@@ -218,13 +214,6 @@ def _validate_args(parser, options, args):
     if len([x for x in [options.node_list, options.find_node, options.node_args, options.ros_args] if x]) > 1:
         parser.error("only one of [--nodes, --find-node, --args --ros-args] may be specified")
     
-def handle_exception(roslaunch_core, logger, msg, e):
-    roslaunch_core.printerrlog(msg + str(e))
-    roslaunch_core.printerrlog('The traceback for the exception was written to the log file')
-    if logger:
-        logger.error(traceback.format_exc())
-    sys.exit(1)
-
 def main(argv=sys.argv):
     options = None
     logger = None
@@ -313,18 +302,23 @@ def main(argv=sys.argv):
             p = roslaunch_parent.ROSLaunchParent(uuid, args, roslaunch_strs=roslaunch_strs,
                     is_core=options.core, port=options.port, local_only=options.local_only,
                     verbose=options.verbose, force_screen=options.force_screen,
-                    num_workers=options.num_workers, timeout=options.timeout,
-                    master_logger_level=options.master_logger_level)
+                    num_workers=options.num_workers, timeout=options.timeout)
             p.start()
             p.spin()
 
     except RLException as e:
-        handle_exception(roslaunch_core, logger, "RLException: ", e)
+        roslaunch_core.printerrlog(str(e))
+        roslaunch_core.printerrlog('The traceback for the exception was written to the log file')
+        if logger:
+            logger.error(traceback.format_exc())
+        sys.exit(1)
     except ValueError as e:
         # TODO: need to trap better than this high-level trap
-        handle_exception(roslaunch_core, logger, "Value error: ", e)
-    except rospkg.ResourceNotFound as e:
-        handle_exception(roslaunch_core, logger, "Resource not found: ", e)
+        roslaunch_core.printerrlog(str(e))
+        roslaunch_core.printerrlog('The traceback for the exception was written to the log file')
+        if logger:
+            logger.error(traceback.format_exc())
+        sys.exit(1)
     except Exception as e:
         traceback.print_exc()
         sys.exit(1)

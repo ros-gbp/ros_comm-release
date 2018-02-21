@@ -333,7 +333,7 @@ class TestRospyTime(unittest.TestCase):
         #start sleeper
         self.failIf(test_sleep_done)
         sleepthread = threading.Thread(target=sleeper, args=())
-        sleepthread.daemon = True
+        sleepthread.setDaemon(True)
         sleepthread.start()
         time.sleep(1.0) #make sure thread is spun up
         self.failIf(test_sleep_done)
@@ -346,7 +346,7 @@ class TestRospyTime(unittest.TestCase):
         #start duration sleeper
         self.failIf(test_duration_sleep_done)      
         dursleepthread = threading.Thread(target=duration_sleeper, args=())
-        dursleepthread.daemon = True
+        dursleepthread.setDaemon(True)
         dursleepthread.start()
         time.sleep(1.0) #make sure thread is spun up
         self.failIf(test_duration_sleep_done)
@@ -359,7 +359,7 @@ class TestRospyTime(unittest.TestCase):
         #start backwards sleeper
         self.failIf(test_backwards_sleep_done)
         backsleepthread = threading.Thread(target=backwards_sleeper, args=())
-        backsleepthread.daemon = True
+        backsleepthread.setDaemon(True)
         backsleepthread.start()
         time.sleep(1.0) #make sure thread is spun up
         self.failIf(test_backwards_sleep_done)

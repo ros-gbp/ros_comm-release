@@ -41,7 +41,6 @@ try:
 except ImportError:
     from io import StringIO, BytesIO #Python 3.x
     python3 = 1
-import errno
 import socket
 import logging
 
@@ -138,7 +137,7 @@ class TCPServer(object):
     def start(self):
         """Runs the run() loop in a separate thread"""
         t = threading.Thread(target=self.run, args=())
-        t.daemon = True
+        t.setDaemon(True)
         t.start()
 
     def run(self):
@@ -155,8 +154,8 @@ class TCPServer(object):
             except socket.timeout:
                 continue
             except IOError as e:
-                (e_errno, msg) = e.args
-                if e_errno == errno.EINTR: #interrupted system call
+                (errno, msg) = e.args
+                if errno == 4: #interrupted system call
                     continue
                 raise
             if self.is_shutdown:
@@ -569,9 +568,7 @@ class TCPROSTransport(Transport):
             if not isinstance(e, socket.error):
                 # FATAL: no reconnection as error is unknown
                 self.close()
-            elif not isinstance(e, socket.timeout) and e.errno not in [
-                    errno.ENETDOWN, errno.ENETUNREACH, errno.ENETRESET,
-                    errno.ECONNABORTED, errno.ETIMEDOUT, errno.EHOSTDOWN, errno.EHOSTUNREACH]:
+            elif not isinstance(e, socket.timeout) and e.errno not in [100, 101, 102, 103, 110, 112, 113]:
                 # reconnect in follow cases, otherwise close the socket:
                 # 1. socket.timeout: on timeouts caused by delays on wireless links
                 # 2. ENETDOWN (100), ENETUNREACH (101), ENETRESET (102), ECONNABORTED (103):
@@ -686,20 +683,20 @@ class TCPROSTransport(Transport):
             self.stat_num_msg += 1
         except IOError as ioe:
             #for now, just document common errno's in code
-            (ioe_errno, msg) = ioe.args
-            if ioe_errno == errno.EPIPE: #broken pipe
+            (errno, msg) = ioe.args
+            if errno == 32: #broken pipe
                 logdebug("ERROR: Broken Pipe")
                 self.close()
-                raise TransportTerminated(str(ioe_errno)+msg)
+                raise TransportTerminated(str(errno)+msg)
             raise #re-raise
         except socket.error as se:
             #for now, just document common errno's in code
-            (se_errno, msg) = se.args
-            if se_errno == errno.EPIPE: #broken pipe
+            (errno, msg) = se.args
+            if errno == 32: #broken pipe
                 logdebug("[%s]: Closing connection [%s] due to broken pipe", self.name, self.endpoint_id)
                 self.close()
                 raise TransportTerminated(msg)
-            elif se_errno == errno.ECONNRESET: #connection reset by peer
+            elif errno == 104: #connection reset by peer
                 logdebug("[%s]: Peer [%s] has closed connection", self.name, self.endpoint_id) 
                 self.close()
                 raise TransportTerminated(msg)
@@ -707,7 +704,7 @@ class TCPROSTransport(Transport):
                 rospydebug("unknown socket error writing data: %s",traceback.format_exc())
                 logdebug("[%s]: closing connection [%s] due to unknown socket error: %s", self.name, self.endpoint_id, msg) 
                 self.close()
-                raise TransportTerminated(str(se_errno)+' '+msg)
+                raise TransportTerminated(str(errno)+' '+msg)                
         return True
     
     def receive_once(self):

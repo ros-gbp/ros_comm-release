@@ -14,8 +14,6 @@
 #ifndef MAKEDEPEND
 # include <map>
 # include <string>
-# include <vector>
-# include <poll.h>
 #endif
 
 #include "xmlrpcpp/XmlRpcDispatch.h"
@@ -89,13 +87,10 @@ namespace XmlRpc {
   protected:
 
     //! Accept a client connection request
-    virtual unsigned acceptConnection();
+    virtual void acceptConnection();
 
     //! Create a new connection object for processing requests from a specific client.
     virtual XmlRpcServerConnection* createConnection(int socket);
-
-    //! Count number of free file descriptors
-    int countFreeFDs();
 
     // Whether the introspection API is supported by this server
     bool _introspectionEnabled;
@@ -113,18 +108,6 @@ namespace XmlRpc {
 
     int _port;
 
-    // Flag indicating that accept had an error and needs to be retried.
-    bool _accept_error;
-    // If we cannot accept(), retry after this many seconds. Hopefully there
-    // will be more free file descriptors later.
-    static const double ACCEPT_RETRY_INTERVAL_SEC;
-    // Retry time for accept.
-    double _accept_retry_time_sec;
-
-    // Minimum number of free file descriptors before rejecting clients.
-    static const int FREE_FD_BUFFER;
-    // List of all file descriptors, used for counting open files.
-    std::vector<struct pollfd> pollfds;
   };
 } // namespace XmlRpc
 
