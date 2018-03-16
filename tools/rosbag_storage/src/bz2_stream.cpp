@@ -38,10 +38,6 @@
 #include <cstring>
 #include "console_bridge/console.h"
 
-// Remove this include when no longer supporting platforms with libconsole-bridge-dev < 0.3.0,
-// in particular Debian Jessie: https://packages.debian.org/jessie/libconsole-bridge-dev
-#include "rosbag/console_bridge_compatibility.h"
-
 using std::string;
 
 namespace rosbag {
