@@ -1,3 +1,59 @@
+## ros_comm (melodic) - 1.14.0-0
+
+The packages in the `ros_comm` repository were released into the `melodic` distro by running `/usr/bin/bloom-release -r melodic -t melodic ros_comm` on `Mon, 21 May 2018 16:59:50 -0000`
+
+These packages were released:
+- `message_filters`
+- `ros_comm`
+- `rosbag`
+- `rosbag_storage`
+- `roscpp`
+- `rosgraph`
+- `roslaunch`
+- `roslz4`
+- `rosmaster`
+- `rosmsg`
+- `rosnode`
+- `rosout`
+- `rosparam`
+- `rospy`
+- `rosservice`
+- `rostest`
+- `rostopic`
+- `roswtf`
+- `topic_tools`
+- `xmlrpcpp`
+
+These packages were explicitly ignored:
+- `test_rosbag`
+- `test_rosbag_storage`
+- `test_roscpp`
+- `test_rosgraph`
+- `test_roslaunch`
+- `test_roslib_comm`
+- `test_rosmaster`
+- `test_rosparam`
+- `test_rospy`
+- `test_rosservice`
+- `test_rostopic`
+
+Version of package(s) in repository `ros_comm`:
+
+- upstream repository: git@github.com:ros/ros_comm.git
+- release repository: https://github.com/ros-gbp/ros_comm-release.git
+- rosdistro version: `1.13.6-2`
+- old version: `1.13.6-2`
+- new version: `1.14.0-0`
+
+Versions of tools used:
+
+- bloom version: `0.6.4`
+- catkin_pkg version: `0.4.2`
+- rosdep version: `0.12.2`
+- rosdistro version: `0.6.8`
+- vcstools version: `0.1.40`
+
+
 ## ros_comm (melodic) - 1.13.6-2
 
 The packages in the `ros_comm` repository were released into the `melodic` distro by running `/usr/bin/bloom-release ros_comm -r melodic -t melodic` on `Tue, 10 Apr 2018 02:43:37 -0000`
