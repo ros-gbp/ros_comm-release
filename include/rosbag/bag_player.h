@@ -70,6 +70,24 @@ private:
     Callback cb_;
 };
 
+template<>
+class BagCallbackT<MessageInstance> : public BagCallback
+{
+public:
+    typedef boost::function<void (const MessageInstance&)> Callback;
+
+    BagCallbackT(Callback cb) :
+        cb_(cb)
+    {}
+
+    void call(MessageInstance m) {
+        cb_(m);
+    }
+
+private:
+    Callback cb_;
+};
+
 
 /* A class for playing back bag files at an API level. It supports
    relatime, as well as accelerated and slowed playback. */
@@ -116,7 +134,7 @@ public:
 private:
     ros::Time real_time(const ros::Time &msg_time);
 
-    std::map<std::string, BagCallback *> cbs_;
+    std::map<std::string, boost::shared_ptr<BagCallback> > cbs_;
     ros::Time bag_start_;
     ros::Time bag_end_;
     ros::Time last_message_time_;
@@ -127,7 +145,7 @@ private:
 template<class T>
 void BagPlayer::register_callback(const std::string &topic,
         typename BagCallbackT<T>::Callback cb) {
-    cbs_[topic] = new BagCallbackT<T>(cb);
+    cbs_[topic] = boost::make_shared<BagCallbackT<T> >(cb);
 }
 
 }
