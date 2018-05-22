@@ -2,6 +2,9 @@
 Changelog for package rostopic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.14.1 (2018-05-21)
+-------------------
+
 1.14.0 (2018-05-21)
 -------------------
 * add public get_topic_list() function for use in other scripts (`#1154 <https://github.com/ros/ros_comm/issues/1154>`_)
