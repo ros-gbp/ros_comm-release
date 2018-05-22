@@ -2,6 +2,9 @@
 Changelog for package roswtf
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.14.1 (2018-05-21)
+-------------------
+
 1.14.0 (2018-05-21)
 -------------------
 * warn if ROS_IP contains whitespace (`#1379 <https://github.com/ros/ros_comm/issues/1379>`_)
