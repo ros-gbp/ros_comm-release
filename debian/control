@@ -1,0 +1,12 @@
+Source: ros-lunar-message-filters
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), libboost-all-dev, ros-lunar-catkin (>= 0.5.68), ros-lunar-rosconsole, ros-lunar-roscpp, ros-lunar-rostest, ros-lunar-rosunit
+Homepage: http://ros.org/wiki/message_filters
+Standards-Version: 3.9.2
+
+Package: ros-lunar-message-filters
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-lunar-rosconsole, ros-lunar-roscpp
+Description: A set of message filters which take in messages and may output those messages at a later time, based on the conditions that filter needs met.
