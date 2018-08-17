@@ -2,6 +2,9 @@
 Changelog for package rosconsole
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.13.7 (2018-08-17)
+-------------------
+
 1.13.6 (2018-02-05)
 -------------------
 * rename log macro argument from rate to period (`#1318 <https://github.com/ros/ros_comm/issues/1318>`_)
