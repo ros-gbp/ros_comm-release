@@ -2,20 +2,9 @@
 Changelog for package topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.14.3 (2018-08-06)
+1.13.7 (2018-08-17)
 -------------------
-
-1.14.2 (2018-06-06)
--------------------
-
-1.14.1 (2018-05-21)
--------------------
-
-1.14.0 (2018-05-21)
--------------------
-* throttling when rostime jump backward (`#1397 <https://github.com/ros/ros_comm/issues/1397>`_)
 * check that output topic is valid in demux (`#1367 <https://github.com/ros/ros_comm/issues/1367>`_)
-* add latch functionality to topic_tools/transform (`#1341 <https://github.com/ros/ros_comm/issues/1341>`_)
 
 1.13.6 (2018-02-05)
 -------------------

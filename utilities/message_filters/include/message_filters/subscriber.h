@@ -123,7 +123,7 @@ public:
 
   ~Subscriber()
   {
-    Subscriber::unsubscribe();
+    unsubscribe();
   }
 
   /**

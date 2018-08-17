@@ -2,16 +2,7 @@
 Changelog for package xmlrpcpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.14.3 (2018-08-06)
--------------------
-
-1.14.2 (2018-06-06)
--------------------
-
-1.14.1 (2018-05-21)
--------------------
-
-1.14.0 (2018-05-21)
+1.13.7 (2018-08-17)
 -------------------
 * fixes for OSX (`#1402 <https://github.com/ros/ros_comm/issues/1402>`_)
 * take XmlRpcValue by *const* ref. in operator<< (`#1350 <https://github.com/ros/ros_comm/issues/1350>`_)

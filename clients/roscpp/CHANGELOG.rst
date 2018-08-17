@@ -2,25 +2,13 @@
 Changelog for package roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.14.3 (2018-08-06)
+1.13.7 (2018-08-17)
 -------------------
 * add hasStarted() to Timer API (`#1464 <https://github.com/ros/ros_comm/issues/1464>`_)
-* fix compiler warnings about unused variables (`#1428 <https://github.com/ros/ros_comm/issues/1428>`_)
-
-1.14.2 (2018-06-06)
--------------------
-
-1.14.1 (2018-05-21)
--------------------
-
-1.14.0 (2018-05-21)
--------------------
 * force a rebuild of the pollset on flag changes (`#1393 <https://github.com/ros/ros_comm/issues/1393>`_)
 * fix integer overflow for oneshot timers (`#1382 <https://github.com/ros/ros_comm/issues/1382>`_)
 * convert the period standard deviation in StatisticsLogger to Duration at the end (`#1361 <https://github.com/ros/ros_comm/issues/1361>`_)
-* add time when timer expired to timer events (`#1130 <https://github.com/ros/ros_comm/issues/1130>`_)
 * replace DCL pattern with static variable (`#1365 <https://github.com/ros/ros_comm/issues/1365>`_)
-* add parameter to stop clients from generating rosout topics list (`#1241 <https://github.com/ros/ros_comm/issues/1241>`_)
 
 1.13.6 (2018-02-05)
 -------------------

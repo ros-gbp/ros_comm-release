@@ -2,21 +2,8 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.14.3 (2018-08-06)
+1.13.7 (2018-08-17)
 -------------------
-* restore API compatibility (`#1473 <https://github.com/ros/ros_comm/issues/1473>`_) (regression from 1.14.0)
-* throw BagException when disk is full (`#1451 <https://github.com/ros/ros_comm/issues/1451>`_)
-
-1.14.2 (2018-06-06)
--------------------
-
-1.14.1 (2018-05-21)
--------------------
-
-1.14.0 (2018-05-21)
--------------------
-* keep connection header info in rosbag filter/compress (`#1372 <https://github.com/ros/ros_comm/issues/1372>`_)
-* implement bag encryption/decryption (`#1206 <https://github.com/ros/ros_comm/issues/1206>`_)
 * add TransportHint options --tcpnodelay and --udp (`#1295 <https://github.com/ros/ros_comm/issues/1295>`_)
 * fix check for header first in rosbag play for rate control topic (`#1352 <https://github.com/ros/ros_comm/issues/1352>`_)
 

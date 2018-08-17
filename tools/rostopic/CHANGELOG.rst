@@ -2,19 +2,9 @@
 Changelog for package rostopic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.14.3 (2018-08-06)
+1.13.7 (2018-08-17)
 -------------------
-
-1.14.2 (2018-06-06)
--------------------
-* fix the count of subscribers, regression from 1.14.0 (`#1407 <https://github.com/ros/ros_comm/issues/1407>`_)
-
-1.14.1 (2018-05-21)
--------------------
-
-1.14.0 (2018-05-21)
--------------------
-* add public get_topic_list() function for use in other scripts (`#1154 <https://github.com/ros/ros_comm/issues/1154>`_)
+* add public get_topic_list() function for use in other scripts (`#1154 <https://github.com/ros/ros_comm/issues/1154>`_, `#1407 <https://github.com/ros/ros_comm/issues/1407>`_)
 
 1.13.6 (2018-02-05)
 -------------------

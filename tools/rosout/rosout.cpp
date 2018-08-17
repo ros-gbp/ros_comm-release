@@ -82,35 +82,29 @@ public:
 
   void init()
   {
-    bool disable_file_logging = false;
-    node_.getParamCached("/rosout/disable_file_logging", disable_file_logging);
+    handle_ = fopen(log_file_name_.c_str(), "w");
 
-    if (!disable_file_logging)
+    if (handle_ == 0)
     {
-      handle_ = fopen(log_file_name_.c_str(), "w");
+      std::cerr << "Error opening rosout log file '" << log_file_name_.c_str() << "': " << strerror(errno);
+    }
+    else
+    {
+      std::cout << "logging to " << log_file_name_.c_str() << std::endl;
 
-      if (handle_ == 0)
+      std::stringstream ss;
+      ss <<  "\n\n" << ros::Time::now() << "  Node Startup\n";
+      int written = fprintf(handle_, "%s", ss.str().c_str());
+      if (written < 0)
       {
-        std::cerr << "Error opening rosout log file '" << log_file_name_.c_str() << "': " << strerror(errno);
+        std::cerr << "Error writting to rosout log file '" << log_file_name_.c_str() << "': " << strerror(ferror(handle_)) << std::endl;
       }
-      else
+      else if (written > 0)
       {
-        std::cout << "logging to " << log_file_name_.c_str() << std::endl;
-
-        std::stringstream ss;
-        ss <<  "\n\n" << ros::Time::now() << "  Node Startup\n";
-        int written = fprintf(handle_, "%s", ss.str().c_str());
-        if (written < 0)
+        current_file_size_ += written;
+        if (fflush(handle_))
         {
-          std::cerr << "Error writting to rosout log file '" << log_file_name_.c_str() << "': " << strerror(ferror(handle_)) << std::endl;
-        }
-        else if (written > 0)
-        {
-          current_file_size_ += written;
-          if (fflush(handle_))
-          {
-            std::cerr << "Error flushing rosout log file '" << log_file_name_.c_str() << "': " << strerror(ferror(handle_));
-          }
+          std::cerr << "Error flushing rosout log file '" << log_file_name_.c_str() << "': " << strerror(ferror(handle_));
         }
       }
     }
@@ -125,11 +119,6 @@ public:
   void rosoutCallback(const rosgraph_msgs::Log::ConstPtr& msg)
   {
     agg_pub_.publish(msg);
-
-    if (!handle_)
-    {
-      return;
-    }
 
     std::stringstream ss;
     ss << msg->header.stamp << " ";

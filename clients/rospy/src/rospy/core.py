@@ -43,7 +43,6 @@ except ImportError:
     import pickle
 import inspect
 import logging
-from hashlib import md5
 import os
 import signal
 import sys
@@ -144,16 +143,7 @@ def rospyerr(msg, *args):
 def rospywarn(msg, *args):
     """Internal rospy client library warn logging"""
     _rospy_logger.warn(msg, *args)
-
-
-def _frame_to_caller_id(frame):
-    caller_id = (
-        inspect.getabsfile(frame),
-        frame.f_lineno,
-        frame.f_lasti,
-    )
-    return pickle.dumps(caller_id)
-
+    
 
 def _base_logger(msg, *args, **kwargs):
 
@@ -161,7 +151,6 @@ def _base_logger(msg, *args, **kwargs):
     throttle = kwargs.pop('logger_throttle', None)
     level = kwargs.pop('logger_level', None)
     once = kwargs.pop('logger_once', False)
-    throttle_identical = kwargs.pop('logger_throttle_identical', False)
 
     rospy_logger = logging.getLogger('rosout')
     if name:
@@ -171,13 +160,6 @@ def _base_logger(msg, *args, **kwargs):
     if once:
         caller_id = _frame_to_caller_id(inspect.currentframe().f_back.f_back)
         if _logging_once(caller_id):
-            logfunc(msg, *args)
-    elif throttle_identical:
-        caller_id = _frame_to_caller_id(inspect.currentframe().f_back.f_back)
-        throttle_elapsed = False
-        if throttle is not None:
-            throttle_elapsed = _logging_throttle(caller_id, throttle)
-        if _logging_identical(caller_id, msg) or throttle_elapsed:
             logfunc(msg, *args)
     elif throttle:
         caller_id = _frame_to_caller_id(inspect.currentframe().f_back.f_back)
@@ -233,6 +215,15 @@ class LoggingThrottle(object):
 _logging_throttle = LoggingThrottle()
 
 
+def _frame_to_caller_id(frame):
+    caller_id = (
+        inspect.getabsfile(frame),
+        frame.f_lineno,
+        frame.f_lasti,
+    )
+    return pickle.dumps(caller_id)
+
+
 def logdebug_throttle(period, msg):
     _base_logger(msg, logger_throttle=period, logger_level='debug')
 
@@ -247,49 +238,6 @@ def logerr_throttle(period, msg):
 
 def logfatal_throttle(period, msg):
     _base_logger(msg, logger_throttle=period, logger_level='critical')
-
-
-class LoggingIdentical(object):
-
-    last_logging_msg_table = {}
-
-    def __call__(self, caller_id, msg):
-        """Do logging specified message only if distinct from last message.
-
-        - caller_id (str): Id to identify the caller
-        - msg (str): Contents of message to log
-        """
-        msg_hash = md5(msg).hexdigest()
-
-        if msg_hash != self.last_logging_msg_table.get(caller_id):
-            self.last_logging_msg_table[caller_id] = msg_hash
-            return True
-        return False
-
-
-_logging_identical = LoggingIdentical()
-
-
-def logdebug_throttle_identical(period, msg):
-    _base_logger(msg, logger_throttle=period, logger_throttle_identical=True,
-                 logger_level='debug')
-
-def loginfo_throttle_identical(period, msg):
-    _base_logger(msg, logger_throttle=period, logger_throttle_identical=True,
-                 logger_level='info')
-
-def logwarn_throttle_identical(period, msg):
-    _base_logger(msg, logger_throttle=period, logger_throttle_identical=True,
-                 logger_level='warn')
-
-def logerr_throttle_identical(period, msg):
-    _base_logger(msg, logger_throttle=period, logger_throttle_identical=True,
-                 logger_level='error')
-
-def logfatal_throttle_identical(period, msg):
-    _base_logger(msg, logger_throttle=period, logger_throttle_identical=True,
-                 logger_level='critical')
-
 
 class LoggingOnce(object):
 
@@ -647,3 +595,4 @@ def xmlrpcapi(uri):
     if not uriValidate[0] or not uriValidate[1]:
         return None
     return xmlrpcclient.ServerProxy(uri)
+

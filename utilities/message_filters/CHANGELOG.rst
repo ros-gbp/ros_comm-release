@@ -2,21 +2,9 @@
 Changelog for package message_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.14.3 (2018-08-06)
+1.13.7 (2018-08-17)
 -------------------
-* call Subscriber::unsubscribe() in destructor (`#1434 <https://github.com/ros/ros_comm/issues/1434>`_)
 * rename Python message_filters.Cache.getLastestTime to getLatestTime (`#1450 <https://github.com/ros/ros_comm/issues/1450>`_)
-
-1.14.2 (2018-06-06)
--------------------
-
-1.14.1 (2018-05-21)
--------------------
-
-1.14.0 (2018-05-21)
--------------------
-* change invocation to `add` to conform template syntax (`#1388 <https://github.com/ros/ros_comm/issues/1388>`_)
-* fix sphinx warning (`#1371 <https://github.com/ros/ros_comm/issues/1371>`_)
 
 1.13.6 (2018-02-05)
 -------------------

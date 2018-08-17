@@ -2,22 +2,8 @@
 Changelog for package rosbag_storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.14.3 (2018-08-06)
+1.13.7 (2018-08-17)
 -------------------
-
-1.14.2 (2018-06-06)
--------------------
-
-1.14.1 (2018-05-21)
--------------------
-* add in -D_FILE_OFFSET_BITS=64 on machines less than 64-bits (`#1406 <https://github.com/ros/ros_comm/issues/1406>`_)
-
-1.14.0 (2018-05-21)
--------------------
-* specialize BagCallbackT for MessageInstance (`#1374 <https://github.com/ros/ros_comm/issues/1374>`_)
-* fix compiler warning of test_aes_encryptor (`#1376 <https://github.com/ros/ros_comm/issues/1376>`_)
-* implement bag encryption/decryption (`#1206 <https://github.com/ros/ros_comm/issues/1206>`_)
-* use boost::shared_ptr to fix memory leak (`#1373 <https://github.com/ros/ros_comm/issues/1373>`_)
 
 1.13.6 (2018-02-05)
 -------------------
