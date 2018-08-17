@@ -1,0 +1,12 @@
+Source: ros-lunar-rostest
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), libboost-all-dev, ros-lunar-catkin (>= 0.7.9), ros-lunar-rosunit
+Homepage: http://ros.org/wiki/rostest
+Standards-Version: 3.9.2
+
+Package: ros-lunar-rostest
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-all-dev, ros-lunar-rosgraph, ros-lunar-roslaunch, ros-lunar-rosmaster, ros-lunar-rospy, ros-lunar-rosunit
+Description: Integration test suite based on roslaunch that is compatible with xUnit frameworks.
