@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, Willow Garage, Inc.
+ * Copyright (c) 2017, Open Source Robotics Foundation, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -10,7 +10,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Willow Garage, Inc. nor the names of its
+ *     * Neither the name of the Open Source Robotics Foundation, Inc. nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
  *
@@ -27,57 +27,36 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* Author: Troy Straszheim */
+#ifndef ROSBAG__CONSOLE_BRIDGE_COMPATIBILITY_H_
+#define ROSBAG__CONSOLE_BRIDGE_COMPATIBILITY_H_
 
-#include <string>
-#include <sstream>
-#include <fstream>
+#include <console_bridge/console.h>
 
-#include <gtest/gtest.h>
+// Remove this file and it's inclusions when no longer supporting platforms with
+// libconsole-bridge-dev < 0.3.0,
+// in particular Debian Jessie: https://packages.debian.org/jessie/libconsole-bridge-dev
+#ifndef CONSOLE_BRIDGE_logError
+# define CONSOLE_BRIDGE_logError(fmt, ...)  \
+  console_bridge::log( \
+    __FILE__, __LINE__, console_bridge::CONSOLE_BRIDGE_LOG_ERROR, fmt, ##__VA_ARGS__)
+#endif
 
-#include <time.h>
-#include <stdlib.h>
+#ifndef CONSOLE_BRIDGE_logWarn
+# define CONSOLE_BRIDGE_logWarn(fmt, ...)   \
+  console_bridge::log( \
+    __FILE__, __LINE__, console_bridge::CONSOLE_BRIDGE_LOG_WARN,  fmt, ##__VA_ARGS__)
+#endif
 
-#include "ros/ros.h"
-#include "std_msgs/String.h"
+#ifndef CONSOLE_BRIDGE_logInform
+# define CONSOLE_BRIDGE_logInform(fmt, ...) \
+  console_bridge::log( \
+    __FILE__, __LINE__, console_bridge::CONSOLE_BRIDGE_LOG_INFO,  fmt, ##__VA_ARGS__)
+#endif
 
-std::string expect_what, on_topic;
-unsigned nseen = 0;
+#ifndef CONSOLE_BRIDGE_logDebug
+# define CONSOLE_BRIDGE_logDebug(fmt, ...)  \
+  console_bridge::log( \
+    __FILE__, __LINE__, console_bridge::CONSOLE_BRIDGE_LOG_DEBUG, fmt, ##__VA_ARGS__)
+#endif
 
-void callback(const std_msgs::String::ConstPtr& msg)
-{
-  EXPECT_STREQ(expect_what.c_str(), msg->data.c_str());
-  nseen++;
-}
-
-TEST(Expecter, impl)
-{
-  ros::NodeHandle nh;
-
-  ros::Subscriber sub = nh.subscribe(on_topic, 0, callback);
-
-  ros::Rate loop_rate(10);
-
-  while(ros::ok() && nseen == 0)
-    {
-      ros::spinOnce();
-      loop_rate.sleep();
-    }
-
-  ASSERT_GT(nseen, 0);
-}
-
-int
-main(int argc, char** argv)
-{
-  expect_what = argv[1];
-  on_topic = argv[2];
-
-  std::cout << "Will look for string \"" << expect_what << "\" on topic " << on_topic << "\n";
-
-  testing::InitGoogleTest(&argc, argv);
-  ros::init( argc, argv, "params" );
-//  ros::NodeHandle nh;
-
-  return RUN_ALL_TESTS();
-}
+#endif  // ROSBAG__CONSOLE_BRIDGE_COMPATIBILITY_H_

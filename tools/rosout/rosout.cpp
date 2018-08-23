@@ -66,22 +66,20 @@ public:
   ros::NodeHandle node_;
   ros::Subscriber rosout_sub_;
   ros::Publisher agg_pub_;
-  bool omit_topics_;
 
-  Rosout() :
-    log_file_name_(ros::file_log::getLogDirectory() + "/rosout.log"),
-    handle_(NULL),
-    max_file_size_(100*1024*1024),
-    current_file_size_(0),
-    max_backup_index_(10),
-    current_backup_index_(0),
-    omit_topics_(false)
+  Rosout()
   {
     init();
   }
 
   void init()
   {
+    max_file_size_ = 100*1024*1024;
+    current_file_size_ = 0;
+    max_backup_index_ = 10;
+    current_backup_index_ = 0;
+
+    log_file_name_ = ros::file_log::getLogDirectory() + "/rosout.log";
     handle_ = fopen(log_file_name_.c_str(), "w");
 
     if (handle_ == 0)
@@ -143,30 +141,23 @@ public:
       ss << msg->level << " ";
     }
 
-    ss << msg->name << " ";
-    ss << "[" << msg->file << ":" << msg->line << "(" << msg->function << ")] ";
+    ss << "[" << msg->file << ":" << msg->line << "(" << msg->function << ") ";
 
-    // check parameter server for omit_topics flag and set class member
-    node_.getParamCached("/rosout/omit_topics", omit_topics_);
-
-    if (!omit_topics_)
+    ss << "[topics: ";
+    std::vector<std::string>::const_iterator it = msg->topics.begin();
+    std::vector<std::string>::const_iterator end = msg->topics.end();
+    for ( ; it != end; ++it )
     {
-      ss << "[topics: ";
-      std::vector<std::string>::const_iterator it = msg->topics.begin();
-      std::vector<std::string>::const_iterator end = msg->topics.end();
-      for ( ; it != end; ++it )
+      const std::string& topic = *it;
+
+      if ( it != msg->topics.begin() )
       {
-        const std::string& topic = *it;
-
-        if ( it != msg->topics.begin() )
-        {
-          ss << ", ";
-        }
-
-        ss << topic;
+        ss << ", ";
       }
-      ss << "] ";
+
+      ss << topic;
     }
+    ss << "] ";
 
     ss << msg->msg;
     ss << "\n";
@@ -186,42 +177,40 @@ public:
       // check for rolling
       if (current_file_size_ > max_file_size_)
       {
-        std::cout << "rosout log file " << log_file_name_.c_str() << " reached max size, rotating log files" << std::endl;
         if (fclose(handle_))
         {
           std::cerr << "Error closing rosout log file '" << log_file_name_.c_str() << "': " << strerror(ferror(handle_)) << std::endl;
         }
-        if (current_backup_index_ == max_backup_index_)
+        current_backup_index_++;
+        if (current_backup_index_ <= max_backup_index_)
         {
           std::stringstream backup_file_name;
-          backup_file_name << log_file_name_ << "." << max_backup_index_;
-          int rc = remove(backup_file_name.str().c_str());
+          backup_file_name << log_file_name_ << "." << current_backup_index_;
+          int rc = rename(log_file_name_.c_str(), backup_file_name.str().c_str());
           if (rc != 0)
           {
-            std::cerr << "Error deleting oldest rosout log file '" << backup_file_name.str().c_str() << "': " << strerror(errno) << std::endl;
+            rc = remove(backup_file_name.str().c_str());
+            if (rc == 0)
+            {
+              rc = rename(log_file_name_.c_str(), backup_file_name.str().c_str());
+              if (rc)
+              {
+                std::cerr << "Error rotating rosout log file '" << log_file_name_.c_str() << "' to '" << backup_file_name.str().c_str() << "': " << strerror(errno);
+              }
+            }
           }
-        }
-        std::size_t i = std::min(max_backup_index_, current_backup_index_ + 1);
-        while (i > 0)
-        {
-          std::stringstream current_file_name;
-          current_file_name << log_file_name_;
-          if (i > 1)
+          if (rc)
           {
-            current_file_name << "." << (i - 1);
+            std::cerr << "Error rotating rosout log file '" << log_file_name_.c_str() << "'' to '" << backup_file_name.str().c_str() << "'" << std::endl;
           }
-          std::stringstream rotated_file_name;
-          rotated_file_name << log_file_name_ << "." << i;
-          int rc = rename(current_file_name.str().c_str(), rotated_file_name.str().c_str());
-          if (rc != 0)
+          else
           {
-            std::cerr << "Error rotating rosout log file '" << current_file_name.str().c_str() << "' to '" << rotated_file_name.str().c_str() << "': " << strerror(errno) << std::endl;
+            std::cout << "rosout log file " << log_file_name_.c_str() << " reached max size, back up data to " << backup_file_name.str().c_str() << std::endl;
           }
-          --i;
-        }
-        if (current_backup_index_ < max_backup_index_)
-        {
-          ++current_backup_index_;
+          if (current_backup_index_ == max_backup_index_)
+          {
+            current_backup_index_ = 0;
+          }
         }
         handle_ = fopen(log_file_name_.c_str(), "w");
         if (handle_ == 0)

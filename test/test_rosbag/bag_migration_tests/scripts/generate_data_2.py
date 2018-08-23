@@ -32,6 +32,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+import rospy
 from test_rosbag.msg import *
 
 import genpy

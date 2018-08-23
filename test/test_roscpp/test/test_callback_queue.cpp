@@ -439,8 +439,9 @@ void ConditionObject::add()
 {
   while(!condition_stop.load())
   {
-    if(condition_sync.load() && queue->isEmpty())
+    if(condition_sync.load())
     {
+      condition_sync.store(false);
       condition_one.store(true);
       id++;
       queue->addCallback(boost::make_shared<RaceConditionCallback>(this, &id), id);
@@ -457,7 +458,6 @@ TEST(CallbackQueue, raceConditionCallback)
   boost::thread t(boost::bind(&ConditionObject::add, &condition_object));
   for(unsigned int i = 0; i < 1000000; ++i)
   {
-    condition_object.condition_sync.store(false);
     if (queue.callOne() == CallbackQueue::Called)
     {
       if(condition_object.condition_one.load())

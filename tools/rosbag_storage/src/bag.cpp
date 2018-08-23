@@ -42,6 +42,9 @@
 #include <boost/foreach.hpp>
 
 #include "console_bridge/console.h"
+// Remove this include when no longer supporting platforms with libconsole-bridge-dev < 0.3.0,
+// in particular Debian Jessie: https://packages.debian.org/jessie/libconsole-bridge-dev
+#include "rosbag/console_bridge_compatibility.h"
 
 #define foreach BOOST_FOREACH
 
@@ -57,50 +60,43 @@ using ros::Time;
 
 namespace rosbag {
 
-Bag::Bag()
+Bag::Bag() :
+    mode_(bagmode::Write),
+    version_(0),
+    compression_(compression::Uncompressed),
+    chunk_threshold_(768 * 1024),  // 768KB chunks
+    bag_revision_(0),
+    file_size_(0),
+    file_header_pos_(0),
+    index_data_pos_(0),
+    connection_count_(0),
+    chunk_count_(0),
+    chunk_open_(false),
+    curr_chunk_data_pos_(0),
+    current_buffer_(0),
+    decompressed_chunk_(0)
 {
-    init();
 }
 
-Bag::Bag(string const& filename, uint32_t mode)
+Bag::Bag(string const& filename, uint32_t mode) :
+    compression_(compression::Uncompressed),
+    chunk_threshold_(768 * 1024),  // 768KB chunks
+    bag_revision_(0),
+    file_size_(0),
+    file_header_pos_(0),
+    index_data_pos_(0),
+    connection_count_(0),
+    chunk_count_(0),
+    chunk_open_(false),
+    curr_chunk_data_pos_(0),
+    current_buffer_(0),
+    decompressed_chunk_(0)
 {
-    init();
     open(filename, mode);
 }
 
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
-
-Bag::Bag(Bag&& other) {
-    init();
-    swap(other);
-}
-
-Bag& Bag::operator=(Bag&& other) {
-    swap(other);
-    return *this;
-}
-
-#endif // BOOST_NO_CXX11_RVALUE_REFERENCES
-
 Bag::~Bag() {
     close();
-}
-
-void Bag::init() {
-    mode_ = bagmode::Write;
-    version_ = 0;
-    compression_ = compression::Uncompressed;
-    chunk_threshold_ = 768 * 1024;  // 768KB chunks
-    bag_revision_ = 0;
-    file_size_ = 0;
-    file_header_pos_ = 0;
-    index_data_pos_ = 0;
-    connection_count_ = 0;
-    chunk_count_ = 0;
-    chunk_open_ = false;
-    curr_chunk_data_pos_ = 0;
-    current_buffer_ = 0;
-    decompressed_chunk_ = 0;
 }
 
 void Bag::open(string const& filename, uint32_t mode) {
@@ -164,7 +160,7 @@ void Bag::openAppend(string const& filename) {
 }
 
 void Bag::close() {
-    if (!isOpen())
+    if (!file_.isOpen())
         return;
 
     if (mode_ & bagmode::Write || mode_ & bagmode::Append)
@@ -180,8 +176,6 @@ void Bag::close() {
     chunks_.clear();
     connection_indexes_.clear();
     curr_chunk_connection_indexes_.clear();
-
-    init();
 }
 
 void Bag::closeWrite() {
@@ -195,7 +189,7 @@ uint64_t Bag::getSize()     const { return file_size_;          }
 uint32_t Bag::getChunkThreshold() const { return chunk_threshold_; }
 
 void Bag::setChunkThreshold(uint32_t chunk_threshold) {
-    if (isOpen() && chunk_open_)
+    if (file_.isOpen() && chunk_open_)
         stopWritingChunk();
 
     chunk_threshold_ = chunk_threshold;
@@ -204,7 +198,7 @@ void Bag::setChunkThreshold(uint32_t chunk_threshold) {
 CompressionType Bag::getCompression() const { return compression_; }
 
 void Bag::setCompression(CompressionType compression) {
-    if (isOpen() && chunk_open_)
+    if (file_.isOpen() && chunk_open_)
         stopWritingChunk();
 
     if (!(compression == compression::Uncompressed ||
@@ -1157,7 +1151,4 @@ void Bag::swap(Bag& other) {
     swap(decompressed_chunk_, other.decompressed_chunk_);
 }
 
-bool Bag::isOpen() const { return file_.isOpen(); }
-
 } // namespace rosbag
-

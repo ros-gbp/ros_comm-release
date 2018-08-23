@@ -148,8 +148,6 @@ void ChunkedFile::close() {
     filename_.clear();
     
     clearUnused();
-    offset_ = 0;
-    compressed_in_ = 0;
 }
 
 // Read/write modes
