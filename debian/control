@@ -1,0 +1,13 @@
+Source: ros-kinetic-topic-tools
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-kinetic-catkin (>= 0.5.78), ros-kinetic-cpp-common, ros-kinetic-message-generation, ros-kinetic-rosconsole, ros-kinetic-roscpp, ros-kinetic-rostest, ros-kinetic-rostime, ros-kinetic-rosunit, ros-kinetic-std-msgs, ros-kinetic-xmlrpcpp
+Homepage: http://ros.org/wiki/topic_tools
+Standards-Version: 3.9.2
+
+Package: ros-kinetic-topic-tools
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-kinetic-message-runtime, ros-kinetic-rosconsole, ros-kinetic-roscpp, ros-kinetic-rostime, ros-kinetic-std-msgs, ros-kinetic-xmlrpcpp
+Description: Tools for directing, throttling, selecting, and otherwise messing with ROS topics at a meta level.
+ None of the programs in this package actually know about the topics whose streams they are altering; instead, these tools deal with messages as generic binary blobs. This means they can be applied to any ROS topic.
