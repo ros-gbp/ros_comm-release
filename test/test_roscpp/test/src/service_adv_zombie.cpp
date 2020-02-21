@@ -34,6 +34,9 @@
 #include <test_roscpp/TestStringString.h>
 
 #include <stdlib.h>
+#ifdef _WIN32
+# include <windows.h>
+#endif
 
 bool srvCallback(test_roscpp::TestStringString::Request &,
                  test_roscpp::TestStringString::Response &res)
@@ -53,7 +56,12 @@ int main(int argc, char** argv)
 	for(int i = 0; i < 10; ++i)
 	{
 		ros::spinOnce();
+
+#ifndef _WIN32
 		usleep(100*1000);
+#else
+		Sleep(100);
+#endif
 	}
 
 	// Exit immediately without calling any atexit hooks
