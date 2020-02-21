@@ -209,9 +209,13 @@ XmlRpcSocket::connect(int fd, const std::string& host, int port)
   hints.ai_family = AF_UNSPEC;
   int getaddr_err = getaddrinfo(host.c_str(), NULL, &hints, &addr);
   if (0 != getaddr_err) {
+#if !defined(_WINDOWS)
     if(getaddr_err == EAI_SYSTEM) {
       XmlRpcUtil::error("Couldn't find an %s address for [%s]: %s\n", s_use_ipv6_ ? "AF_INET6" : "AF_INET", host.c_str(), XmlRpcSocket::getErrorMsg().c_str());
     } else {
+#else
+    {
+#endif
       XmlRpcUtil::error("Couldn't find an %s address for [%s]: %s\n", s_use_ipv6_ ? "AF_INET6" : "AF_INET", host.c_str(), gai_strerror(getaddr_err));
     }
     return false;
@@ -371,11 +375,7 @@ std::string
 XmlRpcSocket::getErrorMsg(int error)
 {
   char err[60];
-#ifdef _MSC_VER
-  strerror_s(err,60,error);
-#else
-  snprintf(err,sizeof(err),"%s",strerror(error));
-#endif
+  std::snprintf(err,sizeof(err),"%s",strerror(error));
   return std::string(err);
 }
 
