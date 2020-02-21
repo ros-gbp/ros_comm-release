@@ -106,7 +106,7 @@ class TestSlaveApi(unittest.TestCase):
     def load_profile(self, filename):
         import yaml
         with open(filename) as f:
-            d = yaml.load(f)
+            d = yaml.safe_load(f)
         self.required_pubs = d.get('pubs', {})
         self.required_subs = d.get('subs', {})
         
@@ -124,7 +124,7 @@ class TestSlaveApi(unittest.TestCase):
                 time.sleep(0.1)
         if not self.node_api:
             self.fail("master did not return XML-RPC API for [%s, %s]"%(self.caller_id, self.test_node))
-        print "[%s] API  = %s"%(self.test_node, self.node_api)
+        print("[%s] API  = %s"%(self.test_node, self.node_api))
         self.assert_(self.node_api.startswith('http'))
         self.node = ServerProxy(self.node_api)
 
@@ -173,7 +173,10 @@ class TestSlaveApi(unittest.TestCase):
         """
         validates a URI as being http(s)
         """
-        import urlparse
+        try:
+            import urllib.parse as urlparse
+        except ImportError:
+            import urlparse
         parsed = urlparse.urlparse(uri)
         self.assert_(parsed[0] in ['http', 'https'], 'protocol [%s] is [%s] invalid'%(parsed[0], uri))
         self.assert_(parsed[1], 'host missing [%s]'%uri)
@@ -206,7 +209,7 @@ class TestSlaveApi(unittest.TestCase):
         """
         test that node obeys simtime (/Clock) contract
 
-        http://www.ros.org/wiki/Clock
+        http://wiki.ros.org/Clock
         """
         try:
             use_sim_time = self.master.getParam('/use_sim_time')
@@ -323,7 +326,10 @@ class TestSlaveApi(unittest.TestCase):
         self.check_uri(uri)
 
         # check against env, canonicalize for comparison
-        import urlparse
+        try:
+            import urllib.parse as urlparse
+        except ImportError:
+            import urlparse
         master_env = rosgraph.get_master_uri()
         if not master_env.endswith('/'):
             master_env = master_env + '/'

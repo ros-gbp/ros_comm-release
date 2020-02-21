@@ -109,6 +109,12 @@ namespace XmlRpc {
       throw XmlRpcException("type error: expected an array");
   }
 
+  void XmlRpcValue::assertStruct() const
+  {
+    if (_type != TypeStruct)
+      throw XmlRpcException("type error: expected a struct");
+  }
+
   void XmlRpcValue::assertStruct()
   {
     if (_type == TypeInvalid) {
@@ -318,7 +324,7 @@ namespace XmlRpc {
   std::string XmlRpcValue::intToXml() const
   {
     char buf[256];
-    snprintf(buf, sizeof(buf)-1, "%d", _value.asInt);
+    std::snprintf(buf, sizeof(buf)-1, "%d", _value.asInt);
     buf[sizeof(buf)-1] = 0;
     std::string xml = VALUE_TAG;
     xml += I4_TAG;
@@ -428,7 +434,7 @@ namespace XmlRpc {
   {
     struct tm* t = _value.asTime;
     char buf[20];
-    snprintf(buf, sizeof(buf)-1, "%4d%02d%02dT%02d:%02d:%02d", 
+    std::snprintf(buf, sizeof(buf)-1, "%4d%02d%02dT%02d:%02d:%02d", 
       t->tm_year,t->tm_mon,t->tm_mday,t->tm_hour,t->tm_min,t->tm_sec);
     buf[sizeof(buf)-1] = 0;
 
@@ -497,7 +503,7 @@ namespace XmlRpc {
     xml.resize(xml.size() + base64EncodedSize(_value.asBinary->size()));
 
     base64::encoder encoder;
-    offset += encoder.encode(&(*_value.asBinary)[0], _value.asBinary->size(), &xml[offset]);
+    offset += encoder.encode(_value.asBinary->data(), _value.asBinary->size(), &xml[offset]);
     offset += encoder.encode_end(&xml[offset]);
     xml.resize(offset);
 
@@ -604,7 +610,7 @@ namespace XmlRpc {
         {
           struct tm* t = _value.asTime;
           char buf[20];
-          snprintf(buf, sizeof(buf)-1, "%4d%02d%02dT%02d:%02d:%02d", 
+          std::snprintf(buf, sizeof(buf)-1, "%4d%02d%02dT%02d:%02d:%02d", 
             t->tm_year,t->tm_mon,t->tm_mday,t->tm_hour,t->tm_min,t->tm_sec);
           buf[sizeof(buf)-1] = 0;
           os << buf;
@@ -613,7 +619,7 @@ namespace XmlRpc {
       case TypeBase64:
         {
           std::stringstream buffer;
-          buffer.write(&(*_value.asBinary)[0], _value.asBinary->size());
+          buffer.write(_value.asBinary->data(), _value.asBinary->size());
           base64::encoder encoder;
           encoder.encode(buffer, os);
           break;
