@@ -43,6 +43,7 @@ import itertools
 import os
 import string
 import sys
+import traceback
 
 import genmsg.msgs
 import genpy
@@ -117,6 +118,13 @@ def checkmessages(migrator, messages):
             
     return migrations
 
+def _migrate_connection_header(conn_header, new_msg_type):
+    conn_header['type'] = new_msg_type._type
+    conn_header['md5sum'] = new_msg_type._md5sum
+    conn_header['message_definition'] = new_msg_type._full_text
+
+    return conn_header
+
 ## Fix a bag so that it can be played in the current system
 #
 # @param migrator The message migrator to use
@@ -131,10 +139,11 @@ def fixbag(migrator, inbag, outbag):
     if not False in [m[1] == [] for m in res]:
         bag = rosbag.Bag(inbag, 'r')
         rebag = rosbag.Bag(outbag, 'w', options=bag.options)
-        for topic, msg, t in bag.read_messages(raw=True):
+        for topic, msg, t, conn_header in bag.read_messages(raw=True, return_connection_header=True):
             new_msg_type = migrator.find_target(msg[4])
             mig_msg = migrator.migrate_raw(msg, (new_msg_type._type, None, new_msg_type._md5sum, None, new_msg_type))
-            rebag.write(topic, mig_msg, t, raw=True)
+            new_conn_header = _migrate_connection_header(conn_header, new_msg_type)
+            rebag.write(topic, mig_msg, t, connection_header=new_conn_header, raw=True)
         rebag.close()
         bag.close()
         return True
@@ -157,13 +166,14 @@ def fixbag2(migrator, inbag, outbag, force=False):
     if len(migrations) == 0 or force:
         bag = rosbag.Bag(inbag, 'r')
         rebag = rosbag.Bag(outbag, 'w', options=bag.options)
-        for topic, msg, t in bag.read_messages(raw=True):
+        for topic, msg, t, conn_header in bag.read_messages(raw=True, return_connection_header=True):
             new_msg_type = migrator.find_target(msg[4])
             if new_msg_type != None:
                 mig_msg = migrator.migrate_raw(msg, (new_msg_type._type, None, new_msg_type._md5sum, None, new_msg_type))
-                rebag.write(topic, mig_msg, t, raw=True)
+                new_conn_header = _migrate_connection_header(conn_header, new_msg_type)
+                rebag.write(topic, mig_msg, t, connection_header=new_conn_header, raw=True)
             else:
-                rebag.write(topic, msg, t, raw=True)
+                rebag.write(topic, msg, t, connection_header=connection_header, raw=True)
         rebag.close()
         bag.close()
 
@@ -257,6 +267,9 @@ class MessageUpdateRule(object):
 
     valid = False
 
+    class EmptyType(Exception):
+        pass
+
     ## Initialize class
     def __init__(self, migrator, location):
         # Every rule needs to hang onto the migrator so we can potentially use it
@@ -271,23 +284,26 @@ class MessageUpdateRule(object):
         # Instantiate types dynamically based on definition
         try:
             if self.old_type == "":
-                raise Exception
+                raise self.EmptyType
             self.old_types = genpy.dynamic.generate_dynamic(self.old_type, self.old_full_text)
             self.old_class = self.old_types[self.old_type]
             self.old_md5sum = self.old_class._md5sum
-        except:
-            self.old_types = []
+        except Exception as e:
+            if not isinstance(e, self.EmptyType):
+                traceback.print_exc(file=sys.stderr)
+            self.old_types = {}
             self.old_class = None
             self.old_md5sum = ""
-
         try:
             if self.new_type == "":
-                raise Exception
+                raise self.EmptyType
             self.new_types = genpy.dynamic.generate_dynamic(self.new_type, self.new_full_text)
             self.new_class = self.new_types[self.new_type]
             self.new_md5sum = self.new_class._md5sum
-        except:
-            self.new_types = []
+        except Exception as e:
+            if not isinstance(e, self.EmptyType):
+                traceback.print_exc(file=sys.stderr)
+            self.new_types = {}
             self.new_class = None
             self.new_md5sum = ""
 
@@ -830,7 +846,7 @@ class MessageMigrator(object):
                 if (tmp_sn != first_sn):
                     sn_range.append(tmp_sn)
                 if (tmp_sn.new_class._type == new_type):
-                    found_new_type == True
+                    found_new_type = True
                 if (found_new_type and tmp_sn.new_class._type != new_type):
                     break
 
