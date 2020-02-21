@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(topic_tools)
 
 if(NOT WIN32)
@@ -106,6 +106,7 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest(test/lazy_transport.test)
   add_rostest(test/mux_initial_none.test)
   add_rostest(test/mux_initial_other.test)
+  add_rostest(test/transform.test)
   ## Latched test disabled until underlying issue in roscpp is resolved,
   ## #3385, #3434.
   #rosbuild_add_rostest(test/relay_latched.test)
