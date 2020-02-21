@@ -1,0 +1,12 @@
+Source: ros-melodic-test-rostest
+Section: misc
+Priority: optional
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-melodic-catkin, ros-melodic-rostest, ros-melodic-rostopic
+Homepage: http://ros.org/wiki/rostest
+Standards-Version: 3.9.2
+
+Package: ros-melodic-test-rostest
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, 
+Description: Tests for rostest.
