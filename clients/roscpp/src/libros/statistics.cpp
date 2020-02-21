@@ -113,7 +113,8 @@ void StatisticsLogger::callback(const boost::shared_ptr<M_string>& connection_he
   }
 
   // should publish new statistics?
-  if (stats.last_publish + ros::Duration(pub_frequency_) < received_time)
+  double pub_period = 1.0 / pub_frequency_;
+  if (stats.last_publish + ros::Duration(pub_period) < received_time)
   {
     ros::Time window_start = stats.last_publish;
     stats.last_publish = received_time;
@@ -132,13 +133,13 @@ void StatisticsLogger::callback(const boost::shared_ptr<M_string>& connection_he
     // not all message types have this
     if (stats.age_list.size() > 0)
     {
-      msg.stamp_age_mean = ros::Duration(0);
+      double stamp_age_sum = 0.0;
       msg.stamp_age_max = ros::Duration(0);
 
       for(std::list<ros::Duration>::iterator it = stats.age_list.begin(); it != stats.age_list.end(); it++)
       {
         ros::Duration age = *it;
-        msg.stamp_age_mean += age;
+        stamp_age_sum += age.toSec();
 
         if (age > msg.stamp_age_max)
         {
@@ -146,7 +147,7 @@ void StatisticsLogger::callback(const boost::shared_ptr<M_string>& connection_he
         }
       }
 
-      msg.stamp_age_mean *= 1.0 / stats.age_list.size();
+      msg.stamp_age_mean = ros::Duration(stamp_age_sum / stats.age_list.size());
 
       double stamp_age_variance = 0.0;
       for(std::list<ros::Duration>::iterator it = stats.age_list.begin(); it != stats.age_list.end(); it++)
@@ -236,11 +237,11 @@ void StatisticsLogger::callback(const boost::shared_ptr<M_string>& connection_he
     pub_.publish(msg);
 
     // dynamic window resizing
-    if (stats.arrival_time_list.size() > static_cast<size_t>(max_elements) && pub_frequency_ * 2 <= max_window)
+    if (stats.arrival_time_list.size() > static_cast<size_t>(max_elements) && pub_period / 2.0 >= min_window)
     {
       pub_frequency_ *= 2;
     }
-    if (stats.arrival_time_list.size() < static_cast<size_t>(min_elements) && pub_frequency_ / 2 >= min_window)
+    if (stats.arrival_time_list.size() < static_cast<size_t>(min_elements) && pub_period * 2.0 <= max_window)
     {
       pub_frequency_ /= 2;
     }
