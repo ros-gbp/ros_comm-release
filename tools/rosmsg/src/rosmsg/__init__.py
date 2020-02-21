@@ -240,7 +240,7 @@ def create_names_filter(names):
     """
     returns a function to use as filter that returns all objects slots except those with names in list.
     """
-    return lambda obj : filter(lambda slotname : not slotname in names, obj.__slots__)
+    return lambda obj : list(filter(lambda slotname : not slotname in names, obj.__slots__))
 
 
 def init_rosmsg_proto():
@@ -551,7 +551,7 @@ def _get_package_paths(pkgname, rospack):
     path = rospack.get_path(pkgname)
     paths.append(path)
     results = find_in_workspaces(search_dirs=['share'], project=pkgname, first_match_only=True, workspace_to_source_spaces=_catkin_workspace_to_source_spaces, source_path_to_packages=_catkin_source_path_to_packages)
-    if results and results[0] != path:
+    if results and results[0].replace(os.path.sep, '/') != path.replace(os.path.sep, '/'):
         paths.append(results[0])
     return paths
     
