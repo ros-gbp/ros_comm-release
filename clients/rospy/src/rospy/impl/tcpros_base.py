@@ -158,7 +158,8 @@ class TCPServer(object):
                 (e_errno, msg) = e.args
                 if e_errno == errno.EINTR: #interrupted system call
                     continue
-                raise
+                if not self.is_shutdown:
+                    raise
             if self.is_shutdown:
                 break
             try:
@@ -445,7 +446,7 @@ class TCPROSTransport(Transport):
         else: # Python 3.x
             self.read_buff = BytesIO()
             self.write_buff = BytesIO()
-                    	    
+
         #self.write_buff = StringIO()
         self.header = header
 
@@ -473,6 +474,7 @@ class TCPROSTransport(Transport):
         Similar to getTransportInfo() in 'libros/transport/transport_tcp.cpp'
         e.g. TCPROS connection on port 41374 to [127.0.0.1:40623 on socket 6]
         """
+        # Pattern matching this output in tools/rosnode/src/rosnode/__init__.py CONNECTION_PATTERN
         return "%s connection on port %s to [%s:%s on socket %s]" % (self.transport_type, self.local_endpoint[1], self.remote_endpoint[0], self.remote_endpoint[1], self._fileno)
 
     def fileno(self):
@@ -649,7 +651,7 @@ class TCPROSTransport(Transport):
         if sock is None:
             return
         sock.setblocking(1)
-	# TODO: add bytes received to self.stat_bytes
+        # TODO: add bytes received to self.stat_bytes
         self._validate_header(read_ros_handshake_header(sock, self.read_buff, self.protocol.buff_size))
                 
     def send_message(self, msg, seq):
@@ -668,6 +670,7 @@ class TCPROSTransport(Transport):
         serialize_message(self.write_buff, seq, msg)
         self.write_data(self.write_buff.getvalue())
         self.write_buff.truncate(0)
+        self.write_buff.seek(0)
 
     def write_data(self, data):
         """
