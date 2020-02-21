@@ -2,27 +2,68 @@
 Changelog for package rosgraph
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.12.14 (2018-08-23)
---------------------
+1.14.4 (2020-02-20)
+-------------------
+* add default ROS_MASTER_URI (`#1666 <https://github.com/ros/ros_comm/issues/1666>`_)
+* fix test which fails on Noetic (`#1891 <https://github.com/ros/ros_comm/issues/1891>`_)
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* [Windows] Python 3 compatibility (`#1819 <https://github.com/ros/ros_comm/issues/1819>`_)
+* fix escape sequences in regular expressions (`#1837 <https://github.com/ros/ros_comm/issues/1837>`_)
+* fix RospyLogger findCaller arguments in Python 3.8 (`#1838 <https://github.com/ros/ros_comm/issues/1838>`_)
+* [Windows] make test code to be more portable (`#1726 <https://github.com/ros/ros_comm/issues/1726>`_)
+* fix Coverity forward null (`#1787 <https://github.com/ros/ros_comm/issues/1787>`_)
+* make log config from rosgraph optional (`#1797 <https://github.com/ros/ros_comm/issues/1797>`_)
+* use condition attributes to specify Python 2 and 3 dependencies (`#1792 <https://github.com/ros/ros_comm/issues/1792>`_)
+* add is_legal_remap() to rosgraph to make remap-detection more precise (`#1683 <https://github.com/ros/ros_comm/issues/1683>`_)
+* more Python 3 compatibility (`#1783 <https://github.com/ros/ros_comm/issues/1783>`_)
+* more Python 3 compatibility (`#1782 <https://github.com/ros/ros_comm/issues/1782>`_)
+* switch to yaml.safe_load(_all) to prevent YAMLLoadWarning (`#1688 <https://github.com/ros/ros_comm/issues/1688>`_)
+* use urlparse for parsing the port, whick makes ipv6 possible (`#1698 <https://github.com/ros/ros_comm/issues/1698>`_)
+* fix paths (and regex for paths) comparison issues (`#1592 <https://github.com/ros/ros_comm/issues/1592>`_)
+* fix various test problems (`#1601 <https://github.com/ros/ros_comm/issues/1601>`_)
+* fix typos: awhile -> a while (`#1534 <https://github.com/ros/ros_comm/issues/1534>`_)
 
-1.12.13 (2018-02-21)
---------------------
-
-1.12.12 (2017-11-16)
---------------------
-
-1.12.11 (2017-11-07)
---------------------
-
-1.12.10 (2017-11-06)
---------------------
-
-1.12.9 (2017-11-06)
+1.14.3 (2018-08-06)
 -------------------
 
-1.12.8 (2017-11-06)
+1.14.2 (2018-06-06)
+-------------------
+
+1.14.1 (2018-05-21)
+-------------------
+
+1.14.0 (2018-05-21)
+-------------------
+* use HTTP/1.1 in XMLRPC Server (`#1287 <https://github.com/ros/ros_comm/issues/1287>`_)
+
+1.13.6 (2018-02-05)
+-------------------
+* fix search strategy for python_logging config (`#1292 <https://github.com/ros/ros_comm/issues/1292>`_)
+
+1.13.5 (2017-11-09)
+-------------------
+
+1.13.4 (2017-11-02)
+-------------------
+
+1.13.3 (2017-10-25)
+-------------------
+* use defined error codes rather than hardcoded integers (`#1174 <https://github.com/ros/ros_comm/issues/1174>`_)
+* improve logger tests (`#1144 <https://github.com/ros/ros_comm/issues/1144>`_)
+
+1.13.2 (2017-08-15)
+-------------------
+* fix stack frame identification in rospy logging (`#1141 <https://github.com/ros/ros_comm/issues/1141>`_, regression from 1.13.1)
+* make RospyLogger.findCaller compatible with Python 3 (`#1121 <https://github.com/ros/ros_comm/issues/1121>`_)
+
+1.13.1 (2017-07-27)
 -------------------
 * improve message when `roslogging` cannot change permissions (`#1068 <https://github.com/ros/ros_comm/issues/1068>`_)
+* allow python_logging.yaml for logging configuration (`#1061 <https://github.com/ros/ros_comm/issues/1061>`_)
+* write log for class method with class name (`#1043 <https://github.com/ros/ros_comm/issues/1043>`_)
+
+1.13.0 (2017-02-22)
+-------------------
 
 1.12.7 (2017-02-17)
 -------------------

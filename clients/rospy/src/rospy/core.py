@@ -43,6 +43,7 @@ except ImportError:
     import pickle
 import inspect
 import logging
+from hashlib import md5
 import os
 import signal
 import sys
@@ -72,6 +73,7 @@ from rospy.names import *
 from rospy.impl.validators import ParameterInvalid
 
 from rosgraph_msgs.msg import Log
+from functools import partial
 
 _logger = logging.getLogger("rospy.core")
 
@@ -130,37 +132,82 @@ _rospy_logger = logging.getLogger("rospy.internal")
 # other sorts of information that scare users but are essential for
 # debugging
 
-def rospydebug(msg, *args):
+def rospydebug(msg, *args, **kwargs):
     """Internal rospy client library debug logging"""
-    _rospy_logger.debug(msg, *args)
-def rospyinfo(msg, *args):
+    _rospy_logger.debug(msg, *args, **kwargs)
+def rospyinfo(msg, *args, **kwargs):
     """Internal rospy client library debug logging"""
-    _rospy_logger.info(msg, *args)
-def rospyerr(msg, *args):
+    _rospy_logger.info(msg, *args, **kwargs)
+def rospyerr(msg, *args, **kwargs):
     """Internal rospy client library error logging"""
-    _rospy_logger.error(msg, *args)
-def rospywarn(msg, *args):
+    _rospy_logger.error(msg, *args, **kwargs)
+def rospywarn(msg, *args, **kwargs):
     """Internal rospy client library warn logging"""
-    _rospy_logger.warn(msg, *args)
-    
-logdebug = logging.getLogger('rosout').debug
+    _rospy_logger.warn(msg, *args, **kwargs)
 
-logwarn = logging.getLogger('rosout').warning
 
-loginfo = logging.getLogger('rosout').info
+def _frame_to_caller_id(frame):
+    caller_id = (
+        inspect.getabsfile(frame),
+        frame.f_lineno,
+        frame.f_lasti,
+    )
+    return pickle.dumps(caller_id)
+
+
+def _base_logger(msg, args, kwargs, throttle=None,
+                 throttle_identical=False, level=None, once=False):
+
+    rospy_logger = logging.getLogger('rosout')
+    name = kwargs.pop('logger_name', None)
+    if name:
+        rospy_logger = rospy_logger.getChild(name)
+    logfunc = getattr(rospy_logger, level)
+
+    if once:
+        caller_id = _frame_to_caller_id(inspect.currentframe().f_back.f_back)
+        if _logging_once(caller_id):
+            logfunc(msg, *args, **kwargs)
+    elif throttle_identical:
+        caller_id = _frame_to_caller_id(inspect.currentframe().f_back.f_back)
+        throttle_elapsed = False
+        if throttle is not None:
+            throttle_elapsed = _logging_throttle(caller_id, throttle)
+        if _logging_identical(caller_id, msg) or throttle_elapsed:
+            logfunc(msg, *args, **kwargs)
+    elif throttle:
+        caller_id = _frame_to_caller_id(inspect.currentframe().f_back.f_back)
+        if _logging_throttle(caller_id, throttle):
+            logfunc(msg, *args, **kwargs)
+    else:
+        logfunc(msg, *args, **kwargs)
+
+
+def logdebug(msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, level='debug')
+
+def loginfo(msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, level='info')
+
+def logwarn(msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, level='warn')
+
+def logerr(msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, level='error')
+
+def logfatal(msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, level='critical')
+
 logout = loginfo # alias deprecated name
 
-logerr = logging.getLogger('rosout').error
 logerror = logerr # alias logerr
-
-logfatal = logging.getLogger('rosout').critical
 
 
 class LoggingThrottle(object):
 
     last_logging_time_table = {}
 
-    def __call__(self, caller_id, logging_func, period, msg):
+    def __call__(self, caller_id, period):
         """Do logging specified message periodically.
 
         - caller_id (str): Id to identify the caller
@@ -174,45 +221,99 @@ class LoggingThrottle(object):
 
         if (last_logging_time is None or
               (now - last_logging_time) > rospy.Duration(period)):
-            logging_func(msg)
             self.last_logging_time_table[caller_id] = now
+            return True
+        return False
 
 
 _logging_throttle = LoggingThrottle()
 
 
-def _frame_to_caller_id(frame):
-    caller_id = (
-        inspect.getabsfile(frame),
-        frame.f_lineno,
-        frame.f_lasti,
-    )
-    return pickle.dumps(caller_id)
+def logdebug_throttle(period, msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, throttle=period, level='debug')
+
+def loginfo_throttle(period, msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, throttle=period, level='info')
+
+def logwarn_throttle(period, msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, throttle=period, level='warn')
+
+def logerr_throttle(period, msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, throttle=period, level='error')
+
+def logfatal_throttle(period, msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, throttle=period, level='critical')
 
 
-def logdebug_throttle(period, msg):
-    caller_id = _frame_to_caller_id(inspect.currentframe().f_back)
-    _logging_throttle(caller_id, logdebug, period, msg)
+class LoggingIdentical(object):
+
+    last_logging_msg_table = {}
+
+    def __call__(self, caller_id, msg):
+        """Do logging specified message only if distinct from last message.
+
+        - caller_id (str): Id to identify the caller
+        - msg (str): Contents of message to log
+        """
+        msg_hash = md5(msg.encode()).hexdigest()
+
+        if msg_hash != self.last_logging_msg_table.get(caller_id):
+            self.last_logging_msg_table[caller_id] = msg_hash
+            return True
+        return False
 
 
-def loginfo_throttle(period, msg):
-    caller_id = _frame_to_caller_id(inspect.currentframe().f_back)
-    _logging_throttle(caller_id, loginfo, period, msg)
+_logging_identical = LoggingIdentical()
 
 
-def logwarn_throttle(period, msg):
-    caller_id = _frame_to_caller_id(inspect.currentframe().f_back)
-    _logging_throttle(caller_id, logwarn, period, msg)
+def logdebug_throttle_identical(period, msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, throttle=period, throttle_identical=True,
+                 level='debug')
+
+def loginfo_throttle_identical(period, msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, throttle=period, throttle_identical=True,
+                 level='info')
+
+def logwarn_throttle_identical(period, msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, throttle=period, throttle_identical=True,
+                 level='warn')
+
+def logerr_throttle_identical(period, msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, throttle=period, throttle_identical=True,
+                 level='error')
+
+def logfatal_throttle_identical(period, msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, throttle=period, throttle_identical=True,
+                 level='critical')
 
 
-def logerr_throttle(period, msg):
-    caller_id = _frame_to_caller_id(inspect.currentframe().f_back)
-    _logging_throttle(caller_id, logerr, period, msg)
+class LoggingOnce(object):
+
+    called_caller_ids = set()
+
+    def __call__(self, caller_id):
+        if caller_id not in self.called_caller_ids:
+            self.called_caller_ids.add(caller_id)
+            return True
+        return False
+
+_logging_once = LoggingOnce()
 
 
-def logfatal_throttle(period, msg):
-    caller_id = _frame_to_caller_id(inspect.currentframe().f_back)
-    _logging_throttle(caller_id, logfatal, period, msg)
+def logdebug_once(msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, once=True, level='debug')
+
+def loginfo_once(msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, once=True, level='info')
+
+def logwarn_once(msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, once=True, level='warn')
+
+def logerr_once(msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, once=True, level='error')
+
+def logfatal_once(msg, *args, **kwargs):
+    _base_logger(msg, args, kwargs, once=True, level='critical')
 
 
 #########################################################
@@ -291,10 +392,11 @@ def configure_logging(node_name, level=logging.INFO):
         filename = os.path.abspath(logfilename_remap)
     else:
         # fix filesystem-unsafe chars
-        filename = node_name.replace('/', '_') + '.log'
+        suffix = '.log'
+        filename = node_name.replace('/', '_') + suffix
         if filename[0] == '_':
             filename = filename[1:]
-        if not filename:
+        if filename == suffix:
             raise rospy.exceptions.ROSException('invalid configure_logging parameter: %s'%node_name)
     _log_filename = rosgraph.roslogging.configure_logging('rospy', level, filename=filename)
 
@@ -499,7 +601,7 @@ def signal_shutdown(reason):
 def _ros_signal(sig, stackframe):
     signal_shutdown("signal-"+str(sig))
     prev_handler = _signalChain.get(sig, None)
-    if prev_handler is not None and not type(prev_handler) == int:
+    if callable(prev_handler):
         try:
             prev_handler(sig, stackframe)
         except KeyboardInterrupt:
@@ -530,7 +632,10 @@ def is_topic(param_name):
         return v
     return validator
 
-def xmlrpcapi(uri):
+_xmlrpc_cache = {}
+_xmlrpc_lock = threading.Lock()
+
+def xmlrpcapi(uri, cache=True):
     """
     @return: instance for calling remote server or None if not a valid URI
     @rtype: xmlrpclib.ServerProxy
@@ -540,5 +645,22 @@ def xmlrpcapi(uri):
     uriValidate = urlparse.urlparse(uri)
     if not uriValidate[0] or not uriValidate[1]:
         return None
-    return xmlrpcclient.ServerProxy(uri)
+    if not cache:
+        return xmlrpcclient.ServerProxy(uri)
+    if uri not in _xmlrpc_cache:
+        with _xmlrpc_lock:
+            if uri not in _xmlrpc_cache:  # allows lazy locking
+                _xmlrpc_cache[uri] = _LockedServerProxy(uri)
+    return _xmlrpc_cache[uri]
 
+
+class _LockedServerProxy(xmlrpcclient.ServerProxy):
+
+    def __init__(self, *args, **kwargs):
+        xmlrpcclient.ServerProxy.__init__(self, *args, **kwargs)
+        self._lock = threading.Lock()
+
+    def _ServerProxy__request(self, methodname, params):
+        with self._lock:
+            return xmlrpcclient.ServerProxy._ServerProxy__request(
+                self, methodname, params)

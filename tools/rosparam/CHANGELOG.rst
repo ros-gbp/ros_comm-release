@@ -2,25 +2,46 @@
 Changelog for package rosparam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.12.14 (2018-08-23)
---------------------
+1.14.4 (2020-02-20)
+-------------------
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* change unsafe yaml.load to yaml.safe_load (`#1835 <https://github.com/ros/ros_comm/issues/1835>`_)
+* use condition attributes to specify Python 2 and 3 dependencies (`#1792 <https://github.com/ros/ros_comm/issues/1792>`_)
+* switch to yaml.safe_load(_all) to prevent YAMLLoadWarning (`#1688 <https://github.com/ros/ros_comm/issues/1688>`_)
+* update wiki.ros.org URLs (`#1536 <https://github.com/ros/ros_comm/issues/1536>`_)
 
-1.12.13 (2018-02-21)
---------------------
-
-1.12.12 (2017-11-16)
---------------------
-
-1.12.11 (2017-11-07)
---------------------
-
-1.12.10 (2017-11-06)
---------------------
-
-1.12.9 (2017-11-06)
+1.14.3 (2018-08-06)
 -------------------
 
-1.12.8 (2017-11-06)
+1.14.2 (2018-06-06)
+-------------------
+
+1.14.1 (2018-05-21)
+-------------------
+
+1.14.0 (2018-05-21)
+-------------------
+
+1.13.6 (2018-02-05)
+-------------------
+* remove preprended '|' from pretty-printed strings (`#1114 <https://github.com/ros/ros_comm/issues/1114>`_)
+
+1.13.5 (2017-11-09)
+-------------------
+
+1.13.4 (2017-11-02)
+-------------------
+
+1.13.3 (2017-10-25)
+-------------------
+
+1.13.2 (2017-08-15)
+-------------------
+
+1.13.1 (2017-07-27)
+-------------------
+
+1.13.0 (2017-02-22)
 -------------------
 
 1.12.7 (2017-02-17)

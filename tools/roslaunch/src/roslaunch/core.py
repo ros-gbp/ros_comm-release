@@ -39,6 +39,7 @@ Core roslaunch model and lower-level utility routines.
 import os
 import logging
 
+import re
 import socket
 import sys
 try:
@@ -208,9 +209,9 @@ def setup_env(node, machine, master_uri, env=None):
         if ns[-1] == '/':
             ns = ns[:-1]
         if ns:
-            d[rosgraph.ROS_NAMESPACE] = ns 
+            d[rosgraph.ROS_NAMESPACE] = str(ns)
         for name, value in node.env_args:
-            d[name] = value
+            d[str(name)] = str(value)
 
     return d
 
@@ -346,7 +347,7 @@ class Machine(object):
         self.name = name
         self.env_loader = env_loader
         self.user = user or None
-        self.password = password or None
+        self.password = password
         self.address = address
         self.ssh_port = ssh_port
         self.assignable = assignable
@@ -456,6 +457,7 @@ class Node(object):
         self.type = node_type
         self.name = name or None
         self.namespace = rosgraph.names.make_global_ns(namespace or '/')
+        self.namespace = re.sub("//+", "/", self.namespace)
         self.machine_name = machine_name or None
         self.respawn = respawn
         self.respawn_delay = respawn_delay

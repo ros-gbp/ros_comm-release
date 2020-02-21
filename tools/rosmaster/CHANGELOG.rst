@@ -2,29 +2,52 @@
 Changelog for package rosmaster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.12.14 (2018-08-23)
---------------------
+1.14.4 (2020-02-20)
+-------------------
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* use thread local storage for caching instances of ServerProxy (`#1732 <https://github.com/ros/ros_comm/issues/1732>`_)
+* use condition attributes to specify Python 2 and 3 dependencies (`#1792 <https://github.com/ros/ros_comm/issues/1792>`_)
+* fix issue occuring during alternating calls of getParamCached and setParam (`#1439 <https://github.com/ros/ros_comm/issues/1439>`_)
+* fix docstring in unregisterSubscriber (`#1553 <https://github.com/ros/ros_comm/issues/1553>`_)
+* set correctly typed @apivalidate default return values (`#1472 <https://github.com/ros/ros_comm/issues/1472>`_)
 
-1.12.13 (2018-02-21)
---------------------
-* add TCP_INFO availability check (`#1211 <https://github.com/ros/ros_comm/issues/1211>`_)
-
-1.12.12 (2017-11-16)
---------------------
-
-1.12.11 (2017-11-07)
---------------------
-
-1.12.10 (2017-11-06)
---------------------
-
-1.12.9 (2017-11-06)
+1.14.3 (2018-08-06)
 -------------------
 
-1.12.8 (2017-11-06)
+1.14.2 (2018-06-06)
+-------------------
+
+1.14.1 (2018-05-21)
+-------------------
+
+1.14.0 (2018-05-21)
+-------------------
+
+1.13.6 (2018-02-05)
+-------------------
+* add TCP_INFO availability check (`#1211 <https://github.com/ros/ros_comm/issues/1211>`_)
+* replace Thread.setDaemon() using new API (`#1276 <https://github.com/ros/ros_comm/issues/1276>`_)
+
+1.13.5 (2017-11-09)
+-------------------
+
+1.13.4 (2017-11-02)
 -------------------
 * catch exception with `socket.TCP_INFO` on WSL (`#1212 <https://github.com/ros/ros_comm/issues/1212>`_, regression from 1.13.1)
+
+1.13.3 (2017-10-25)
+-------------------
+* add --set-master-logger-level option for 'rosmaster' to output LOG_API (`#1180 <https://github.com/ros/ros_comm/issues/1180>`_)
+
+1.13.2 (2017-08-15)
+-------------------
+
+1.13.1 (2017-07-27)
+-------------------
 * close CLOSE_WAIT sockets by default (`#1104 <https://github.com/ros/ros_comm/issues/1104>`_)
+
+1.13.0 (2017-02-22)
+-------------------
 
 1.12.7 (2017-02-17)
 -------------------

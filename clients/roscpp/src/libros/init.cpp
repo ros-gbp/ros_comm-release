@@ -316,13 +316,6 @@ void start()
     }
   }
 
-#ifdef _MSC_VER
-  if (env_ipv6)
-  {
-    free(env_ipv6);
-  }
-#endif
-
   param::param("/tcp_keepalive", TransportTCP::s_use_keepalive_, TransportTCP::s_use_keepalive_);
 
   PollManager::instance()->addPollThreadListener(checkForShutdown);
@@ -343,7 +336,20 @@ void start()
 
   ros::Time::init();
 
-  if (!(g_init_options & init_options::NoRosout))
+  bool no_rosout = false;
+  std::string no_rosout_env;
+  if (get_environment_variable(no_rosout_env,"ROSCPP_NO_ROSOUT"))
+  {
+    try
+    {
+      no_rosout = boost::lexical_cast<bool>(no_rosout_env.c_str());
+    }
+    catch (boost::bad_lexical_cast&)
+    {
+    }
+  }
+
+  if (!(no_rosout || (g_init_options & init_options::NoRosout)))
   {
     g_rosout_appender = new ROSOutAppender;
     ros::console::register_appender(g_rosout_appender);
@@ -430,6 +436,13 @@ void check_ipv6_environment() {
   bool use_ipv6 = (env_ipv6 && strcmp(env_ipv6,"on") == 0);
   TransportTCP::s_use_ipv6_ = use_ipv6;
   XmlRpc::XmlRpcSocket::s_use_ipv6_ = use_ipv6;
+
+#ifdef _MSC_VER
+  if (env_ipv6)
+  {
+    free(env_ipv6);
+  }
+#endif
 }
 
 void init(const M_string& remappings, const std::string& name, uint32_t options)
@@ -454,6 +467,9 @@ void init(const M_string& remappings, const std::string& name, uint32_t options)
     // Disable SIGPIPE
 #ifndef WIN32
     signal(SIGPIPE, SIG_IGN);
+#else
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 0), &wsaData);
 #endif
     check_ipv6_environment();
     network::init(remappings);
@@ -592,7 +608,8 @@ void shutdown()
   {
     g_internal_queue_thread.join();
   }
-
+  //ros::console::deregister_appender(g_rosout_appender);
+  delete g_rosout_appender;
   g_rosout_appender = 0;
 
   if (g_started)
@@ -604,11 +621,14 @@ void shutdown()
     XMLRPCManager::instance()->shutdown();
   }
 
-  WallTime end = WallTime::now();
-
   g_started = false;
   g_ok = false;
   Time::shutdown();
+}
+
+const std::string& getDefaultMasterURI() {
+  static const std::string uri = "http://localhost:11311";
+  return uri;
 }
 
 }

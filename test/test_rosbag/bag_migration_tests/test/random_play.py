@@ -39,7 +39,7 @@ import sys
 try:
     from cStringIO import StringIO
 except ImportError:
-    from io import StringIO
+    from io import BytesIO as StringIO
 import time
 from random_messages import RandomMsgGen
 import subprocess
@@ -152,7 +152,7 @@ class RandomPlay(unittest.TestCase):
             # these bounds are much larger than they ought to be, but
             # you never know with a heavily loaded system.
             self.assertTrue(input_time - expect_time > -.5)
-            self.assertTrue(abs(input_time - expect_time) < .5)
+            self.assertTrue(abs(input_time - expect_time) < 5.0)
             break
 
         if not msg_match:

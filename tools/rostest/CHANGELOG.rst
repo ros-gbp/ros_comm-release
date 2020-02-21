@@ -2,28 +2,50 @@
 Changelog for package rostest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.12.14 (2018-08-23)
---------------------
+1.14.4 (2020-02-20)
+-------------------
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* more Python 3 compatibility (`#1795 <https://github.com/ros/ros_comm/issues/1795>`_)
+* rostest: add advertisetest (`#1761 <https://github.com/ros/ros_comm/issues/1761>`_)
+* fix flaky hztests (`#1661 <https://github.com/ros/ros_comm/issues/1661>`_)
+* use AnyMsg in publishtest (`#1659 <https://github.com/ros/ros_comm/issues/1659>`_)
+* fix various test problems (`#1601 <https://github.com/ros/ros_comm/issues/1601>`_)
+* invoke rostest from CMake with the PYTHON_EXECUTABLE (`#1583 <https://github.com/ros/ros_comm/issues/1583>`_)
 
-1.12.13 (2018-02-21)
---------------------
+1.14.3 (2018-08-06)
+-------------------
+
+1.14.2 (2018-06-06)
+-------------------
+
+1.14.1 (2018-05-21)
+-------------------
+
+1.14.0 (2018-05-21)
+-------------------
+
+1.13.6 (2018-02-05)
+-------------------
 * add_rostest_gmock function (`#1303 <https://github.com/ros/ros_comm/issues/1303>`_)
 
-1.12.12 (2017-11-16)
---------------------
-
-1.12.11 (2017-11-07)
---------------------
-
-1.12.10 (2017-11-06)
---------------------
-
-1.12.9 (2017-11-06)
+1.13.5 (2017-11-09)
 -------------------
 
-1.12.8 (2017-11-06)
+1.13.4 (2017-11-02)
+-------------------
+
+1.13.3 (2017-10-25)
+-------------------
+
+1.13.2 (2017-08-15)
+-------------------
+
+1.13.1 (2017-07-27)
 -------------------
 * check clock publication neatly in publishtest (`#973 <https://github.com/ros/ros_comm/issues/973>`_)
+
+1.13.0 (2017-02-22)
+-------------------
 
 1.12.7 (2017-02-17)
 -------------------

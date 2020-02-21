@@ -2,27 +2,53 @@
 Changelog for package roswtf
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.12.14 (2018-08-23)
---------------------
+1.14.4 (2020-02-20)
+-------------------
+* add default ROS_MASTER_URI (`#1666 <https://github.com/ros/ros_comm/issues/1666>`_)
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* do not try to run online checks if there are no roslaunch uris (`#1848 <https://github.com/ros/ros_comm/issues/1848>`_)
+* more Python 3 compatibility (`#1796 <https://github.com/ros/ros_comm/issues/1796>`_)
+* use condition attributes to specify Python 2 and 3 dependencies (`#1792 <https://github.com/ros/ros_comm/issues/1792>`_)
+* print exception content to show better idea why loading plugin failed (`#1721 <https://github.com/ros/ros_comm/issues/1721>`_)
+* duplicate test nodes which aren't available to other packages, add missing dependencies (`#1611 <https://github.com/ros/ros_comm/issues/1611>`_)
+* query ipv6 only if specified (`#1596 <https://github.com/ros/ros_comm/issues/1596>`_)
+* fix typos: awhile -> a while (`#1534 <https://github.com/ros/ros_comm/issues/1534>`_)
+* improve msg replacement for 'No package or stack in context'. (`#1505 <https://github.com/ros/ros_comm/issues/1505>`_)
 
-1.12.13 (2018-02-21)
---------------------
-
-1.12.12 (2017-11-16)
---------------------
-
-1.12.11 (2017-11-07)
---------------------
-
-1.12.10 (2017-11-06)
---------------------
-
-1.12.9 (2017-11-06)
+1.14.3 (2018-08-06)
 -------------------
 
-1.12.8 (2017-11-06)
+1.14.2 (2018-06-06)
 -------------------
-* improve roswtf tests (`#1102 <https://github.com/ros/ros_comm/pull/1102>`_)
+
+1.14.1 (2018-05-21)
+-------------------
+
+1.14.0 (2018-05-21)
+-------------------
+* warn if ROS_IP contains whitespace (`#1379 <https://github.com/ros/ros_comm/issues/1379>`_)
+
+1.13.6 (2018-02-05)
+-------------------
+
+1.13.5 (2017-11-09)
+-------------------
+
+1.13.4 (2017-11-02)
+-------------------
+
+1.13.3 (2017-10-25)
+-------------------
+
+1.13.2 (2017-08-15)
+-------------------
+
+1.13.1 (2017-07-27)
+-------------------
+* improve roswtf tests (`#1101 <https://github.com/ros/ros_comm/pull/1101>`_, `#1102 <https://github.com/ros/ros_comm/pull/1102>`_)
+
+1.13.0 (2017-02-22)
+-------------------
 
 1.12.7 (2017-02-17)
 -------------------

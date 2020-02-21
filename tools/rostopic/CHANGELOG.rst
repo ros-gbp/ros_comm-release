@@ -2,29 +2,58 @@
 Changelog for package rostopic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.12.14 (2018-08-23)
---------------------
+1.14.4 (2020-02-20)
+-------------------
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* [Windows] make test code to be more portable (`#1726 <https://github.com/ros/ros_comm/issues/1726>`_)
+* add --use-rostime for pub (`#1717 <https://github.com/ros/ros_comm/issues/1717>`_)
+* _rostopic_list_group_by_host: publisher/subscriber lists have correct type now (`#1780 <https://github.com/ros/ros_comm/issues/1780>`_)
+* more Python 3 compatibility (`#1783 <https://github.com/ros/ros_comm/issues/1783>`_)
+* switch to yaml.safe_load(_all) to prevent YAMLLoadWarning (`#1688 <https://github.com/ros/ros_comm/issues/1688>`_)
+* fix typo, confict -> conflict (`#1690 <https://github.com/ros/ros_comm/issues/1690>`_)
+* repeatedly republish message from file (`#1635 <https://github.com/ros/ros_comm/issues/1635>`_)
+* duplicate test nodes which aren't available to other packages, add missing dependencies (`#1611 <https://github.com/ros/ros_comm/issues/1611>`_)
+* update wiki.ros.org URLs (`#1536 <https://github.com/ros/ros_comm/issues/1536>`_)
 
-1.12.13 (2018-02-21)
---------------------
-
-1.12.12 (2017-11-16)
---------------------
-
-1.12.11 (2017-11-07)
---------------------
-
-1.12.10 (2017-11-06)
---------------------
-
-1.12.9 (2017-11-06)
+1.14.3 (2018-08-06)
 -------------------
 
-1.12.8 (2017-11-06)
+1.14.2 (2018-06-06)
+-------------------
+* fix the count of subscribers, regression from 1.14.0 (`#1407 <https://github.com/ros/ros_comm/issues/1407>`_)
+
+1.14.1 (2018-05-21)
+-------------------
+
+1.14.0 (2018-05-21)
+-------------------
+* add public get_topic_list() function for use in other scripts (`#1154 <https://github.com/ros/ros_comm/issues/1154>`_)
+
+1.13.6 (2018-02-05)
+-------------------
+* add --tcpnodelay TransportHint option to hz and delay commands (`#1296 <https://github.com/ros/ros_comm/issues/1296>`_)
+* remove unreachable exceptions (`#1260 <https://github.com/ros/ros_comm/issues/1260>`_)
+
+1.13.5 (2017-11-09)
+-------------------
+
+1.13.4 (2017-11-02)
+-------------------
+
+1.13.3 (2017-10-25)
+-------------------
+
+1.13.2 (2017-08-15)
 -------------------
 * fix rostopic hz and bw in Python 3 (`#1126 <https://github.com/ros/ros_comm/issues/1126>`_)
 * update tests to match stringify changes (`#1125 <https://github.com/ros/ros_comm/issues/1125>`_)
+
+1.13.1 (2017-07-27)
+-------------------
 * fix rostopic prining long integers (`#1110 <https://github.com/ros/ros_comm/pull/1110>`_)
+
+1.13.0 (2017-02-22)
+-------------------
 
 1.12.7 (2017-02-17)
 -------------------

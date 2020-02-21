@@ -99,6 +99,7 @@ def construct_yaml_binary(loader, node):
 # register the (de)serializers with pyyaml
 yaml.add_representer(Binary,represent_xml_binary)
 yaml.add_constructor(u'tag:yaml.org,2002:binary', construct_yaml_binary)
+yaml.SafeLoader.add_constructor(u'tag:yaml.org,2002:binary', construct_yaml_binary)
 
 def construct_angle_radians(loader, node):
     """
@@ -185,7 +186,7 @@ def load_str(str, filename, default_namespace=None, verbose=False):
     """
     paramlist = []
     default_namespace = default_namespace or get_ros_namespace()
-    for doc in yaml.load_all(str):
+    for doc in yaml.safe_load_all(str):
         if NS in doc:
             ns = ns_join(default_namespace, doc.get(NS, None))
             if verbose:
@@ -266,12 +267,7 @@ def _rosparam_cmd_get_param(param, pretty=False, verbose=False):
         if type(val) == dict:
             _pretty_print(val)
         else:
-            if '\n' in val:
-                print('|')
-                for l in val.split('\n'):
-                    print('  '+l)
-            else:
-                print(val)
+            print(val)
     else:
         dump = yaml.dump(val)
         # #1617
@@ -372,7 +368,7 @@ def set_param(param, value, verbose=False):
     :param param: parameter name, ``str``
     :param value: yaml-encoded value, ``str``
     """
-    set_param_raw(param, yaml.load(value), verbose=verbose)
+    set_param_raw(param, yaml.safe_load(value), verbose=verbose)
 
 def upload_params(ns, values, verbose=False):
     """
@@ -638,10 +634,14 @@ def yamlmain(argv=None):
 
 yaml.add_constructor(u'!radians', construct_angle_radians)
 yaml.add_constructor(u'!degrees', construct_angle_degrees)
+yaml.SafeLoader.add_constructor(u'!radians', construct_angle_radians)
+yaml.SafeLoader.add_constructor(u'!degrees', construct_angle_degrees)
 
 # allow both !degrees 180, !radians 2*pi
 pattern = re.compile(r'^deg\([^\)]*\)$')
 yaml.add_implicit_resolver(u'!degrees', pattern, first="deg(")
+yaml.SafeLoader.add_implicit_resolver(u'!degrees', pattern, first="deg(")
 pattern = re.compile(r'^rad\([^\)]*\)$')
 yaml.add_implicit_resolver(u'!radians', pattern, first="rad(")
+yaml.SafeLoader.add_implicit_resolver(u'!radians', pattern, first="rad(")
 

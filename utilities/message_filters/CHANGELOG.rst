@@ -2,26 +2,53 @@
 Changelog for package message_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.12.14 (2018-08-23)
---------------------
+1.14.4 (2020-02-20)
+-------------------
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* add overload of ApproximateTime::setInterMessageLowerBound() to set all topics to the same value (`#1860 <https://github.com/ros/ros_comm/issues/1860>`_)
+* update approximate time filter to work with Python 2 and 3 (`#1660 <https://github.com/ros/ros_comm/issues/1660>`_)
+* message_filters/__init_\_.py - Added reduce import for Python 3 compatability (`#1633 <https://github.com/ros/ros_comm/issues/1633>`_)
+* remove messages that are newer than the newly added message (`#1438 <https://github.com/ros/ros_comm/issues/1438>`_)
+* remove signals from find_package(Boost COMPONENTS ...) (`#1580 <https://github.com/ros/ros_comm/issues/1580>`_)
+* fix message_filters build issue on the template syntax (`#1483 <https://github.com/ros/ros_comm/issues/1483>`_)
+
+1.14.3 (2018-08-06)
+-------------------
+* call Subscriber::unsubscribe() in destructor (`#1434 <https://github.com/ros/ros_comm/issues/1434>`_)
 * rename Python message_filters.Cache.getLastestTime to getLatestTime (`#1450 <https://github.com/ros/ros_comm/issues/1450>`_)
 
-1.12.13 (2018-02-21)
---------------------
-
-1.12.12 (2017-11-16)
---------------------
-
-1.12.11 (2017-11-07)
---------------------
-
-1.12.10 (2017-11-06)
---------------------
-
-1.12.9 (2017-11-06)
+1.14.2 (2018-06-06)
 -------------------
 
-1.12.8 (2017-11-06)
+1.14.1 (2018-05-21)
+-------------------
+
+1.14.0 (2018-05-21)
+-------------------
+* change invocation to `add` to conform template syntax (`#1388 <https://github.com/ros/ros_comm/issues/1388>`_)
+* fix sphinx warning (`#1371 <https://github.com/ros/ros_comm/issues/1371>`_)
+
+1.13.6 (2018-02-05)
+-------------------
+* use SteadyTimer in message_filters (`#1247 <https://github.com/ros/ros_comm/issues/1247>`_)
+* remove unnecessary xmlrpcpp dependency from message_filters (`#1264 <https://github.com/ros/ros_comm/issues/1264>`_)
+
+1.13.5 (2017-11-09)
+-------------------
+
+1.13.4 (2017-11-02)
+-------------------
+
+1.13.3 (2017-10-25)
+-------------------
+
+1.13.2 (2017-08-15)
+-------------------
+
+1.13.1 (2017-07-27)
+-------------------
+
+1.13.0 (2017-02-22)
 -------------------
 
 1.12.7 (2017-02-17)

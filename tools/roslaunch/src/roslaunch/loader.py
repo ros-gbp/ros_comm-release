@@ -36,15 +36,18 @@
 General routines and representations for loading roslaunch model.
 """
 
+import errno
 import os
+import sys
 from copy import deepcopy
+
+import yaml
 
 from roslaunch.core import Param, RosbinExecutable, RLException, PHASE_SETUP
 
 from rosgraph.names import make_global_ns, ns_join, PRIV_NAME, load_mappings, is_legal_name, canonicalize_name
 
 #lazy-import global for yaml and rosparam
-yaml = None
 rosparam = None
 
 class LoadException(RLException):
@@ -88,12 +91,17 @@ def convert_value(value, type_):
     elif type_ == 'double':
         return float(value)
     elif type_ == 'bool' or type_ == 'boolean':
-        value = value.lower()
+        value = value.lower().strip()
         if value == 'true' or value == '1':
             return True
         elif value == 'false' or value == '0':
             return False
         raise ValueError("%s is not a '%s' type"%(value, type_))
+    elif type_ == 'yaml':
+        try:
+            return yaml.safe_load(value)
+        except yaml.parser.ParserError as e:
+            raise ValueError(e)
     else:
         raise ValueError("Unknown type '%s'"%type_)        
 
@@ -397,16 +405,12 @@ class Loader(object):
             if subst_function is not None:
                 text = subst_function(text)
             # parse YAML text
-            # - lazy import
-            global yaml
-            if yaml is None:
-                import yaml
             # - lazy import: we have to import rosparam in oder to to configure the YAML constructors
             global rosparam
             if rosparam is None:
                 import rosparam
             try:
-                data = yaml.load(text)
+                data = yaml.safe_load(text)
                 # #3162: if there is no YAML, load() will return an
                 # empty string.  We want an empty dictionary instead
                 # for our representation of empty.
@@ -470,7 +474,7 @@ class Loader(object):
             return convert_value(value.strip(), ptype)
         elif textfile is not None:
             with open(textfile, 'r') as f:
-                return f.read()
+                return convert_value(f.read(), ptype)
         elif binfile is not None:
             try:
                 from xmlrpc.client import Binary
@@ -488,19 +492,53 @@ class Loader(object):
                 print("... executing command param [%s]" % command)
             import subprocess, shlex #shlex rocks
             try:
-                p = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE)
+                if os.name != 'nt':
+                    command = shlex.split(command)
+                else:
+                    # Python scripts in ROS tend to omit .py extension since they could become executable with shebang line
+                    # special handle the use of Python scripts in Windows environment:
+                    # 1. search for a wrapper executable (of the same name) under the same directory with stat.S_IXUSR flag
+                    # 2. if no wrapper is present, prepend command with 'python' executable
+
+                    cl = shlex.split(command, posix=False)  # use non-posix method on Windows
+                    if os.path.isabs(cl[0]):
+                        # trying to launch an executable from a specific location(package), e.g. xacro
+                        import stat
+                        rx_flag = stat.S_IRUSR | stat.S_IXUSR
+                        if not os.path.exists(cl[0]) or os.stat(cl[0]).st_mode & rx_flag != rx_flag:
+                            d = os.path.dirname(cl[0])
+                            files_of_same_name = [
+                                os.path.join(d, f) for f in os.listdir(d)
+                                if os.path.splitext(f)[0].lower() == os.path.splitext(os.path.basename(cl[0]))[0].lower()
+                            ] if os.path.exists(d) else []
+                            executable_command = None
+                            for f in files_of_same_name:
+                                if os.stat(f).st_mode & rx_flag == rx_flag:
+                                    # found an executable wrapper of the desired Python script
+                                    executable_command = f
+
+                            if not executable_command:
+                                for f in files_of_same_name:
+                                    mode = os.stat(f).st_mode
+                                    if (mode & stat.S_IRUSR == stat.S_IRUSR) and (mode & stat.S_IXUSR != stat.S_IXUSR):
+                                        # when there is read permission but not execute permission, this is typically a Python script (in ROS)
+                                        if os.path.splitext(f)[1].lower() in ['.py', '']:
+                                            executable_command = ' '.join([sys.executable, f])
+                            if executable_command:
+                                command = command.replace(cl[0], executable_command, 1)
+                p = subprocess.Popen(command, stdout=subprocess.PIPE)
                 c_value = p.communicate()[0]
                 if not isinstance(c_value, str):
                     c_value = c_value.decode('utf-8')
                 if p.returncode != 0:
                     raise ValueError("Cannot load command parameter [%s]: command [%s] returned with code [%s]"%(name, command, p.returncode))
             except OSError as e:
-                if e.errno == 2:
+                if e.errno == errno.ENOENT:
                     raise ValueError("Cannot load command parameter [%s]: no such command [%s]"%(name, command))
                 raise
             if c_value is None:
                 raise ValueError("parameter: unable to get output of command [%s]"%command)
-            return c_value
+            return convert_value(c_value, ptype)
         else: #_param_tag prevalidates, so this should not be reachable
             raise ValueError("unable to determine parameter value")
 

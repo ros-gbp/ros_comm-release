@@ -39,14 +39,7 @@
 #include <assert.h>
 #include <iomanip>
 
-#include <boost/foreach.hpp>
-
 #include "console_bridge/console.h"
-// Remove this include when no longer supporting platforms with libconsole-bridge-dev < 0.3.0,
-// in particular Debian Jessie: https://packages.debian.org/jessie/libconsole-bridge-dev
-#include "rosbag/console_bridge_compatibility.h"
-
-#define foreach BOOST_FOREACH
 
 using std::map;
 using std::priority_queue;
@@ -60,43 +53,51 @@ using ros::Time;
 
 namespace rosbag {
 
-Bag::Bag() :
-    mode_(bagmode::Write),
-    version_(0),
-    compression_(compression::Uncompressed),
-    chunk_threshold_(768 * 1024),  // 768KB chunks
-    bag_revision_(0),
-    file_size_(0),
-    file_header_pos_(0),
-    index_data_pos_(0),
-    connection_count_(0),
-    chunk_count_(0),
-    chunk_open_(false),
-    curr_chunk_data_pos_(0),
-    current_buffer_(0),
-    decompressed_chunk_(0)
+Bag::Bag() : encryptor_loader_("rosbag_storage", "rosbag::EncryptorBase")
 {
+    init();
 }
 
-Bag::Bag(string const& filename, uint32_t mode) :
-    compression_(compression::Uncompressed),
-    chunk_threshold_(768 * 1024),  // 768KB chunks
-    bag_revision_(0),
-    file_size_(0),
-    file_header_pos_(0),
-    index_data_pos_(0),
-    connection_count_(0),
-    chunk_count_(0),
-    chunk_open_(false),
-    curr_chunk_data_pos_(0),
-    current_buffer_(0),
-    decompressed_chunk_(0)
+Bag::Bag(string const& filename, uint32_t mode) : encryptor_loader_("rosbag_storage", "rosbag::EncryptorBase")
 {
+    init();
     open(filename, mode);
 }
 
+#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
+
+Bag::Bag(Bag&& other) : encryptor_loader_("rosbag_storage", "rosbag::EncryptorBase") {
+    init();
+    swap(other);
+}
+
+Bag& Bag::operator=(Bag&& other) {
+    swap(other);
+    return *this;
+}
+
+#endif // BOOST_NO_CXX11_RVALUE_REFERENCES
+
 Bag::~Bag() {
     close();
+}
+
+void Bag::init() {
+    mode_ = bagmode::Write;
+    version_ = 0;
+    compression_ = compression::Uncompressed;
+    chunk_threshold_ = 768 * 1024;  // 768KB chunks
+    bag_revision_ = 0;
+    file_size_ = 0;
+    file_header_pos_ = 0;
+    index_data_pos_ = 0;
+    connection_count_ = 0;
+    chunk_count_ = 0;
+    chunk_open_ = false;
+    curr_chunk_data_pos_ = 0;
+    current_buffer_ = 0;
+    decompressed_chunk_ = 0;
+    setEncryptorPlugin(std::string("rosbag/NoEncryptor"));
 }
 
 void Bag::open(string const& filename, uint32_t mode) {
@@ -160,7 +161,7 @@ void Bag::openAppend(string const& filename) {
 }
 
 void Bag::close() {
-    if (!file_.isOpen())
+    if (!isOpen())
         return;
 
     if (mode_ & bagmode::Write || mode_ & bagmode::Append)
@@ -176,6 +177,8 @@ void Bag::close() {
     chunks_.clear();
     connection_indexes_.clear();
     curr_chunk_connection_indexes_.clear();
+
+    init();
 }
 
 void Bag::closeWrite() {
@@ -189,7 +192,7 @@ uint64_t Bag::getSize()     const { return file_size_;          }
 uint32_t Bag::getChunkThreshold() const { return chunk_threshold_; }
 
 void Bag::setChunkThreshold(uint32_t chunk_threshold) {
-    if (file_.isOpen() && chunk_open_)
+    if (isOpen() && chunk_open_)
         stopWritingChunk();
 
     chunk_threshold_ = chunk_threshold;
@@ -198,7 +201,7 @@ void Bag::setChunkThreshold(uint32_t chunk_threshold) {
 CompressionType Bag::getCompression() const { return compression_; }
 
 void Bag::setCompression(CompressionType compression) {
-    if (file_.isOpen() && chunk_open_)
+    if (isOpen() && chunk_open_)
         stopWritingChunk();
 
     if (!(compression == compression::Uncompressed ||
@@ -209,6 +212,14 @@ void Bag::setCompression(CompressionType compression) {
     }
 
     compression_ = compression;
+}
+
+void Bag::setEncryptorPlugin(std::string const& plugin_name, std::string const& plugin_param) {
+    if (!chunks_.empty()) {
+        throw BagException("Cannot set encryption plugin after chunks are written");
+    }
+    encryptor_ = encryptor_loader_.createInstance(plugin_name);
+    encryptor_->initialize(*this, plugin_param);
 }
 
 // Version
@@ -283,7 +294,7 @@ void Bag::startReadingVersion200() {
         readChunkInfoRecord();
 
     // Read the connection indexes for each chunk
-    foreach(ChunkInfo const& chunk_info, chunks_) {
+    for (ChunkInfo const& chunk_info : chunks_) {
         curr_chunk_info_ = chunk_info;
 
         seek(curr_chunk_info_.pos);
@@ -308,7 +319,7 @@ void Bag::startReadingVersion102() {
         // Read the file header record, which points to the start of the topic indexes
         readFileHeaderRecord();
     }
-    catch (BagFormatException ex) {
+    catch (const BagFormatException& ex) {
         throw BagUnindexedException();
     }
 
@@ -351,6 +362,7 @@ void Bag::writeFileHeaderRecord() {
     header[INDEX_POS_FIELD_NAME]        = toHeaderString(&index_data_pos_);
     header[CONNECTION_COUNT_FIELD_NAME] = toHeaderString(&connection_count_);
     header[CHUNK_COUNT_FIELD_NAME]      = toHeaderString(&chunk_count_);
+    encryptor_->addFieldsToFileHeader(header);
 
     boost::shared_array<uint8_t> header_buffer;
     uint32_t header_len;
@@ -391,6 +403,12 @@ void Bag::readFileHeaderRecord() {
     if (version_ >= 200) {
         readField(fields, CONNECTION_COUNT_FIELD_NAME, true, &connection_count_);
         readField(fields, CHUNK_COUNT_FIELD_NAME,      true, &chunk_count_);
+        std::string encryptor_plugin_name;
+        readField(fields, ENCRYPTOR_FIELD_NAME, 0, UINT_MAX, false, encryptor_plugin_name);
+        if (!encryptor_plugin_name.empty()) {
+            setEncryptorPlugin(encryptor_plugin_name);
+            encryptor_->readFieldsFromFileHeader(fields);
+        }
     }
 
     CONSOLE_BRIDGE_logDebug("Read FILE_HEADER: index_pos=%llu connection_count=%d chunk_count=%d",
@@ -433,6 +451,10 @@ void Bag::stopWritingChunk() {
     uint32_t uncompressed_size = getChunkOffset();
     file_.setWriteMode(compression::Uncompressed);
     uint32_t compressed_size = file_.getOffset() - curr_chunk_data_pos_;
+
+    // When encryption is on, compressed_size represents encrypted chunk size;
+    // When decrypting, the actual compressed size can be deduced from the decrypted chunk
+    compressed_size = encryptor_->encryptChunk(compressed_size, curr_chunk_data_pos_, file_);
 
     // Rewrite the chunk header with the size of the chunk (remembering current offset)
     uint64_t end_of_chunk_pos = file_.getOffset();
@@ -512,7 +534,7 @@ void Bag::writeIndexRecords() {
         CONSOLE_BRIDGE_logDebug("Writing INDEX_DATA: connection=%d ver=%d count=%d", connection_id, INDEX_VERSION, index_size);
 
         // Write the index record data (pairs of timestamp and position in file)
-        foreach(IndexEntry const& e, index) {
+        for (IndexEntry const& e : index) {
             write((char*) &e.time.sec,  4);
             write((char*) &e.time.nsec, 4);
             write((char*) &e.offset,    4);
@@ -637,11 +659,11 @@ void Bag::readConnectionIndexRecord200() {
 void Bag::writeConnectionRecords() {
     for (map<uint32_t, ConnectionInfo*>::const_iterator i = connections_.begin(); i != connections_.end(); i++) {
         ConnectionInfo const* connection_info = i->second;
-        writeConnectionRecord(connection_info);
+        writeConnectionRecord(connection_info, true);
     }
 }
 
-void Bag::writeConnectionRecord(ConnectionInfo const* connection_info) {
+void Bag::writeConnectionRecord(ConnectionInfo const* connection_info, const bool encrypt) {
     CONSOLE_BRIDGE_logDebug("Writing CONNECTION [%llu:%d]: topic=%s id=%d",
               (unsigned long long) file_.getOffset(), getChunkOffset(), connection_info->topic.c_str(), connection_info->id);
 
@@ -649,9 +671,16 @@ void Bag::writeConnectionRecord(ConnectionInfo const* connection_info) {
     header[OP_FIELD_NAME]         = toHeaderString(&OP_CONNECTION);
     header[TOPIC_FIELD_NAME]      = connection_info->topic;
     header[CONNECTION_FIELD_NAME] = toHeaderString(&connection_info->id);
-    writeHeader(header);
 
-    writeHeader(*connection_info->header);
+    if (encrypt)
+        encryptor_->writeEncryptedHeader(boost::bind(&Bag::writeHeader, this, _1), header, file_);
+    else
+        writeHeader(header);
+
+    if (encrypt)
+        encryptor_->writeEncryptedHeader(boost::bind(&Bag::writeHeader, this, _1), *connection_info->header, file_);
+    else
+        writeHeader(*connection_info->header);
 }
 
 void Bag::appendConnectionRecordToBuffer(Buffer& buf, ConnectionInfo const* connection_info) {
@@ -666,7 +695,7 @@ void Bag::appendConnectionRecordToBuffer(Buffer& buf, ConnectionInfo const* conn
 
 void Bag::readConnectionRecord() {
     ros::Header header;
-    if (!readHeader(header))
+    if (!encryptor_->readEncryptedHeader(boost::bind(&Bag::readHeader, this, _1), header, header_buffer_, file_))
         throw BagFormatException("Error reading CONNECTION header");
     M_string& fields = *header.getValues();
 
@@ -679,7 +708,7 @@ void Bag::readConnectionRecord() {
     readField(fields, TOPIC_FIELD_NAME,      true, topic);
 
     ros::Header connection_header;
-    if (!readHeader(connection_header))
+    if (!encryptor_->readEncryptedHeader(boost::bind(&Bag::readHeader, this, _1), connection_header, header_buffer_, file_))
         throw BagFormatException("Error reading connection header");
 
     // If this is a new connection, update connections
@@ -800,12 +829,10 @@ void Bag::readMessageDataRecord102(uint64_t offset, ros::Header& header) const {
 // Reading this into a buffer isn't completely necessary, but we do it anyways for now
 void Bag::decompressRawChunk(ChunkHeader const& chunk_header) const {
     assert(chunk_header.compression == COMPRESSION_NONE);
-    assert(chunk_header.compressed_size == chunk_header.uncompressed_size);
 
     CONSOLE_BRIDGE_logDebug("compressed_size: %d uncompressed_size: %d", chunk_header.compressed_size, chunk_header.uncompressed_size);
 
-    decompress_buffer_.setSize(chunk_header.compressed_size);
-    file_.read((char*) decompress_buffer_.getData(), chunk_header.compressed_size);
+    encryptor_->decryptChunk(chunk_header, decompress_buffer_, file_);
 
     // todo check read was successful
 }
@@ -817,8 +844,7 @@ void Bag::decompressBz2Chunk(ChunkHeader const& chunk_header) const {
 
     CONSOLE_BRIDGE_logDebug("compressed_size: %d uncompressed_size: %d", chunk_header.compressed_size, chunk_header.uncompressed_size);
 
-    chunk_buffer_.setSize(chunk_header.compressed_size);
-    file_.read((char*) chunk_buffer_.getData(), chunk_header.compressed_size);
+    encryptor_->decryptChunk(chunk_header, chunk_buffer_, file_);
 
     decompress_buffer_.setSize(chunk_header.uncompressed_size);
     file_.decompress(compression, decompress_buffer_.getData(), decompress_buffer_.getSize(), chunk_buffer_.getData(), chunk_buffer_.getSize());
@@ -834,8 +860,7 @@ void Bag::decompressLz4Chunk(ChunkHeader const& chunk_header) const {
     CONSOLE_BRIDGE_logDebug("lz4 compressed_size: %d uncompressed_size: %d",
              chunk_header.compressed_size, chunk_header.uncompressed_size);
 
-    chunk_buffer_.setSize(chunk_header.compressed_size);
-    file_.read((char*) chunk_buffer_.getData(), chunk_header.compressed_size);
+    encryptor_->decryptChunk(chunk_header, chunk_buffer_, file_);
 
     decompress_buffer_.setSize(chunk_header.uncompressed_size);
     file_.decompress(compression, decompress_buffer_.getData(), decompress_buffer_.getSize(), chunk_buffer_.getData(), chunk_buffer_.getSize());
@@ -881,7 +906,7 @@ uint32_t Bag::readMessageDataSize(IndexEntry const& index_entry) const {
 }
 
 void Bag::writeChunkInfoRecords() {
-    foreach(ChunkInfo const& chunk_info, chunks_) {
+    for (ChunkInfo const& chunk_info : chunks_) {
         // Write the chunk info header
         M_string header;
         uint32_t chunk_connection_count = chunk_info.connection_counts.size();
@@ -1149,6 +1174,10 @@ void Bag::swap(Bag& other) {
     swap(outgoing_chunk_buffer_, other.outgoing_chunk_buffer_);
     swap(current_buffer_, other.current_buffer_);
     swap(decompressed_chunk_, other.decompressed_chunk_);
+    swap(encryptor_, other.encryptor_);
 }
 
+bool Bag::isOpen() const { return file_.isOpen(); }
+
 } // namespace rosbag
+

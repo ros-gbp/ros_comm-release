@@ -2,27 +2,50 @@
 Changelog for package rosmsg
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.12.14 (2018-08-23)
---------------------
+1.14.4 (2020-02-20)
+-------------------
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* more Windows test code fixes (`#1727 <https://github.com/ros/ros_comm/issues/1727>`_)
+* [Windows] make test code to be more portable (`#1726 <https://github.com/ros/ros_comm/issues/1726>`_)
+* use condition attributes to specify Python 2 and 3 dependencies (`#1792 <https://github.com/ros/ros_comm/issues/1792>`_)
+* more Python 3 compatibility (`#1783 <https://github.com/ros/ros_comm/issues/1783>`_)
+* normalize paths before comparison in rosmsg (`#1586 <https://github.com/ros/ros_comm/issues/1586>`_)
+* update wiki.ros.org URLs (`#1536 <https://github.com/ros/ros_comm/issues/1536>`_)
 
-1.12.13 (2018-02-21)
---------------------
-
-1.12.12 (2017-11-16)
---------------------
-
-1.12.11 (2017-11-07)
---------------------
-
-1.12.10 (2017-11-06)
---------------------
-
-1.12.9 (2017-11-06)
+1.14.3 (2018-08-06)
 -------------------
 
-1.12.8 (2017-11-06)
+1.14.2 (2018-06-06)
+-------------------
+* import rosbag locally instead of at module level (`#1424 <https://github.com/ros/ros_comm/issues/1424>`_)
+
+1.14.1 (2018-05-21)
+-------------------
+
+1.14.0 (2018-05-21)
+-------------------
+
+1.13.6 (2018-02-05)
+-------------------
+
+1.13.5 (2017-11-09)
+-------------------
+
+1.13.4 (2017-11-02)
+-------------------
+
+1.13.3 (2017-10-25)
+-------------------
+
+1.13.2 (2017-08-15)
+-------------------
+
+1.13.1 (2017-07-27)
 -------------------
 * fix rosmsg show from bag (`#1006 <https://github.com/ros/ros_comm/pull/1006>`_)
+
+1.13.0 (2017-02-22)
+-------------------
 
 1.12.7 (2017-02-17)
 -------------------

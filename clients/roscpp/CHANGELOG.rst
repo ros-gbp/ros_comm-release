@@ -2,47 +2,107 @@
 Changelog for package roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.12.14 (2018-08-23)
---------------------
+1.14.4 (2020-02-20)
+-------------------
+* add default ROS_MASTER_URI (`#1666 <https://github.com/ros/ros_comm/issues/1666>`_)
+* add default assignment operator for various classes (`#1888 <https://github.com/ros/ros_comm/issues/1888>`_)
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* do not display error message if poll yields EINTR (`#1868 <https://github.com/ros/ros_comm/issues/1868>`_)
+* [windows] portable duration cast (`#1882 <https://github.com/ros/ros_comm/issues/1882>`_)
+* drop custom implementation of boost::condition_variable to fix busy-wait spinning (`#1878 <https://github.com/ros/ros_comm/issues/1878>`_)
+* disable rosout via ROSCPP_NO_ROSOUT environment variable (`#1858 <https://github.com/ros/ros_comm/issues/1858>`_)
+* [windows] conditionally guard sys/socket.h (`#1876 <https://github.com/ros/ros_comm/issues/1876>`_)
+* explicit include of socket.h to support FreeBSD (`#1864 <https://github.com/ros/ros_comm/issues/1864>`_)
+* remove DEBUG statements from getImpl (`#1823 <https://github.com/ros/ros_comm/issues/1823>`_)
+* use c++11 std::snprintf (`#1820 <https://github.com/ros/ros_comm/issues/1820>`_)
+* TransportTCP: Allow socket() to return 0 (`#1707 <https://github.com/ros/ros_comm/issues/1707>`_)
+* fix dynamic windowing for Topic Statistics (`#1695 <https://github.com/ros/ros_comm/issues/1695>`_)
+* service_publication: removed int-bool-comparison (`#1710 <https://github.com/ros/ros_comm/issues/1710>`_)
+* add Timer::isValid() const (`#1779 <https://github.com/ros/ros_comm/issues/1779>`_)
+* add possibility to pass rospy.Duration as timeout to wait_for_service and wait_for_message (`#1703 <https://github.com/ros/ros_comm/issues/1703>`_)
+* fix segfault in TransportPublisherLink (`#1714 <https://github.com/ros/ros_comm/issues/1714>`_)
+* TransportTCP: enable poll event POLLRDHUP to detect dead connections properly (`#1704 <https://github.com/ros/ros_comm/issues/1704>`_)
+* transportUDP: zero-initialize sockaddr_in object (`#1740 <https://github.com/ros/ros_comm/issues/1740>`_)
+* unregisterService returns result of execute("unregisterService") (`#1751 <https://github.com/ros/ros_comm/issues/1751>`_)
+* use safe string check (`#1771 <https://github.com/ros/ros_comm/issues/1771>`_)
+* fix memory leak of global variable (`#1503 <https://github.com/ros/ros_comm/issues/1503>`_)
+* fix exception boost::lock_error during shutdown (`#1656 <https://github.com/ros/ros_comm/issues/1656>`_)
+* avoid deadlock in TopicManager (`#1645 <https://github.com/ros/ros_comm/issues/1645>`_)
+* use WallTime/WallDuration for waiting for service (`#1638 <https://github.com/ros/ros_comm/issues/1638>`_)
+* add missing include path (for bazel workspaces) (`#1636 <https://github.com/ros/ros_comm/issues/1636>`_)
+* fix bug in statistics decision making if one should publish (`#1625 <https://github.com/ros/ros_comm/issues/1625>`_)
+* add hasStarted() const to WallTimer and SteadyTimer API (`#1565 <https://github.com/ros/ros_comm/issues/1565>`_)
+* remove signals from find_package(Boost COMPONENTS ...) (`#1580 <https://github.com/ros/ros_comm/issues/1580>`_)
+* fix string error on windows (`#1582 <https://github.com/ros/ros_comm/issues/1582>`_)
+* visibility macros update (`#1591 <https://github.com/ros/ros_comm/issues/1591>`_)
+* fix race due tounprotected access to callbacks\_ (`#1595 <https://github.com/ros/ros_comm/issues/1595>`_)
+* fix nullptr access from Timer().hasStarted() (`#1541 <https://github.com/ros/ros_comm/issues/1541>`_)
+* add const specifier to `NodeHandle::param(param_name, default_val)`. (`#1539 <https://github.com/ros/ros_comm/issues/1539>`_)
+* update wiki.ros.org URLs (`#1536 <https://github.com/ros/ros_comm/issues/1536>`_)
+* fix stamp_age_mean overflow when stamp age very big (`#1526 <https://github.com/ros/ros_comm/issues/1526>`_)
+* remove explicit -std=c++11, default to 14
+* fix memory error due to missing rosout_disable_topics_generation parameter (`#1507 <https://github.com/ros/ros_comm/issues/1507>`_)
+* fix issues when built or run on Windows (`#1466 <https://github.com/ros/ros_comm/issues/1466>`_)
+
+1.14.3 (2018-08-06)
+-------------------
 * add hasStarted() to Timer API (`#1464 <https://github.com/ros/ros_comm/issues/1464>`_)
+* fix compiler warnings about unused variables (`#1428 <https://github.com/ros/ros_comm/issues/1428>`_)
+
+1.14.2 (2018-06-06)
+-------------------
+
+1.14.1 (2018-05-21)
+-------------------
+
+1.14.0 (2018-05-21)
+-------------------
 * force a rebuild of the pollset on flag changes (`#1393 <https://github.com/ros/ros_comm/issues/1393>`_)
 * fix integer overflow for oneshot timers (`#1382 <https://github.com/ros/ros_comm/issues/1382>`_)
 * convert the period standard deviation in StatisticsLogger to Duration at the end (`#1361 <https://github.com/ros/ros_comm/issues/1361>`_)
+* add time when timer expired to timer events (`#1130 <https://github.com/ros/ros_comm/issues/1130>`_)
 * replace DCL pattern with static variable (`#1365 <https://github.com/ros/ros_comm/issues/1365>`_)
+* add parameter to stop clients from generating rosout topics list (`#1241 <https://github.com/ros/ros_comm/issues/1241>`_)
 
-1.12.13 (2018-02-21)
---------------------
+1.13.6 (2018-02-05)
+-------------------
 * avoid recreating poll set (`#1281 <https://github.com/ros/ros_comm/pull/1281>`_)
 * switch to using epoll (`#1217 <https://github.com/ros/ros_comm/pull/1217>`_)
 * monotonic clock for callback queue timeouts (`#1250 <https://github.com/ros/ros_comm/pull/1250>`_)
 * fix IPv6 initialization order (`#1262 <https://github.com/ros/ros_comm/issues/1262>`_)
 * changed error message for single threaded spinner  (`#1164 <https://github.com/ros/ros_comm/pull/1164>`_)
 
-1.12.12 (2017-11-16)
---------------------
-
-1.12.11 (2017-11-07)
---------------------
-
-1.12.10 (2017-11-06)
---------------------
-
-1.12.9 (2017-11-06)
+1.13.5 (2017-11-09)
 -------------------
 
-1.12.8 (2017-11-06)
+1.13.4 (2017-11-02)
 -------------------
+
+1.13.3 (2017-10-25)
+-------------------
+* avoid unused parameter warning in TransportTCP (`#1195 <https://github.com/ros/ros_comm/issues/1195>`_)
 * check if socket options are available before using them (`#1172 <https://github.com/ros/ros_comm/issues/1172>`_)
+
+1.13.2 (2017-08-15)
+-------------------
 * only use CLOCK_MONOTONIC if not on OS X (`#1142 <https://github.com/ros/ros_comm/issues/1142>`_)
 * xmlrpc_manager: use SteadyTime for timeout (`#1134 <https://github.com/ros/ros_comm/issues/1134>`_)
 * ignore headers with zero stamp in statistics (`#1127 <https://github.com/ros/ros_comm/issues/1127>`_)
+
+1.13.1 (2017-07-27)
+-------------------
 * add SteadyTimer, used in TimerManager (`#1014 <https://github.com/ros/ros_comm/issues/1014>`_)
 * include missing header for writev() (`#1105 <https://github.com/ros/ros_comm/pull/1105>`_)
+* clean the namespace to get rid of double or trailing forward slashes (`#1100 <https://github.com/ros/ros_comm/issues/1100>`_)
 * add missing mutex lock for publisher links (`#1090 <https://github.com/ros/ros_comm/pull/1090>`_)
 * fix race condition that lead to miss first message (`#1058 <https://github.com/ros/ros_comm/issues/1058>`_)
 * fix bug in transport_tcp on Windows (`#1050 <https://github.com/ros/ros_comm/issues/1050>`_)
 * add subscriber to connection log messages (`#1023 <https://github.com/ros/ros_comm/issues/1023>`_)
 * avoid deleting XmlRpcClient while being used in another thread (`#1013 <https://github.com/ros/ros_comm/issues/1013>`_)
+
+1.13.0 (2017-02-22)
+-------------------
+* remove support for multiple spinners on the same queue which existed only for backward compatibily (`#988 <https://github.com/ros/ros_comm/pull/988>`_)
 
 1.12.7 (2017-02-17)
 -------------------
