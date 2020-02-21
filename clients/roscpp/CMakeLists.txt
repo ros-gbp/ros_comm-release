@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(roscpp)
 
 if(NOT WIN32)
-  set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11;-Wall;-Wextra")
+  set_directory_properties(PROPERTIES COMPILE_OPTIONS "-Wall;-Wextra")
 endif()
 
 find_package(catkin REQUIRED COMPONENTS
@@ -22,9 +22,23 @@ list(GET roscpp_VERSION_LIST 2 roscpp_VERSION_PATCH)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/ros/common.h.in ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/ros/common.h)
 
-find_package(Boost REQUIRED COMPONENTS chrono filesystem signals system)
+find_package(Boost REQUIRED COMPONENTS chrono filesystem system)
+
+# Make sure we use CLOCK_MONOTONIC for the condition variable wait_for if not Apple.
+if(NOT APPLE AND NOT WIN32)
+  if(Boost_VERSION LESS 106100)
+    message(FATAL_ERROR "${PROJECT_NAME} requires Boost 1.61 or above.")
+  endif()
+  if(Boost_VERSION LESS 106700)
+    # CLOCK_MONOTONIC became the default in Boost 1.67:
+    # https://github.com/boostorg/thread/commit/1e84b978b2bb0aae830cc14533dea3b7ddda5cde
+    add_definitions(-DBOOST_THREAD_HAS_CONDATTR_SET_CLOCK_MONOTONIC)
+  endif()
+endif()
 
 include_directories(include ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/ros ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+# this is needed for use within a bazel workspace. See #1548 for details.
+include_directories(${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION})
 
 add_message_files(
   DIRECTORY msg
@@ -124,12 +138,20 @@ add_library(roscpp
   src/libros/steady_timer.cpp
   )
 
+if(WIN32)
+  add_definitions(-DNOGDI)
+endif()
+
 add_dependencies(roscpp ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(roscpp
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
   )
+
+if(WIN32)
+  target_link_libraries(roscpp ws2_32)
+endif()
 
 #explicitly install library and includes
 install(TARGETS roscpp
