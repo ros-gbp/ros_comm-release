@@ -191,7 +191,7 @@ def load_mappings(argv):
     """    
     mappings = {}
     for arg in argv:
-        if REMAP in arg:
+        if is_legal_remap(arg):
             try:
                 src, dst = [x.strip() for x in arg.split(REMAP)]
                 if src and dst:
@@ -212,7 +212,7 @@ def load_mappings(argv):
 import re
 
 #~,/, or ascii char followed by (alphanumeric, _, /)
-NAME_LEGAL_CHARS_P = re.compile('^[\~\/A-Za-z][\w\/]*$')
+NAME_LEGAL_CHARS_P = re.compile(r'^[\~\/A-Za-z][\w\/]*$')
 def is_legal_name(name):
     """
     Check if name is a legal ROS name for graph resources
@@ -232,7 +232,7 @@ def is_legal_name(name):
     m = NAME_LEGAL_CHARS_P.match(name)
     return m is not None and m.group(0) == name and not '//' in name
     
-BASE_NAME_LEGAL_CHARS_P = re.compile('^[A-Za-z][\w]*$') #ascii char followed by (alphanumeric, _)
+BASE_NAME_LEGAL_CHARS_P = re.compile(r'^[A-Za-z][\w]*$') #ascii char followed by (alphanumeric, _)
 def is_legal_base_name(name):
     """
     Validates that name is a legal base name for a graph resource. A base name has
@@ -242,6 +242,17 @@ def is_legal_base_name(name):
         return False
     m = BASE_NAME_LEGAL_CHARS_P.match(name)
     return m is not None and m.group(0) == name
+
+REMAP_PATTERN = re.compile(r'^([\~\/A-Za-z]|_|__)[\w\/]*' + REMAP + '.*')
+
+def is_legal_remap(arg):
+    """
+    Validates that arg is a legal remap according to U{http://wiki.ros.org/Remapping%20Arguments}.
+    """
+    if arg is None:
+        return False
+    m = REMAP_PATTERN.match(arg)
+    return m is not None and m.group(0) == arg
 
 def canonicalize_name(name):
     """
