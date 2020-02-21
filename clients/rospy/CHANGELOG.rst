@@ -2,6 +2,10 @@
 Changelog for package rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.15.0 (2020-02-21)
+-------------------
+* fix dictionary changed size during iteration (`#1894 <https://github.com/ros/ros_comm/issues/1894>`_)
+
 1.14.4 (2020-02-20)
 -------------------
 * add default ROS_MASTER_URI (`#1666 <https://github.com/ros/ros_comm/issues/1666>`_)
