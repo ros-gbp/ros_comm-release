@@ -80,9 +80,11 @@ void writeUInt32(unsigned char *buffer, uint32_t val) {
   buffer[3] = (val >> 24) & 0xFF;
 }
 
+#ifndef _MSC_VER
 int min(int a, int b) {
   return a < b ? a : b;
 }
+#endif
 
 /*========================== Low level compression ==========================*/
 
@@ -257,6 +259,14 @@ int streamStateAlloc(roslz4_stream *str) {
   state->finished = 0;
 
   state->xxh32_state = XXH32_init(0);
+  if (state->xxh32_state == NULL) {
+    if (state->buffer != NULL) {
+      free(state->buffer);
+    }
+    free(state);
+    str->state = NULL;
+    return ROSLZ4_MEMORY_ERROR; // Allocation failed
+  }
   state->stream_checksum = 0;
   state->stream_checksum_read = 0;
 
