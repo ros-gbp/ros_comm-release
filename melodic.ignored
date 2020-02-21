@@ -8,4 +8,5 @@ test_rosmaster
 test_rosparam
 test_rospy
 test_rosservice
+test_rostest
 test_rostopic
