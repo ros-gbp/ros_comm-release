@@ -1,7 +1,7 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
 *
-*  Copyright (c) 2008, Willow Garage, Inc.
+*  Copyright (c) 2017, Open Source Robotics Foundation
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -30,59 +30,51 @@
 *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
-********************************************************************/
+*********************************************************************/
 
-#include <stdlib.h>
-#include <assert.h>
-#include <utility>
-#include <limits>
+#ifndef ROSBAG_AES_ENCRYPTION_H
+#define ROSBAG_AES_ENCRYPTION_H
 
-#include "rosbag/buffer.h"
+#include "rosbag/encryptor.h"
 
-//#include <ros/ros.h>
+#ifndef _WIN32
+  #include <openssl/aes.h>
 
 namespace rosbag {
 
-Buffer::Buffer() : buffer_(NULL), capacity_(0), size_(0) { }
+class AesCbcEncryptor : public EncryptorBase
+{
+public:
+    static const std::string GPG_USER_FIELD_NAME;
+    static const std::string ENCRYPTED_KEY_FIELD_NAME;
 
-Buffer::~Buffer() {
-    free(buffer_);
+public:
+    AesCbcEncryptor() { }
+    ~AesCbcEncryptor() { }
+
+    void initialize(Bag const& bag, std::string const& gpg_key_user);
+    uint32_t encryptChunk(const uint32_t chunk_size, const uint64_t chunk_data_pos, ChunkedFile& file);
+    void decryptChunk(ChunkHeader const& chunk_header, Buffer& decrypted_chunk, ChunkedFile& file) const;
+    void addFieldsToFileHeader(ros::M_string& header_fields) const;
+    void readFieldsFromFileHeader(ros::M_string const& header_fields);
+    void writeEncryptedHeader(boost::function<void(ros::M_string const&)>, ros::M_string const& header_fields, ChunkedFile&);
+    bool readEncryptedHeader(boost::function<bool(ros::Header&)>, ros::Header& header, Buffer& header_buffer, ChunkedFile&);
+
+private:
+    void buildSymmetricKey();
+
+private:
+    // User name of GPG key used for symmetric key encryption
+    std::string gpg_key_user_;
+    // Symmetric key for encryption/decryption
+    std::basic_string<unsigned char> symmetric_key_;
+    // Encrypted symmetric key
+    std::string encrypted_symmetric_key_;
+    // AES keys for encryption/decryption
+    AES_KEY aes_encrypt_key_;
+    AES_KEY aes_decrypt_key_;
+};
 }
+#endif
 
-uint8_t* Buffer::getData()           { return buffer_;   }
-uint32_t Buffer::getCapacity() const { return capacity_; }
-uint32_t Buffer::getSize()     const { return size_;     }
-
-void Buffer::setSize(uint32_t size) {
-    size_ = size;
-    ensureCapacity(size);
-}
-
-void Buffer::ensureCapacity(uint32_t capacity) {
-    if (capacity <= capacity_)
-        return;
-
-    if (capacity_ == 0)
-        capacity_ = capacity;
-    else {
-        while (capacity_ < capacity)
-        {
-          if (static_cast<uint64_t>(capacity) * 2 > std::numeric_limits<uint32_t>::max())
-            capacity_ = std::numeric_limits<uint32_t>::max();
-          else
-            capacity_ *= 2;
-        }
-    }
-
-    buffer_ = (uint8_t*) realloc(buffer_, capacity_);
-    assert(buffer_);
-}
-
-void Buffer::swap(Buffer& other) {
-    using std::swap;
-    swap(buffer_, other.buffer_);
-    swap(capacity_, other.capacity_);
-    swap(size_, other.size_);
-}
-
-} // namespace rosbag
+#endif
