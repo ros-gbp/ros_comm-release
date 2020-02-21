@@ -162,7 +162,7 @@ class SSHChildROSLaunchProcess(roslaunch.server.ChildROSLaunchProcess):
         except ImportError as e:
             _logger.error("cannot use SSH: paramiko is not installed")
             return None, "paramiko is not installed"
-		#load user's ssh configuration
+        #load user's ssh configuration
         config_block = {'hostname': None, 'user': None, 'identityfile': None}
         ssh_config = paramiko.SSHConfig()
         try:
@@ -186,7 +186,7 @@ class SSHChildROSLaunchProcess(roslaunch.server.ChildROSLaunchProcess):
         if not err_msg:
             username_str = '%s@'%username if username else ''
             try:
-                if not password: #use SSH agent
+                if password is None: #use SSH agent
                     ssh.connect(address, port, username, timeout=TIMEOUT_SSH_CONNECT, key_filename=identity_file)
                 else: #use SSH with login/pass
                     ssh.connect(address, port, username, password, timeout=TIMEOUT_SSH_CONNECT)
