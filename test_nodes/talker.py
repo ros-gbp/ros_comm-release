@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2013, Willow Garage, Inc.
+# Copyright (c) 2008, Willow Garage, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,25 +31,23 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import roslaunch.core
-import roslaunch.arg_dump as roslaunch_arg_dump
-from roslaunch import rlutil
-import sys
+## Simple talker demo that published std_msgs/Strings messages
+## to the 'chatter' topic
 
-try:
-    args = rlutil.resolve_launch_arguments(sys.argv[1:])
-    # Strip all other args: As we are completing they might be incomplete
-    # and will lead to an error. Anyways we only want all possible args.
-    args = args[0:1]
-    roslaunch_args = roslaunch_arg_dump.get_args(args)
-except roslaunch.core.RLException:
-    # stay silent for completion
-    sys.exit(1)
+import rospy
+from std_msgs.msg import String
 
-#complete_args = [a + ":=" for a in sorted(roslaunch_args.keys())]
-# Currently don't put := after that as the completion will escape := to \:\=
-# Unfortunately we also want the escaping for roslaunch, when completing filenames
-complete_args = [a for a in sorted(roslaunch_args.keys())]
-print(" ".join(complete_args))
-sys.exit(0)
-
+def talker():
+    rospy.init_node('talker', anonymous=True)
+    pub = rospy.Publisher('chatter', String, queue_size=10)
+    r = rospy.Rate(10) # 10hz
+    while not rospy.is_shutdown():
+        str = "hello world %s"%rospy.get_time()
+        rospy.loginfo(str)
+        pub.publish(str)
+        r.sleep()
+        
+if __name__ == '__main__':
+    try:
+        talker()
+    except rospy.ROSInterruptException: pass
