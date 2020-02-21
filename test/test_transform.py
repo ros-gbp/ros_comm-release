@@ -31,38 +31,28 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import sys
-import os
-import string
-
+import unittest
 import rospy
+import rostest
+import sys
+from std_msgs.msg import *
 
-# imports the DemuxAdd service 
-from topic_tools.srv import DemuxAdd
 
-USAGE = 'USAGE: demux_add DEMUX_NAME TOPIC'
+PKG = 'topic_tools'
+NAME = 'transform_sub'
 
-def call_srv(m, t):
-    # There's probably a nicer rospy way of doing this
-    s = m + '/add'
-    print("Waiting for service \"%s\""%(s))
-    rospy.wait_for_service(s)
-    print("Adding \"%s\" to demux \"%s\""%(t, m))
+
+class TransformSub(unittest.TestCase):
+
+  def test_transform_sub(self):
+    rospy.init_node(NAME)
+    value = rospy.get_param("~value", 1.0)
+
     try:
-        srv = rospy.ServiceProxy(s, DemuxAdd)
-        return srv(t)
-    except rospy.ServiceException, e:
-        print("Service call failed: %s"%e)
+        msg = rospy.wait_for_message("input", Float32, 1.0)
+        self.assertEqual(msg.data, value)
+    except rospy.ROSException as e:
+        self.fail(str(e))
 
-def usage():
-    return "%s "%sys.argv[0]
-
-if __name__ == "__main__":
-    args = rospy.myargv()
-    if len(args) != 3:
-        print(USAGE)
-        sys.exit(1)
-
-    m = args[1]
-    t = args[2]
-    call_srv(m, t)
+if __name__ == '__main__':
+  rostest.rosrun(PKG, NAME, TransformSub, sys.argv)
