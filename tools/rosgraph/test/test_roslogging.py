@@ -32,9 +32,13 @@
 
 import logging
 import os
-from StringIO import StringIO
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 import sys
 
+import re
 from nose.tools import assert_regexp_matches
 import rosgraph.roslogging
 
@@ -106,14 +110,15 @@ try:
             log_out = ' '.join([
                 'INFO',
                 'on ' + loc,
-                '[0-9]*\.[0-9]*',
+                r'[0-9]*\.[0-9]*',
                 '[0-9]*',
                 'rosout',
-                this_file,
+                re.escape(this_file),
                 '[0-9]*',
                 function,
-                '/unnamed',
-                '[0-9]*\.[0-9]*',
+                # depending if rospy.get_name() is available
+                '(/unnamed|<unknown_node_name>)',
+                r'[0-9]*\.[0-9]*',
             ])
             assert_regexp_matches(lout.getvalue().splitlines()[i], log_out)
 
