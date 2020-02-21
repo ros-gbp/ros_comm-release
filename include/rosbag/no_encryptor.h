@@ -1,7 +1,7 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
 *
-*  Copyright (c) 2008, Willow Garage, Inc.
+*  Copyright (c) 2017, Open Source Robotics Foundation
 *  All rights reserved.
 *
 *  Redistribution and use in source and binary forms, with or without
@@ -30,59 +30,30 @@
 *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
-********************************************************************/
+*********************************************************************/
 
-#include <stdlib.h>
-#include <assert.h>
-#include <utility>
-#include <limits>
+#ifndef ROSBAG_NO_ENCRYPTION_H
+#define ROSBAG_NO_ENCRYPTION_H
 
-#include "rosbag/buffer.h"
+#include "rosbag/encryptor.h"
 
-//#include <ros/ros.h>
 
 namespace rosbag {
 
-Buffer::Buffer() : buffer_(NULL), capacity_(0), size_(0) { }
+class NoEncryptor : public EncryptorBase
+{
+public:
+    NoEncryptor() { }
+    ~NoEncryptor() { }
 
-Buffer::~Buffer() {
-    free(buffer_);
+    void initialize(Bag const&, std::string const&) { }
+    uint32_t encryptChunk(const uint32_t, const uint64_t, ChunkedFile&);
+    void decryptChunk(ChunkHeader const&, Buffer&, ChunkedFile&) const;
+    void addFieldsToFileHeader(ros::M_string&) const { }
+    void readFieldsFromFileHeader(ros::M_string const&) { }
+    void writeEncryptedHeader(boost::function<void(ros::M_string const&)>, ros::M_string const&, ChunkedFile&);
+    bool readEncryptedHeader(boost::function<bool(ros::Header&)>, ros::Header&, Buffer&, ChunkedFile&);
+};
 }
 
-uint8_t* Buffer::getData()           { return buffer_;   }
-uint32_t Buffer::getCapacity() const { return capacity_; }
-uint32_t Buffer::getSize()     const { return size_;     }
-
-void Buffer::setSize(uint32_t size) {
-    size_ = size;
-    ensureCapacity(size);
-}
-
-void Buffer::ensureCapacity(uint32_t capacity) {
-    if (capacity <= capacity_)
-        return;
-
-    if (capacity_ == 0)
-        capacity_ = capacity;
-    else {
-        while (capacity_ < capacity)
-        {
-          if (static_cast<uint64_t>(capacity) * 2 > std::numeric_limits<uint32_t>::max())
-            capacity_ = std::numeric_limits<uint32_t>::max();
-          else
-            capacity_ *= 2;
-        }
-    }
-
-    buffer_ = (uint8_t*) realloc(buffer_, capacity_);
-    assert(buffer_);
-}
-
-void Buffer::swap(Buffer& other) {
-    using std::swap;
-    swap(buffer_, other.buffer_);
-    swap(capacity_, other.capacity_);
-    swap(size_, other.size_);
-}
-
-} // namespace rosbag
+#endif
