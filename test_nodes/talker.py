@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-###############################################################################
 # Software License Agreement (BSD License)
 #
-# Copyright (c) 2016, Kentaro Wada.
+# Copyright (c) 2008, Willow Garage, Inc.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,21 +30,24 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-###############################################################################
 
-"""
-This node is designed for testing and just advertises a topic for the specified message class.
-
-Author: Kentaro Wada <www.kentaro.wada@gmail.com>
-"""
+## Simple talker demo that published std_msgs/Strings messages
+## to the 'chatter' topic
 
 import rospy
-import roslib.message
+from std_msgs.msg import String
 
-
+def talker():
+    rospy.init_node('talker', anonymous=True)
+    pub = rospy.Publisher('chatter', String, queue_size=10)
+    r = rospy.Rate(10) # 10hz
+    while not rospy.is_shutdown():
+        str = "hello world %s"%rospy.get_time()
+        rospy.loginfo(str)
+        pub.publish(str)
+        r.sleep()
+        
 if __name__ == '__main__':
-    rospy.init_node('just_advertise')
-    msg_name = rospy.get_param('~msg_name')
-    msg_class = roslib.message.get_message_class(msg_name)
-    pub = rospy.Publisher('~output', msg_class, queue_size=1)
-    rospy.spin()
+    try:
+        talker()
+    except rospy.ROSInterruptException: pass
