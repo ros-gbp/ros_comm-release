@@ -218,15 +218,11 @@ class TestXmlLoader(unittest.TestCase):
         p = [p for p in mock.params if p.key == '/configfile'][0]
         self.assertEquals(contents, p.value, 1)
         p = [p for p in mock.params if p.key == '/binaryfile'][0]
-        self.assertEquals(Binary(contents), p.value, 1)
+        self.assertEquals(Binary(contents.encode()), p.value, 1)
 
-        f = open(os.path.join(get_example_path(), 'example.launch'))
-        try:
-            contents = f.read()
-        finally:
-            f.close()
-        p = [p for p in mock.params if p.key == '/commandoutput'][0]
-        self.assertEquals(contents, p.value, 1)
+        if os.name != 'nt':  # skip testcase for `cat` command in Windows
+            p = [p for p in mock.params if p.key == '/commandoutput'][0]
+            self.assertEquals(contents, p.value, 1)
         
         
     def test_rosparam_valid(self):
@@ -761,7 +757,6 @@ class TestXmlLoader(unittest.TestCase):
                  'test-node-invalid-name-1.xml',
                  'test-node-invalid-name-2.xml',
                  'test-node-invalid-name-3.xml',
-                 'test-node-invalid-machine.xml',
                  'test-node-invalid-respawn.xml',
                  'test-node-invalid-respawn-required.xml',                 
                  'test-node-invalid-required-1.xml',

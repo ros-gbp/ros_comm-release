@@ -49,6 +49,7 @@ public:
   Timer() {}
   Timer(const Timer& rhs);
   ~Timer();
+  Timer& operator=(const Timer& other) = default;
 
   /**
    * \brief Start the timer.  Does nothing if the timer is already started.
@@ -71,8 +72,9 @@ public:
    */
   void setPeriod(const Duration& period, bool reset=true);
 
-  bool hasStarted() const { return impl_->hasStarted(); }
+  bool hasStarted() const { return impl_ && impl_->hasStarted(); }
   bool isValid() { return impl_ && impl_->isValid(); }
+  bool isValid() const { return impl_ && impl_->isValid(); }
   operator void*() { return isValid() ? (void*)1 : (void*)0; }
 
   bool operator<(const Timer& rhs)
@@ -101,6 +103,7 @@ private:
 
     bool hasStarted() const;
     bool isValid();
+    bool isValid() const;
     bool hasPending();
     void setPeriod(const Duration& period, bool reset=true);
 

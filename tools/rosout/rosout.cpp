@@ -29,6 +29,7 @@
 
 #include <cstring>
 #include <cstdlib>
+#include <cctype>
 
 #include "ros/ros.h"
 #include "ros/file_log.h"
@@ -82,10 +83,18 @@ public:
 
   void init()
   {
-    bool disable_file_logging = false;
-    node_.getParamCached("/rosout/disable_file_logging", disable_file_logging);
-
-    if (!disable_file_logging)
+    const char* disable_file_logging_env = getenv("ROSOUT_DISABLE_FILE_LOGGING");
+    std::string disable_file_logging(disable_file_logging_env ? disable_file_logging_env : "");
+    std::transform(
+      disable_file_logging.begin(),
+      disable_file_logging.end(),
+      disable_file_logging.begin(),
+      [](char c){ return std::tolower(c); });
+    if (disable_file_logging.empty() ||  // Not set or set to empty string.
+      disable_file_logging == "0" ||
+      disable_file_logging == "false" ||
+      disable_file_logging == "off" ||
+      disable_file_logging == "no")
     {
       handle_ = fopen(log_file_name_.c_str(), "w");
 
@@ -191,7 +200,7 @@ public:
       current_file_size_ += written;
       if (fflush(handle_))
       {
-        std::cerr << "Error flushing rosout log file '" << log_file_name_.c_str() << "': " << strerror(ferror(handle_));
+        std::cerr << "Error flushing rosout log file '" << log_file_name_.c_str() << "': " << strerror(errno);
       }
 
       // check for rolling
@@ -200,7 +209,7 @@ public:
         std::cout << "rosout log file " << log_file_name_.c_str() << " reached max size, rotating log files" << std::endl;
         if (fclose(handle_))
         {
-          std::cerr << "Error closing rosout log file '" << log_file_name_.c_str() << "': " << strerror(ferror(handle_)) << std::endl;
+          std::cerr << "Error closing rosout log file '" << log_file_name_.c_str() << "': " << strerror(errno) << std::endl;
         }
         if (current_backup_index_ == max_backup_index_)
         {
