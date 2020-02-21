@@ -1,0 +1,13 @@
+Source: ros-melodic-roslaunch
+Section: misc
+Priority: optional
+Maintainer: Dirk Thomas <dthomas@osrfoundation.org>
+Build-Depends: debhelper (>= 9.0.0), ros-melodic-catkin (>= 0.5.78), ros-melodic-rosbuild
+Homepage: http://wiki.ros.org/roslaunch
+Standards-Version: 3.9.2
+
+Package: ros-melodic-roslaunch
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-paramiko, python-rospkg (>= 1.0.37), python-yaml, ros-melodic-rosclean, ros-melodic-rosgraph-msgs, ros-melodic-roslib, ros-melodic-rosmaster (>= 1.11.16), ros-melodic-rosout, ros-melodic-rosparam, ros-melodic-rosunit (>= 1.13.3)
+Description: roslaunch is a tool for easily launching multiple ROS nodes locally and remotely via SSH, as well as setting parameters on the Parameter Server.
+ It includes options to automatically respawn processes that have already died. roslaunch takes in one or more XML configuration files (with the .launch extension) that specify the parameters to set and nodes to launch, as well as the machines that they should be run on.
