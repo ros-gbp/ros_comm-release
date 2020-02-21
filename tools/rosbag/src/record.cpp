@@ -53,6 +53,7 @@ rosbag::RecorderOptions parseOptions(int argc, char** argv) {
       ("regex,e", "match topics using regular expressions")
       ("exclude,x", po::value<std::string>(), "exclude topics matching regular expressions")
       ("quiet,q", "suppress console output")
+      ("publish,p", "Publish a msg when the record begin")
       ("output-prefix,o", po::value<std::string>(), "prepend PREFIX to beginning of bag name")
       ("output-name,O", po::value<std::string>(), "record bagnamed NAME.bag")
       ("buffsize,b", po::value<int>()->default_value(256), "Use an internal buffer of SIZE MB (Default: 256)")
@@ -79,10 +80,10 @@ rosbag::RecorderOptions parseOptions(int argc, char** argv) {
     try 
     {
       po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-    } catch (boost::program_options::invalid_command_line_syntax& e)
+    } catch (const boost::program_options::invalid_command_line_syntax& e)
     {
       throw ros::Exception(e.what());
-    }  catch (boost::program_options::unknown_option& e)
+    } catch (const boost::program_options::unknown_option& e)
     {
       throw ros::Exception(e.what());
     }
@@ -103,6 +104,8 @@ rosbag::RecorderOptions parseOptions(int argc, char** argv) {
     }
     if (vm.count("quiet"))
       opts.quiet = true;
+    if (vm.count("publish"))
+      opts.publish = true;
     if (vm.count("output-prefix"))
     {
       opts.prefix = vm["output-prefix"].as<std::string>();
@@ -123,7 +126,7 @@ rosbag::RecorderOptions parseOptions(int argc, char** argv) {
         ROS_WARN("Use of \"--split <MAX_SIZE>\" has been deprecated.  Please use --split --size <MAX_SIZE> or --split --duration <MAX_DURATION>");
         if (S < 0)
           throw ros::Exception("Split size must be 0 or positive");
-        opts.max_size = 1048576 * S;
+        opts.max_size = 1048576 * static_cast<uint64_t>(S);
       }
     }
     if(vm.count("max-splits"))
@@ -281,11 +284,11 @@ int main(int argc, char** argv) {
     try {
         opts = parseOptions(argc, argv);
     }
-    catch (ros::Exception const& ex) {
+    catch (const ros::Exception& ex) {
         ROS_ERROR("Error reading options: %s", ex.what());
         return 1;
     }
-    catch(boost::regex_error const& ex) {
+    catch(const boost::regex_error& ex) {
         ROS_ERROR("Error reading options: %s\n", ex.what());
         return 1;
     }

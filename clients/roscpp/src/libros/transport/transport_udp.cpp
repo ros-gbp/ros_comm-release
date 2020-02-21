@@ -38,6 +38,9 @@
 
 #include <ros/assert.h>
 #include <boost/bind.hpp>
+#ifndef _WIN32
+  #include <sys/socket.h>  // explicit include required for FreeBSD
+#endif
 
 #include <fcntl.h>
 #if defined(__APPLE__)
@@ -62,6 +65,8 @@ TransportUDP::TransportUDP(PollSet* poll_set, int flags, int max_datagram_size)
 , expecting_read_(false)
 , expecting_write_(false)
 , is_server_(false)
+, server_address_{}
+, local_address_{}
 , server_port_(-1)
 , local_port_(-1)
 , poll_set_(poll_set)
@@ -157,7 +162,7 @@ bool TransportUDP::connect(const std::string& host, int port, int connection_id)
     return false;
   }
 
-  sockaddr_in sin;
+  sockaddr_in sin = {};
   sin.sin_family = AF_INET;
   if (inet_addr(host.c_str()) == INADDR_NONE)
   {
@@ -240,7 +245,7 @@ bool TransportUDP::createIncoming(int port, bool is_server)
 
   sock_ = socket(AF_INET, SOCK_DGRAM, 0);
 
-  if (sock_ <= 0)
+  if (sock_ == ROS_INVALID_SOCKET)
   {
     ROS_ERROR("socket() failed with error [%s]", last_socket_error_string());
     return false;
@@ -710,9 +715,9 @@ std::string TransportUDP::getClientURI()
 
   sockaddr_in *sin = (sockaddr_in *)&sas;
 
-  char namebuf[128];
+  char namebuf[128] = {};
   int port = ntohs(sin->sin_port);
-  strcpy(namebuf, inet_ntoa(sin->sin_addr));
+  strncpy(namebuf, inet_ntoa(sin->sin_addr), sizeof(namebuf)-1);
 
   std::string ip = namebuf;
   std::stringstream uri;

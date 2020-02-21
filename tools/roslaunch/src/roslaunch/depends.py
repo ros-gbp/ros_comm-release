@@ -45,7 +45,7 @@ from xml.dom import Node as DomNode
 
 import rospkg
 
-from .loader import convert_value
+from .loader import convert_value, load_mappings
 from .substitution_args import resolve_args
 
 NAME="roslaunch-deps"
@@ -86,21 +86,21 @@ class RoslaunchDeps(object):
 
 def _get_arg_value(tag, context):
     name = tag.attributes['name'].value
-    if tag.attributes.has_key('value'):
+    if 'value' in tag.attributes.keys():
         return resolve_args(tag.attributes['value'].value, context)
     elif name in context['arg']:
         return context['arg'][name]
-    elif tag.attributes.has_key('default'):
+    elif 'default' in tag.attributes.keys():
         return resolve_args(tag.attributes['default'].value, context)
     else:
         raise RoslaunchDepsException("No value for arg [%s]"%(name))
 
 def _check_ifunless(tag, context):
-    if tag.attributes.has_key('if'):
+    if 'if' in tag.attributes.keys():
         val = resolve_args(tag.attributes['if'].value, context)
         if not convert_value(val, 'bool'):
             return False
-    elif tag.attributes.has_key('unless'):
+    elif 'unless' in tag.attributes.keys():
         val = resolve_args(tag.attributes['unless'].value, context)
         if convert_value(val, 'bool'):
             return False
@@ -118,6 +118,7 @@ def _parse_subcontext(tags, context):
     return subcontext
 
 def _parse_launch(tags, launch_file, file_deps, verbose, context):
+    context['filename'] = os.path.abspath(launch_file)
     dir_path = os.path.dirname(os.path.abspath(launch_file))
     launch_file_pkg = rospkg.get_package_name(dir_path)
             
@@ -205,7 +206,7 @@ def parse_launch(launch_file, file_deps, verbose):
 
     file_deps[launch_file] = RoslaunchDeps()
     launch_tag = dom[0]
-    context = { 'arg': {}}
+    context = { 'arg': load_mappings(sys.argv) }
     _parse_launch(launch_tag.childNodes, launch_file, file_deps, verbose, context)
 
 def rl_file_deps(file_deps, launch_file, verbose=False):
@@ -295,9 +296,9 @@ def calculate_missing(base_pkg, missing, file_deps, use_test_depends=False):
             missing[pkg] = set()
         missing[pkg].update(diff)
     return missing
-        
-    
-def roslaunch_deps(files, verbose=False, use_test_depends=False):
+
+
+def roslaunch_deps(files, verbose=False, use_test_depends=False, ignore_unset_args=False):
     """
     @param packages: list of packages to check
     @type  packages: [str]
@@ -306,6 +307,8 @@ def roslaunch_deps(files, verbose=False, use_test_depends=False):
     @type  files: [str]
     @param use_test_depends [bool]: use test_depends as installed package
     @type  use_test_depends: [bool]
+    @param ignore_unset_args [bool]: ignore exceptions raised by missing default value for <arg> tags
+    @type  ignore_unset_args: [bool]
     @return: base_pkg, file_deps, missing.
       base_pkg is the package of all files
       file_deps is a { filename : RoslaunchDeps } dictionary of
@@ -327,7 +330,15 @@ def roslaunch_deps(files, verbose=False, use_test_depends=False):
         if base_pkg and pkg != base_pkg:
             raise RoslaunchDepsException("roslaunch files must be in the same package: %s vs. %s"%(base_pkg, pkg))
         base_pkg = pkg
-        rl_file_deps(file_deps, launch_file, verbose)
+        try:
+            rl_file_deps(file_deps, launch_file, verbose)
+        except RoslaunchDepsException as e:
+            if ignore_unset_args:
+                import re
+                if not re.compile(r'No value for arg').search(str(e)):
+                    raise RoslaunchDepsException(str(e))
+            else:
+                raise RoslaunchDepsException(str(e))
 
     calculate_missing(base_pkg, missing, file_deps, use_test_depends=use_test_depends)
     return base_pkg, file_deps, missing            

@@ -48,7 +48,7 @@ class ConnectionOverride(rospy.impl.transport.Transport):
     def __init__(self, endpoint_id):
         super(ConnectionOverride, self).__init__(rospy.impl.transport.OUTBOUND, endpoint_id)
         self.endpoint_id = endpoint_id
-        self.data = ''
+        self.data = b''
 
     def set_cleanup_callback(self, cb): pass
     def write_data(self, data):
@@ -164,7 +164,7 @@ class TestRospyTopics(unittest.TestCase):
         try:
             from cStringIO import StringIO
         except ImportError:
-            from io import StringIO
+            from io import BytesIO as StringIO
         buff = StringIO()
         Val('hello world-1').serialize(buff)
         # - check equals, but strip length field first
@@ -222,14 +222,14 @@ class TestRospyTopics(unittest.TestCase):
         self.failIf(impl.has_connections())
 
         # test publish() latch on a new Publisher object (this was encountered in testing, so I want a test case for it)
-        pub = Publisher('bar', data_class, latch=True)
+        pub = Publisher('bar', data_class, latch=True, queue_size=0)
         v = Val('no connection test')
         pub.impl.publish(v)
         self.assert_(v == pub.impl.latch)
 
         # test connection header
         h = {'foo': 'bar', 'fuga': 'hoge'}
-        pub = Publisher('header_test', data_class, headers=h)
+        pub = Publisher('header_test', data_class, headers=h, queue_size=0)
         self.assertEquals(h, pub.impl.headers)
         
     def test_Subscriber_unregister(self):
