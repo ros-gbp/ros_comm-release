@@ -2,6 +2,9 @@
 Changelog for package message_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.15.2 (2020-02-25)
+-------------------
+
 1.15.1 (2020-02-24)
 -------------------
 * fix missing boost dependencies (`#1895 <https://github.com/ros/ros_comm/issues/1895>`_)
