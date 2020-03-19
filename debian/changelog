@@ -1,0 +1,375 @@
+ros-noetic-rosnode (1.15.4-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 19 Mar 2020 07:00:00 -0000
+
+ros-noetic-rosnode (1.15.3-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 28 Feb 2020 08:00:00 -0000
+
+ros-noetic-rosnode (1.15.2-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 25 Feb 2020 08:00:00 -0000
+
+ros-noetic-rosnode (1.15.1-1buster) buster; urgency=high
+
+  * use setuptools instead of distutils (#1870 <https://github.com/ros/ros_comm/issues/1870>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 24 Feb 2020 08:00:00 -0000
+
+ros-noetic-rosnode (1.15.0-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 21 Feb 2020 08:00:00 -0000
+
+ros-noetic-rosnode (1.14.4-1buster) buster; urgency=high
+
+  * bump CMake minimum version to avoid CMP0048 warning (#1869 <https://github.com/ros/ros_comm/issues/1869>)
+  * prevent indefinitely trapping in unknown error state (#1854 <https://github.com/ros/ros_comm/issues/1854>)
+  * duplicate test nodes which aren't available to other packages, add missing dependencies (#1611 <https://github.com/ros/ros_comm/issues/1611>)
+  * update wiki.ros.org URLs (#1536 <https://github.com/ros/ros_comm/issues/1536>)
+  * explicitly handle socket.timeout in rosnode ping (#1517 <https://github.com/ros/ros_comm/issues/1517>)
+  * show connection info on rosnode info (#1497 <https://github.com/ros/ros_comm/issues/1497>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 20 Feb 2020 08:00:00 -0000
+
+ros-noetic-rosnode (1.14.3-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 06 Aug 2018 07:00:00 -0000
+
+ros-noetic-rosnode (1.14.2-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 06 Jun 2018 07:00:00 -0000
+
+ros-noetic-rosnode (1.14.1-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 21 May 2018 07:00:00 -0000
+
+ros-noetic-rosnode (1.14.0-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 21 May 2018 07:00:00 -0000
+
+ros-noetic-rosnode (1.13.6-1buster) buster; urgency=high
+
+  * fix docstrings (#1278 <https://github.com/ros/ros_comm/issues/1278>)
+  * fix documentation for cleanup_master_blacklist() (#1253 <https://github.com/ros/ros_comm/issues/1253>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 05 Feb 2018 08:00:00 -0000
+
+ros-noetic-rosnode (1.13.5-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 09 Nov 2017 08:00:00 -0000
+
+ros-noetic-rosnode (1.13.4-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 02 Nov 2017 07:00:00 -0000
+
+ros-noetic-rosnode (1.13.3-1buster) buster; urgency=high
+
+  * return exit code 1 in case of errors (#1178 <https://github.com/ros/ros_comm/issues/1178>)
+  * sort output of rosnode info (#1160 <https://github.com/ros/ros_comm/issues/1160>)
+  * fix Python 3 compatibility (#1166 <https://github.com/ros/ros_comm/issues/1166>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 25 Oct 2017 07:00:00 -0000
+
+ros-noetic-rosnode (1.13.2-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 15 Aug 2017 07:00:00 -0000
+
+ros-noetic-rosnode (1.13.1-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 27 Jul 2017 07:00:00 -0000
+
+ros-noetic-rosnode (1.13.0-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 22 Feb 2017 08:00:00 -0000
+
+ros-noetic-rosnode (1.12.7-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 17 Feb 2017 08:00:00 -0000
+
+ros-noetic-rosnode (1.12.6-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 26 Oct 2016 07:00:00 -0000
+
+ros-noetic-rosnode (1.12.5-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 30 Sep 2016 07:00:00 -0000
+
+ros-noetic-rosnode (1.12.4-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 19 Sep 2016 07:00:00 -0000
+
+ros-noetic-rosnode (1.12.3-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 17 Sep 2016 07:00:00 -0000
+
+ros-noetic-rosnode (1.12.2-1buster) buster; urgency=high
+
+  * add --quiet option (#809 <https://github.com/ros/ros_comm/pull/809>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 03 Jun 2016 07:00:00 -0000
+
+ros-noetic-rosnode (1.12.1-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 18 Apr 2016 07:00:00 -0000
+
+ros-noetic-rosnode (1.12.0-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 18 Mar 2016 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.18-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 17 Mar 2016 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.17-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 11 Mar 2016 08:00:00 -0000
+
+ros-noetic-rosnode (1.11.16-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 09 Nov 2015 08:00:00 -0000
+
+ros-noetic-rosnode (1.11.15-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 13 Oct 2015 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.14-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 19 Sep 2015 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.13-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 28 Apr 2015 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.12-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Apr 2015 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.11-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 16 Apr 2015 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.10-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 22 Dec 2014 08:00:00 -0000
+
+ros-noetic-rosnode (1.11.9-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 18 Aug 2014 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.8-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 04 Aug 2014 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.7-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 18 Jul 2014 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.6-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 10 Jul 2014 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.5-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 24 Jun 2014 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.4-1buster) buster; urgency=high
+
+  * Python 3 compatibility (#426 <https://github.com/ros/ros_comm/issues/426>, #427 <https://github.com/ros/ros_comm/issues/427>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Jun 2014 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.3-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 May 2014 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.2-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 08 May 2014 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.1-1buster) buster; urgency=high
+
+  * add architecture_independent flag in package.xml (#391 <https://github.com/ros/ros_comm/issues/391>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 07 May 2014 07:00:00 -0000
+
+ros-noetic-rosnode (1.11.0-1buster) buster; urgency=high
+
+  * make rostest in CMakeLists optional (ros/rosdistro#3010 <https://github.com/ros/rosdistro/issues/3010>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 04 Mar 2014 08:00:00 -0000
+
+ros-noetic-rosnode (1.10.0-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 11 Feb 2014 08:00:00 -0000
+
+ros-noetic-rosnode (1.9.54-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Jan 2014 08:00:00 -0000
+
+ros-noetic-rosnode (1.9.53-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 14 Jan 2014 08:00:00 -0000
+
+ros-noetic-rosnode (1.9.52-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 08 Jan 2014 08:00:00 -0000
+
+ros-noetic-rosnode (1.9.51-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 07 Jan 2014 08:00:00 -0000
+
+ros-noetic-rosnode (1.9.50-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 04 Oct 2013 07:00:00 -0000
+
+ros-noetic-rosnode (1.9.49-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Sep 2013 07:00:00 -0000
+
+ros-noetic-rosnode (1.9.48-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 Aug 2013 07:00:00 -0000
+
+ros-noetic-rosnode (1.9.47-1buster) buster; urgency=high
+
+  * check for CATKIN_ENABLE_TESTING to enable configure without tests
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 03 Jul 2013 07:00:00 -0000
+
+ros-noetic-rosnode (1.9.46-1buster) buster; urgency=high
+
+  * fix rosnode_ping to check if new node uri is valid before using it (#235 <https://github.com/ros/ros_comm/issues/235>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 18 Jun 2013 07:00:00 -0000
+
+ros-noetic-rosnode (1.9.45-1buster) buster; urgency=high
+
+  * modify rosnode_ping to check for changed node uri if connection is refused (#221 <https://github.com/ros/ros_comm/issues/221>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 06 Jun 2013 07:00:00 -0000
+
+ros-noetic-rosnode (1.9.44-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 21 Mar 2013 07:00:00 -0000
+
+ros-noetic-rosnode (1.9.43-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 13 Mar 2013 07:00:00 -0000
+
+ros-noetic-rosnode (1.9.42-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 08 Mar 2013 08:00:00 -0000
+
+ros-noetic-rosnode (1.9.41-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 24 Jan 2013 08:00:00 -0000
+
+ros-noetic-rosnode (1.9.40-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sun, 13 Jan 2013 08:00:00 -0000
+
+ros-noetic-rosnode (1.9.39-1buster) buster; urgency=high
+
+  * first public release for Groovy
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 29 Dec 2012 08:00:00 -0000
+
+
