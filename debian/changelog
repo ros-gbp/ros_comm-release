@@ -1,0 +1,477 @@
+ros-noetic-roscpp (1.15.4-1buster) buster; urgency=high
+
+  * restrict boost dependencies to components used (#1871 <https://github.com/ros/ros_comm/issues/1871>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 19 Mar 2020 07:00:00 -0000
+
+ros-noetic-roscpp (1.15.3-1buster) buster; urgency=high
+
+  * remove Boost version check since Noetic only targets platforms with 1.67+ (#1903 <https://github.com/ros/ros_comm/issues/1903>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 28 Feb 2020 08:00:00 -0000
+
+ros-noetic-roscpp (1.15.2-1buster) buster; urgency=high
+
+  * export missing Boost dependency (#1898 <https://github.com/ros/ros_comm/issues/1898>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 25 Feb 2020 08:00:00 -0000
+
+ros-noetic-roscpp (1.15.1-1buster) buster; urgency=high
+
+  * fix missing boost dependencies (#1895 <https://github.com/ros/ros_comm/issues/1895>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 24 Feb 2020 08:00:00 -0000
+
+ros-noetic-roscpp (1.15.0-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 21 Feb 2020 08:00:00 -0000
+
+ros-noetic-roscpp (1.14.4-1buster) buster; urgency=high
+
+  * add default ROS_MASTER_URI (#1666 <https://github.com/ros/ros_comm/issues/1666>)
+  * add default assignment operator for various classes (#1888 <https://github.com/ros/ros_comm/issues/1888>)
+  * bump CMake minimum version to avoid CMP0048 warning (#1869 <https://github.com/ros/ros_comm/issues/1869>)
+  * do not display error message if poll yields EINTR (#1868 <https://github.com/ros/ros_comm/issues/1868>)
+  * [windows] portable duration cast (#1882 <https://github.com/ros/ros_comm/issues/1882>)
+  * drop custom implementation of boost::condition_variable to fix busy-wait spinning (#1878 <https://github.com/ros/ros_comm/issues/1878>)
+  * disable rosout via ROSCPP_NO_ROSOUT environment variable (#1858 <https://github.com/ros/ros_comm/issues/1858>)
+  * [windows] conditionally guard sys/socket.h (#1876 <https://github.com/ros/ros_comm/issues/1876>)
+  * explicit include of socket.h to support FreeBSD (#1864 <https://github.com/ros/ros_comm/issues/1864>)
+  * remove DEBUG statements from getImpl (#1823 <https://github.com/ros/ros_comm/issues/1823>)
+  * use c++11 std::snprintf (#1820 <https://github.com/ros/ros_comm/issues/1820>)
+  * TransportTCP: Allow socket() to return 0 (#1707 <https://github.com/ros/ros_comm/issues/1707>)
+  * fix dynamic windowing for Topic Statistics (#1695 <https://github.com/ros/ros_comm/issues/1695>)
+  * service_publication: removed int-bool-comparison (#1710 <https://github.com/ros/ros_comm/issues/1710>)
+  * add Timer::isValid() const (#1779 <https://github.com/ros/ros_comm/issues/1779>)
+  * add possibility to pass rospy.Duration as timeout to wait_for_service and wait_for_message (#1703 <https://github.com/ros/ros_comm/issues/1703>)
+  * fix segfault in TransportPublisherLink (#1714 <https://github.com/ros/ros_comm/issues/1714>)
+  * TransportTCP: enable poll event POLLRDHUP to detect dead connections properly (#1704 <https://github.com/ros/ros_comm/issues/1704>)
+  * transportUDP: zero-initialize sockaddr_in object (#1740 <https://github.com/ros/ros_comm/issues/1740>)
+  * unregisterService returns result of execute("unregisterService") (#1751 <https://github.com/ros/ros_comm/issues/1751>)
+  * use safe string check (#1771 <https://github.com/ros/ros_comm/issues/1771>)
+  * fix memory leak of global variable (#1503 <https://github.com/ros/ros_comm/issues/1503>)
+  * fix exception boost::lock_error during shutdown (#1656 <https://github.com/ros/ros_comm/issues/1656>)
+  * avoid deadlock in TopicManager (#1645 <https://github.com/ros/ros_comm/issues/1645>)
+  * use WallTime/WallDuration for waiting for service (#1638 <https://github.com/ros/ros_comm/issues/1638>)
+  * add missing include path (for bazel workspaces) (#1636 <https://github.com/ros/ros_comm/issues/1636>)
+  * fix bug in statistics decision making if one should publish (#1625 <https://github.com/ros/ros_comm/issues/1625>)
+  * add hasStarted() const to WallTimer and SteadyTimer API (#1565 <https://github.com/ros/ros_comm/issues/1565>)
+  * remove signals from find_package(Boost COMPONENTS ...) (#1580 <https://github.com/ros/ros_comm/issues/1580>)
+  * fix string error on windows (#1582 <https://github.com/ros/ros_comm/issues/1582>)
+  * visibility macros update (#1591 <https://github.com/ros/ros_comm/issues/1591>)
+  * fix race due tounprotected access to callbacks_ (#1595 <https://github.com/ros/ros_comm/issues/1595>)
+  * fix nullptr access from Timer().hasStarted() (#1541 <https://github.com/ros/ros_comm/issues/1541>)
+  * add const specifier to NodeHandle::param(param_name, default_val). (#1539 <https://github.com/ros/ros_comm/issues/1539>)
+  * update wiki.ros.org URLs (#1536 <https://github.com/ros/ros_comm/issues/1536>)
+  * fix stamp_age_mean overflow when stamp age very big (#1526 <https://github.com/ros/ros_comm/issues/1526>)
+  * remove explicit -std=c++11, default to 14
+  * fix memory error due to missing rosout_disable_topics_generation parameter (#1507 <https://github.com/ros/ros_comm/issues/1507>)
+  * fix issues when built or run on Windows (#1466 <https://github.com/ros/ros_comm/issues/1466>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 20 Feb 2020 08:00:00 -0000
+
+ros-noetic-roscpp (1.14.3-1buster) buster; urgency=high
+
+  * add hasStarted() to Timer API (#1464 <https://github.com/ros/ros_comm/issues/1464>)
+  * fix compiler warnings about unused variables (#1428 <https://github.com/ros/ros_comm/issues/1428>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 06 Aug 2018 07:00:00 -0000
+
+ros-noetic-roscpp (1.14.2-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 06 Jun 2018 07:00:00 -0000
+
+ros-noetic-roscpp (1.14.1-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 21 May 2018 07:00:00 -0000
+
+ros-noetic-roscpp (1.14.0-1buster) buster; urgency=high
+
+  * force a rebuild of the pollset on flag changes (#1393 <https://github.com/ros/ros_comm/issues/1393>)
+  * fix integer overflow for oneshot timers (#1382 <https://github.com/ros/ros_comm/issues/1382>)
+  * convert the period standard deviation in StatisticsLogger to Duration at the end (#1361 <https://github.com/ros/ros_comm/issues/1361>)
+  * add time when timer expired to timer events (#1130 <https://github.com/ros/ros_comm/issues/1130>)
+  * replace DCL pattern with static variable (#1365 <https://github.com/ros/ros_comm/issues/1365>)
+  * add parameter to stop clients from generating rosout topics list (#1241 <https://github.com/ros/ros_comm/issues/1241>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 21 May 2018 07:00:00 -0000
+
+ros-noetic-roscpp (1.13.6-1buster) buster; urgency=high
+
+  * avoid recreating poll set (#1281 <https://github.com/ros/ros_comm/pull/1281>)
+  * switch to using epoll (#1217 <https://github.com/ros/ros_comm/pull/1217>)
+  * monotonic clock for callback queue timeouts (#1250 <https://github.com/ros/ros_comm/pull/1250>)
+  * fix IPv6 initialization order (#1262 <https://github.com/ros/ros_comm/issues/1262>)
+  * changed error message for single threaded spinner  (#1164 <https://github.com/ros/ros_comm/pull/1164>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 05 Feb 2018 08:00:00 -0000
+
+ros-noetic-roscpp (1.13.5-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 09 Nov 2017 08:00:00 -0000
+
+ros-noetic-roscpp (1.13.4-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 02 Nov 2017 07:00:00 -0000
+
+ros-noetic-roscpp (1.13.3-1buster) buster; urgency=high
+
+  * avoid unused parameter warning in TransportTCP (#1195 <https://github.com/ros/ros_comm/issues/1195>)
+  * check if socket options are available before using them (#1172 <https://github.com/ros/ros_comm/issues/1172>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 25 Oct 2017 07:00:00 -0000
+
+ros-noetic-roscpp (1.13.2-1buster) buster; urgency=high
+
+  * only use CLOCK_MONOTONIC if not on OS X (#1142 <https://github.com/ros/ros_comm/issues/1142>)
+  * xmlrpc_manager: use SteadyTime for timeout (#1134 <https://github.com/ros/ros_comm/issues/1134>)
+  * ignore headers with zero stamp in statistics (#1127 <https://github.com/ros/ros_comm/issues/1127>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 15 Aug 2017 07:00:00 -0000
+
+ros-noetic-roscpp (1.13.1-1buster) buster; urgency=high
+
+  * add SteadyTimer, used in TimerManager (#1014 <https://github.com/ros/ros_comm/issues/1014>)
+  * include missing header for writev() (#1105 <https://github.com/ros/ros_comm/pull/1105>)
+  * clean the namespace to get rid of double or trailing forward slashes (#1100 <https://github.com/ros/ros_comm/issues/1100>)
+  * add missing mutex lock for publisher links (#1090 <https://github.com/ros/ros_comm/pull/1090>)
+  * fix race condition that lead to miss first message (#1058 <https://github.com/ros/ros_comm/issues/1058>)
+  * fix bug in transport_tcp on Windows (#1050 <https://github.com/ros/ros_comm/issues/1050>)
+  * add subscriber to connection log messages (#1023 <https://github.com/ros/ros_comm/issues/1023>)
+  * avoid deleting XmlRpcClient while being used in another thread (#1013 <https://github.com/ros/ros_comm/issues/1013>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 27 Jul 2017 07:00:00 -0000
+
+ros-noetic-roscpp (1.13.0-1buster) buster; urgency=high
+
+  * remove support for multiple spinners on the same queue which existed only for backward compatibily (#988 <https://github.com/ros/ros_comm/pull/988>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 22 Feb 2017 08:00:00 -0000
+
+ros-noetic-roscpp (1.12.7-1buster) buster; urgency=high
+
+  * move connection specific log message to new name roscpp_internal.connections (#980 <https://github.com/ros/ros_comm/pull/980>)
+  * move headers to include/xmlrpcpp (#962 <https://github.com/ros/ros_comm/issues/962>)
+  * fix UDP block number when EAGAIN or EWOULDBLOCK (#957 <https://github.com/ros/ros_comm/issues/957>)
+  * fix return code of master execute function (#938 <https://github.com/ros/ros_comm/pull/938>)
+  * change WallTimerEvent from class to struct (#924 <https://github.com/ros/ros_comm/pull/924>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 17 Feb 2017 08:00:00 -0000
+
+ros-noetic-roscpp (1.12.6-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 26 Oct 2016 07:00:00 -0000
+
+ros-noetic-roscpp (1.12.5-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 30 Sep 2016 07:00:00 -0000
+
+ros-noetic-roscpp (1.12.4-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 19 Sep 2016 07:00:00 -0000
+
+ros-noetic-roscpp (1.12.3-1buster) buster; urgency=high
+
+  * fix multi-threaded spinning (#867 <https://github.com/ros/ros_comm/pull/867>)
+  * fix static destruction order (#871 <https://github.com/ros/ros_comm/pull/871>)
+  * throw exception on ros::init with empty node name (#894 <https://github.com/ros/ros_comm/pull/894>)
+  * improve debug message when queue is full (#818 <https://github.com/ros/ros_comm/issues/818>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 17 Sep 2016 07:00:00 -0000
+
+ros-noetic-roscpp (1.12.2-1buster) buster; urgency=high
+
+  * improve stacktrace for exceptions thrown in callbacks (#811 <https://github.com/ros/ros_comm/pull/811>)
+  * fix segfault if creating outgoing UDP transport fails (#807 <https://github.com/ros/ros_comm/pull/807>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 03 Jun 2016 07:00:00 -0000
+
+ros-noetic-roscpp (1.12.1-1buster) buster; urgency=high
+
+  * use directory specific compiler flags (#785 <https://github.com/ros/ros_comm/pull/785>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 18 Apr 2016 07:00:00 -0000
+
+ros-noetic-roscpp (1.12.0-1buster) buster; urgency=high
+
+  * improve TopicManager::instance (#770 <https://github.com/ros/ros_comm/issues/770>)
+  * change return value of param() to bool (#753 <https://github.com/ros/ros_comm/issues/753>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 18 Mar 2016 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.18-1buster) buster; urgency=high
+
+  * fix CMake warning about non-existing targets
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 17 Mar 2016 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.17-1buster) buster; urgency=high
+
+  * fix order of argument in SubscriberLink interface to match actual implemenation (#701 <https://github.com/ros/ros_comm/issues/701>)
+  * add method for getting all the parameters from the parameter server as implemented in the rospy client (#739 <https://github.com/ros/ros_comm/issues/739>)
+  * use boost::make_shared instead of new for constructing boost::shared_ptr (#740 <https://github.com/ros/ros_comm/issues/740>)
+  * fix max elements param for statistics window (#750 <https://github.com/ros/ros_comm/issues/750>)
+  * improve NodeHandle constructor documentation (#692 <https://github.com/ros/ros_comm/issues/692>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 11 Mar 2016 08:00:00 -0000
+
+ros-noetic-roscpp (1.11.16-1buster) buster; urgency=high
+
+  * add getROSArg function (#694 <https://github.com/ros/ros_comm/pull/694>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 09 Nov 2015 08:00:00 -0000
+
+ros-noetic-roscpp (1.11.15-1buster) buster; urgency=high
+
+  * fix crash in onRetryTimer() callback (#577 <https://github.com/ros/ros_comm/issues/577>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 13 Oct 2015 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.14-1buster) buster; urgency=high
+
+  * add optional reset argument to Timer::setPeriod() (#590 <https://github.com/ros/ros_comm/issues/590>)
+  * add getParam() and getParamCached() for float (#621 <https://github.com/ros/ros_comm/issues/621>, #623 <https://github.com/ros/ros_comm/issues/623>)
+  * use explicit bool cast to compile with C++11 (#632 <https://github.com/ros/ros_comm/pull/632>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 19 Sep 2015 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.13-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 28 Apr 2015 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.12-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Apr 2015 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.11-1buster) buster; urgency=high
+
+  * fix memory leak in transport constructor (#570 <https://github.com/ros/ros_comm/pull/570>)
+  * fix computation of stddev in statistics (#556 <https://github.com/ros/ros_comm/pull/556>)
+  * fix empty connection header topic (#543 <https://github.com/ros/ros_comm/issues/543>)
+  * alternative API to get parameter values (#592 <https://github.com/ros/ros_comm/pull/592>)
+  * add getCached() for float parameters (#584 <https://github.com/ros/ros_comm/pull/584>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 16 Apr 2015 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.10-1buster) buster; urgency=high
+
+  * fix various defects reported by coverity
+  * fix comment (#529 <https://github.com/ros/ros_comm/issues/529>)
+  * improve Android support (#518 <https://github.com/ros/ros_comm/pull/518>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 22 Dec 2014 08:00:00 -0000
+
+ros-noetic-roscpp (1.11.9-1buster) buster; urgency=high
+
+  * add accessor to expose whether service is persistent (#489 <https://github.com/ros/ros_comm/issues/489>)
+  * populate delivered_msgs field of TopicStatistics message (#486 <https://github.com/ros/ros_comm/issues/486>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 18 Aug 2014 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.8-1buster) buster; urgency=high
+
+  * fix C++11 compatibility issue (#483 <https://github.com/ros/ros_comm/issues/483>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 04 Aug 2014 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.7-1buster) buster; urgency=high
+
+  * fix segfault due to accessing a NULL pointer for some network interfaces (#465 <https://github.com/ros/ros_comm/issues/465>) (regression from 1.11.6)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 18 Jul 2014 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.6-1buster) buster; urgency=high
+
+  * check ROS_HOSTNAME for localhost / ROS_IP for 127./::1 and prevent connections from other hosts in that case (#452 <https://github.com/ros/ros_comm/issues/452>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 10 Jul 2014 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.5-1buster) buster; urgency=high
+
+  * improve handling dropped connections (#434 <https://github.com/ros/ros_comm/issues/434>)
+  * add header needed for Android (#441 <https://github.com/ros/ros_comm/issues/441>)
+  * fix typo for parameter used for statistics (#448 <https://github.com/ros/ros_comm/issues/448>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 24 Jun 2014 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.4-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Jun 2014 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.3-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 May 2014 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.2-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 08 May 2014 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.1-1buster) buster; urgency=high
+
+  * update API to use boost::signals2 (#267 <https://github.com/ros/ros_comm/issues/267>)
+  * only update param cache when being subscribed (#351 <https://github.com/ros/ros_comm/issues/351>)
+  * ensure to remove delete parameters completely
+  * invalidate cached parent parameters when namespace parameter is set / changes (#352 <https://github.com/ros/ros_comm/issues/352>)
+  * add optional topic/connection statistics (#398 <https://github.com/ros/ros_comm/issues/398>)
+  * add transport information in SlaveAPI::getBusInfo() for roscpp & rospy (#328 <https://github.com/ros/ros_comm/issues/328>)
+  * add AsyncSpinner::canStart() to check if a spinner can be started
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 07 May 2014 07:00:00 -0000
+
+ros-noetic-roscpp (1.11.0-1buster) buster; urgency=high
+
+  * allow getting parameters with name '/' (#313 <https://github.com/ros/ros_comm/issues/313>)
+  * support for /clock remapping (#359 <https://github.com/ros/ros_comm/issues/359>)
+  * suppress boost::signals deprecation warning (#362 <https://github.com/ros/ros_comm/issues/362>)
+  * use catkin_install_python() to install Python scripts (#361 <https://github.com/ros/ros_comm/issues/361>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 04 Mar 2014 08:00:00 -0000
+
+ros-noetic-roscpp (1.10.0-1buster) buster; urgency=high
+
+  * remove use of __connection header
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 11 Feb 2014 08:00:00 -0000
+
+ros-noetic-roscpp (1.9.54-1buster) buster; urgency=high
+
+  * fix return value of pubUpdate() (#334 <https://github.com/ros/ros_comm/issues/334>)
+  * fix handling optional third xml rpc response argument (#335 <https://github.com/ros/ros_comm/issues/335>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Jan 2014 08:00:00 -0000
+
+ros-noetic-roscpp (1.9.53-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 14 Jan 2014 08:00:00 -0000
+
+ros-noetic-roscpp (1.9.52-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 08 Jan 2014 08:00:00 -0000
+
+ros-noetic-roscpp (1.9.51-1buster) buster; urgency=high
+
+  * move several client library independent parts from ros_comm into roscpp_core, split rosbag storage specific stuff from client library usage (#299 <https://github.com/ros/ros_comm/issues/299>)
+  * add missing version dependency on roscpp_core stuff (#299 <https://github.com/ros/ros_comm/issues/299>)
+  * remove log4cxx dependency from roscpp, using new agnostic interface from rosconsole
+  * fix compile problem with gcc 4.4 (#302 <https://github.com/ros/ros_comm/issues/302>)
+  * fix clang warnings
+  * fix usage of boost include directories
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 07 Jan 2014 08:00:00 -0000
+
+ros-noetic-roscpp (1.9.50-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 04 Oct 2013 07:00:00 -0000
+
+ros-noetic-roscpp (1.9.49-1buster) buster; urgency=high
+
+  * add rosparam getter/setter for std::vector and std::map (#279 <https://github.com/ros/ros_comm/issues/279>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Sep 2013 07:00:00 -0000
+
+ros-noetic-roscpp (1.9.48-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 Aug 2013 07:00:00 -0000
+
+ros-noetic-roscpp (1.9.47-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 03 Jul 2013 07:00:00 -0000
+
+ros-noetic-roscpp (1.9.46-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 18 Jun 2013 07:00:00 -0000
+
+ros-noetic-roscpp (1.9.45-1buster) buster; urgency=high
+
+  * improve handling of UDP transport, when fragmented packets are lost or arive out-of-order the connection is not dropped anymore, onle a single message is lost (#226 <https://github.com/ros/ros_comm/issues/226>)
+  * fix missing generation of constant definitions for services (ros/gencpp#2 <https://github.com/ros/gencpp/issues/2>)
+  * fix restoring thread context when callback throws an exception (#219 <https://github.com/ros/ros_comm/issues/219>)
+  * fix calling PollManager::shutdown() repeatedly (#217 <https://github.com/ros/ros_comm/issues/217>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 06 Jun 2013 07:00:00 -0000
+
+ros-noetic-roscpp (1.9.44-1buster) buster; urgency=high
+
+  * fix install destination for dll's under Windows
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 21 Mar 2013 07:00:00 -0000
+
+ros-noetic-roscpp (1.9.43-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 13 Mar 2013 07:00:00 -0000
+
+ros-noetic-roscpp (1.9.42-1buster) buster; urgency=high
+
+  * improve speed of message generation in dry packages (#183 <https://github.com/ros/ros_comm/issues/183>)
+  * fix roscpp service call deadlock (#149 <https://github.com/ros/ros_comm/issues/149>)
+  * fix freezing service calls when returning false (#168 <https://github.com/ros/ros_comm/issues/168>)
+  * fix error message publishing wrong message type (#178 <https://github.com/ros/ros_comm/issues/178>)
+  * fix missing explicit dependency on pthread (#135 <https://github.com/ros/ros_comm/issues/135>)
+  * fix compiler warning about wrong comparison of message md5 hashes (#165 <https://github.com/ros/ros_comm/issues/165>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 08 Mar 2013 08:00:00 -0000
+
+ros-noetic-roscpp (1.9.41-1buster) buster; urgency=high
+
+  * allow sending data exceeding 2GB in chunks (#4049 <https://code.ros.org/trac/ros/ticket/4049>)
+  * update getParam() doc (#1460 <https://code.ros.org/trac/ros/ticket/1460>)
+  * add param::get(float) (#3754 <https://code.ros.org/trac/ros/ticket/3754>)
+  * update inactive assert when publishing message with md5sum "*", update related tests (#3714 <https://code.ros.org/trac/ros/ticket/3714>)
+  * fix ros master retry timeout (#4024 <https://code.ros.org/trac/ros/ticket/4024>)
+  * fix inactive assert when publishing message with wrong type (#3714 <https://code.ros.org/trac/ros/ticket/3714>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 24 Jan 2013 08:00:00 -0000
+
+ros-noetic-roscpp (1.9.40-1buster) buster; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sun, 13 Jan 2013 08:00:00 -0000
+
+ros-noetic-roscpp (1.9.39-1buster) buster; urgency=high
+
+  * first public release for Groovy
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 29 Dec 2012 08:00:00 -0000
+
+
