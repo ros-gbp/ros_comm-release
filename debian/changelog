@@ -1,0 +1,397 @@
+ros-noetic-rosgraph (1.15.4-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 19 Mar 2020 07:00:00 -0000
+
+ros-noetic-rosgraph (1.15.3-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 28 Feb 2020 08:00:00 -0000
+
+ros-noetic-rosgraph (1.15.2-1focal) focal; urgency=high
+
+  * add timestamp formatting for rosconsole (#1892 <https://github.com/ros/ros_comm/issues/1892>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 25 Feb 2020 08:00:00 -0000
+
+ros-noetic-rosgraph (1.15.1-1focal) focal; urgency=high
+
+  * use setuptools instead of distutils (#1870 <https://github.com/ros/ros_comm/issues/1870>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 24 Feb 2020 08:00:00 -0000
+
+ros-noetic-rosgraph (1.15.0-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 21 Feb 2020 08:00:00 -0000
+
+ros-noetic-rosgraph (1.14.4-1focal) focal; urgency=high
+
+  * add default ROS_MASTER_URI (#1666 <https://github.com/ros/ros_comm/issues/1666>)
+  * fix test which fails on Noetic (#1891 <https://github.com/ros/ros_comm/issues/1891>)
+  * bump CMake minimum version to avoid CMP0048 warning (#1869 <https://github.com/ros/ros_comm/issues/1869>)
+  * [Windows] Python 3 compatibility (#1819 <https://github.com/ros/ros_comm/issues/1819>)
+  * fix escape sequences in regular expressions (#1837 <https://github.com/ros/ros_comm/issues/1837>)
+  * fix RospyLogger findCaller arguments in Python 3.8 (#1838 <https://github.com/ros/ros_comm/issues/1838>)
+  * [Windows] make test code to be more portable (#1726 <https://github.com/ros/ros_comm/issues/1726>)
+  * fix Coverity forward null (#1787 <https://github.com/ros/ros_comm/issues/1787>)
+  * make log config from rosgraph optional (#1797 <https://github.com/ros/ros_comm/issues/1797>)
+  * use condition attributes to specify Python 2 and 3 dependencies (#1792 <https://github.com/ros/ros_comm/issues/1792>)
+  * add is_legal_remap() to rosgraph to make remap-detection more precise (#1683 <https://github.com/ros/ros_comm/issues/1683>)
+  * more Python 3 compatibility (#1783 <https://github.com/ros/ros_comm/issues/1783>)
+  * more Python 3 compatibility (#1782 <https://github.com/ros/ros_comm/issues/1782>)
+  * switch to yaml.safe_load(_all) to prevent YAMLLoadWarning (#1688 <https://github.com/ros/ros_comm/issues/1688>)
+  * use urlparse for parsing the port, whick makes ipv6 possible (#1698 <https://github.com/ros/ros_comm/issues/1698>)
+  * fix paths (and regex for paths) comparison issues (#1592 <https://github.com/ros/ros_comm/issues/1592>)
+  * fix various test problems (#1601 <https://github.com/ros/ros_comm/issues/1601>)
+  * fix typos: awhile -> a while (#1534 <https://github.com/ros/ros_comm/issues/1534>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 20 Feb 2020 08:00:00 -0000
+
+ros-noetic-rosgraph (1.14.3-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 06 Aug 2018 07:00:00 -0000
+
+ros-noetic-rosgraph (1.14.2-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 06 Jun 2018 07:00:00 -0000
+
+ros-noetic-rosgraph (1.14.1-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 21 May 2018 07:00:00 -0000
+
+ros-noetic-rosgraph (1.14.0-1focal) focal; urgency=high
+
+  * use HTTP/1.1 in XMLRPC Server (#1287 <https://github.com/ros/ros_comm/issues/1287>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 21 May 2018 07:00:00 -0000
+
+ros-noetic-rosgraph (1.13.6-1focal) focal; urgency=high
+
+  * fix search strategy for python_logging config (#1292 <https://github.com/ros/ros_comm/issues/1292>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 05 Feb 2018 08:00:00 -0000
+
+ros-noetic-rosgraph (1.13.5-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 09 Nov 2017 08:00:00 -0000
+
+ros-noetic-rosgraph (1.13.4-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 02 Nov 2017 07:00:00 -0000
+
+ros-noetic-rosgraph (1.13.3-1focal) focal; urgency=high
+
+  * use defined error codes rather than hardcoded integers (#1174 <https://github.com/ros/ros_comm/issues/1174>)
+  * improve logger tests (#1144 <https://github.com/ros/ros_comm/issues/1144>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 25 Oct 2017 07:00:00 -0000
+
+ros-noetic-rosgraph (1.13.2-1focal) focal; urgency=high
+
+  * fix stack frame identification in rospy logging (#1141 <https://github.com/ros/ros_comm/issues/1141>, regression from 1.13.1)
+  * make RospyLogger.findCaller compatible with Python 3 (#1121 <https://github.com/ros/ros_comm/issues/1121>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 15 Aug 2017 07:00:00 -0000
+
+ros-noetic-rosgraph (1.13.1-1focal) focal; urgency=high
+
+  * improve message when roslogging cannot change permissions (#1068 <https://github.com/ros/ros_comm/issues/1068>)
+  * allow python_logging.yaml for logging configuration (#1061 <https://github.com/ros/ros_comm/issues/1061>)
+  * write log for class method with class name (#1043 <https://github.com/ros/ros_comm/issues/1043>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 27 Jul 2017 07:00:00 -0000
+
+ros-noetic-rosgraph (1.13.0-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 22 Feb 2017 08:00:00 -0000
+
+ros-noetic-rosgraph (1.12.7-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 17 Feb 2017 08:00:00 -0000
+
+ros-noetic-rosgraph (1.12.6-1focal) focal; urgency=high
+
+  * change rospy default rosconsole format for consistency with roscpp (#879 <https://github.com/ros/ros_comm/pull/879>)
+  * increase request_queue_size for xmlrpc server (#849 <https://github.com/ros/ros_comm/issues/849>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 26 Oct 2016 07:00:00 -0000
+
+ros-noetic-rosgraph (1.12.5-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 30 Sep 2016 07:00:00 -0000
+
+ros-noetic-rosgraph (1.12.4-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 19 Sep 2016 07:00:00 -0000
+
+ros-noetic-rosgraph (1.12.3-1focal) focal; urgency=high
+
+  * add 'Darwin' to unix-like platforms improving address resolution (#846 <https://github.com/ros/ros_comm/pull/846>)
+  * use logging Formatter, enabling printing exception info with exc_info=1 (#828 <https://github.com/ros/ros_comm/pull/828>)
+  * add __contains__, which is a better spelling of has (#754 <https://github.com/ros/ros_comm/pull/754>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 17 Sep 2016 07:00:00 -0000
+
+ros-noetic-rosgraph (1.12.2-1focal) focal; urgency=high
+
+  * avoid creating a latest symlink for the root of the log dir (#795 <https://github.com/ros/ros_comm/pull/795>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 03 Jun 2016 07:00:00 -0000
+
+ros-noetic-rosgraph (1.12.1-1focal) focal; urgency=high
+
+  * fix str conversion in encode_ros_handshake_header (#792 <https://github.com/ros/ros_comm/pull/792>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 18 Apr 2016 07:00:00 -0000
+
+ros-noetic-rosgraph (1.12.0-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 18 Mar 2016 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.18-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 17 Mar 2016 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.17-1focal) focal; urgency=high
+
+  * fix raising classes not derived from Exception which caused a TypeError (#761 <https://github.com/ros/ros_comm/pull/761>)
+  * fix handshake header with Python 3 (#759 <https://github.com/ros/ros_comm/issues/759>)
+  * fix encoding of header fields (#704 <https://github.com/ros/ros_comm/issues/704>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 11 Mar 2016 08:00:00 -0000
+
+ros-noetic-rosgraph (1.11.16-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 09 Nov 2015 08:00:00 -0000
+
+ros-noetic-rosgraph (1.11.15-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 13 Oct 2015 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.14-1focal) focal; urgency=high
+
+  * create a symlink to the latest log directory (#659 <https://github.com/ros/ros_comm/pull/659>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 19 Sep 2015 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.13-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 28 Apr 2015 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.12-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Apr 2015 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.11-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 16 Apr 2015 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.10-1focal) focal; urgency=high
+
+  * rosconsole format for rospy (#517 <https://github.com/ros/ros_comm/issues/517>)
+  * fix exception at roscore startup if python has IPv6 disabled (#515 <https://github.com/ros/ros_comm/issues/515>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 22 Dec 2014 08:00:00 -0000
+
+ros-noetic-rosgraph (1.11.9-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 18 Aug 2014 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.8-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 04 Aug 2014 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.7-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 18 Jul 2014 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.6-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 10 Jul 2014 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.5-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 24 Jun 2014 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.4-1focal) focal; urgency=high
+
+  * Python 3 compatibility (#426 <https://github.com/ros/ros_comm/issues/426>, #427 <https://github.com/ros/ros_comm/issues/427>, #429 <https://github.com/ros/ros_comm/issues/429>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Jun 2014 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.3-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 May 2014 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.2-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 08 May 2014 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.1-1focal) focal; urgency=high
+
+  * add architecture_independent flag in package.xml (#391 <https://github.com/ros/ros_comm/issues/391>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 07 May 2014 07:00:00 -0000
+
+ros-noetic-rosgraph (1.11.0-1focal) focal; urgency=high
+
+  * use catkin_install_python() to install Python scripts (#361 <https://github.com/ros/ros_comm/issues/361>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 04 Mar 2014 08:00:00 -0000
+
+ros-noetic-rosgraph (1.10.0-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 11 Feb 2014 08:00:00 -0000
+
+ros-noetic-rosgraph (1.9.54-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Jan 2014 08:00:00 -0000
+
+ros-noetic-rosgraph (1.9.53-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 14 Jan 2014 08:00:00 -0000
+
+ros-noetic-rosgraph (1.9.52-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 08 Jan 2014 08:00:00 -0000
+
+ros-noetic-rosgraph (1.9.51-1focal) focal; urgency=high
+
+  * allow different 127. addresses than 127.0.0.1 (#315 <https://github.com/ros/ros_comm/issues/315>)
+  * work around for nose 1.3.0 bug (#323 <https://github.com/ros/ros_comm/issues/323>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 07 Jan 2014 08:00:00 -0000
+
+ros-noetic-rosgraph (1.9.50-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 04 Oct 2013 07:00:00 -0000
+
+ros-noetic-rosgraph (1.9.49-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Sep 2013 07:00:00 -0000
+
+ros-noetic-rosgraph (1.9.48-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 Aug 2013 07:00:00 -0000
+
+ros-noetic-rosgraph (1.9.47-1focal) focal; urgency=high
+
+  * check for CATKIN_ENABLE_TESTING to enable configure without tests
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 03 Jul 2013 07:00:00 -0000
+
+ros-noetic-rosgraph (1.9.46-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 18 Jun 2013 07:00:00 -0000
+
+ros-noetic-rosgraph (1.9.45-1focal) focal; urgency=high
+
+  * add warnings for obviously wrong environment variables ROS_HOSTNAME and ROS_IP (#134 <https://github.com/ros/ros_comm/issues/134>)
+  * fix exception on netifaces.ifaddresses() (#211 <https://github.com/ros/ros_comm/issues/211>, #213 <https://github.com/ros/ros_comm/issues/213>) (regression from 1.9.42)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 06 Jun 2013 07:00:00 -0000
+
+ros-noetic-rosgraph (1.9.44-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 21 Mar 2013 07:00:00 -0000
+
+ros-noetic-rosgraph (1.9.43-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 13 Mar 2013 07:00:00 -0000
+
+ros-noetic-rosgraph (1.9.42-1focal) focal; urgency=high
+
+  * replace custom code with Python module netifaces (#130 <https://github.com/ros/ros_comm/issues/130>)
+  * make dependencies on rospy optional by refactoring RosStreamHandler to rosgraph (#179 <https://github.com/ros/ros_comm/issues/179>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 08 Mar 2013 08:00:00 -0000
+
+ros-noetic-rosgraph (1.9.41-1focal) focal; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 24 Jan 2013 08:00:00 -0000
+
+ros-noetic-rosgraph (1.9.40-1focal) focal; urgency=high
+
+  * add colorization for rospy log output (#3691 <https://code.ros.org/trac/ros/ticket/3691>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sun, 13 Jan 2013 08:00:00 -0000
+
+ros-noetic-rosgraph (1.9.39-1focal) focal; urgency=high
+
+  * first public release for Groovy
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 29 Dec 2012 08:00:00 -0000
+
+
