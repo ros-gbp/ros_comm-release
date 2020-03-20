@@ -2,6 +2,9 @@
 Changelog for package rosbag_storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.14.5 (2020-03-19)
+-------------------
+
 1.14.4 (2020-02-20)
 -------------------
 * catch polymorphic exceptions by reference (`#1887 <https://github.com/ros/ros_comm/issues/1887>`_)
