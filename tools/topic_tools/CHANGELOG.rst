@@ -2,20 +2,7 @@
 Changelog for package topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.15.4 (2020-03-19)
--------------------
-
-1.15.3 (2020-02-28)
--------------------
-
-1.15.2 (2020-02-25)
--------------------
-
-1.15.1 (2020-02-24)
--------------------
-* use setuptools instead of distutils (`#1870 <https://github.com/ros/ros_comm/issues/1870>`_)
-
-1.15.0 (2020-02-21)
+1.14.5 (2020-03-19)
 -------------------
 * fix flakyness of transform test (`#1890 <https://github.com/ros/ros_comm/issues/1890>`_)
 
