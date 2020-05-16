@@ -2,6 +2,10 @@
 Changelog for package roslz4
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.15.5 (2020-05-15)
+-------------------
+* use undefined dynamic_lookup on macOS (`#1923 <https://github.com/ros/ros_comm/issues/1923>`_)
+
 1.15.4 (2020-03-19)
 -------------------
 
