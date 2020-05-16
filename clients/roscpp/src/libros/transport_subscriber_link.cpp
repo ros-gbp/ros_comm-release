@@ -52,6 +52,7 @@ TransportSubscriberLink::TransportSubscriberLink()
 TransportSubscriberLink::~TransportSubscriberLink()
 {
   drop();
+  connection_->removeDropListener(dropped_conn_);
 }
 
 bool TransportSubscriberLink::initialize(const ConnectionPtr& connection)
@@ -198,7 +199,7 @@ void TransportSubscriberLink::enqueueMessage(const SerializedMessage& m, bool se
       if (!queue_full_)
       {
         ROS_DEBUG("Outgoing queue full for topic [%s].  "
-               "Discarding oldest message\n",
+               "Discarding oldest message",
                topic_.c_str());
       }
 
