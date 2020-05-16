@@ -2,7 +2,27 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.14.5 (2020-03-19)
+1.15.5 (2020-05-15)
+-------------------
+* add option to repeat latched messages at the start of bag splits (`#1850 <https://github.com/ros/ros_comm/issues/1850>`_)
+* fix bag migration failures caused by typo in connection_header assignment (`#1952 <https://github.com/ros/ros_comm/issues/1952>`_)
+
+1.15.4 (2020-03-19)
+-------------------
+* restrict boost dependencies to components used (`#1871 <https://github.com/ros/ros_comm/issues/1871>`_)
+
+1.15.3 (2020-02-28)
+-------------------
+* remove Boost version check since Noetic only targets platforms with 1.67+ (`#1903 <https://github.com/ros/ros_comm/issues/1903>`_)
+
+1.15.2 (2020-02-25)
+-------------------
+
+1.15.1 (2020-02-24)
+-------------------
+* use setuptools instead of distutils (`#1870 <https://github.com/ros/ros_comm/issues/1870>`_)
+
+1.15.0 (2020-02-21)
 -------------------
 
 1.14.4 (2020-02-20)
