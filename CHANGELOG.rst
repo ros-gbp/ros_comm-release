@@ -2,6 +2,10 @@
 Changelog for package rosbag_storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.15.5 (2020-05-15)
+-------------------
+* fix brief description comments after members (`#1920 <https://github.com/ros/ros_comm/issues/1920>`_)
+
 1.15.4 (2020-03-19)
 -------------------
 * restrict boost dependencies to components used (`#1871 <https://github.com/ros/ros_comm/issues/1871>`_)
