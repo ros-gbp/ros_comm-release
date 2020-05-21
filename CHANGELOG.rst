@@ -2,6 +2,9 @@
 Changelog for package rosbag_storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.15.6 (2020-05-21)
+-------------------
+
 1.15.5 (2020-05-15)
 -------------------
 * fix brief description comments after members (`#1920 <https://github.com/ros/ros_comm/issues/1920>`_)
