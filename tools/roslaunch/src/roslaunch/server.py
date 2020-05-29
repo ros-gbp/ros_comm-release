@@ -70,7 +70,6 @@ import rosgraph.xmlrpc as xmlrpc
 import roslaunch.config 
 from roslaunch.pmon import ProcessListener, Process
 import roslaunch.xmlloader
-from roslaunch.nodeprocess import DEFAULT_TIMEOUT_SIGINT, DEFAULT_TIMEOUT_SIGTERM
 
 from roslaunch.launch import ROSLaunchRunner
 from roslaunch.core import RLException, \
@@ -244,17 +243,12 @@ class ROSLaunchChildHandler(ROSLaunchBaseHandler):
     it can track processes across requests
     """    
     
-    def __init__(self, run_id, name, server_uri, pm, sigint_timeout=DEFAULT_TIMEOUT_SIGINT, sigterm_timeout=DEFAULT_TIMEOUT_SIGTERM):
+    def __init__(self, run_id, name, server_uri, pm):
         """
         @param server_uri: XML-RPC URI of server
         @type  server_uri: str
         @param pm: process monitor to use
         @type  pm: L{ProcessMonitor}
-        @param sigint_timeout: The SIGINT timeout used when killing nodes (in seconds).
-        @type  sigint_timeout: float
-        @param sigterm_timeout: The SIGTERM timeout used when killing nodes if SIGINT does not stop the node (
-                                in seconds).
-        @type  sigterm_timeout: float
         @raise RLException: If parameters are invalid
         """            
         super(ROSLaunchChildHandler, self).__init__(pm)        
@@ -270,8 +264,6 @@ class ROSLaunchChildHandler(ROSLaunchBaseHandler):
         self.name = name
         self.pm = pm
         self.server_uri = server_uri
-        self.sigint_timeout = sigint_timeout
-        self.sigterm_timeout = sigterm_timeout
         self.server = ServerProxy(server_uri)
 
     def _shutdown(self, reason):
@@ -336,8 +328,7 @@ class ROSLaunchChildHandler(ROSLaunchBaseHandler):
             # mainly the responsibility of the roslaunch server to not give us any XML that might
             # cause conflict (e.g. master tags, param tags, etc...).
             self._log(Log.INFO, "launching nodes...")
-            runner = ROSLaunchRunner(self.run_id, rosconfig, server_uri=self.server_uri, pmon=self.pm,
-                                     sigint_timeout=self.sigint_timeout, sigterm_timeout=self.sigterm_timeout)
+            runner = ROSLaunchRunner(self.run_id, rosconfig, server_uri=self.server_uri, pmon=self.pm)
             succeeded, failed = runner.launch()
             self._log(Log.INFO, "... done launching nodes")
             # enable the process monitor to exit of all processes die
@@ -484,18 +475,13 @@ class ROSLaunchChildNode(ROSLaunchNode):
     XML-RPC server for roslaunch child processes
     """    
 
-    def __init__(self, run_id, name, server_uri, pm, sigint_timeout=DEFAULT_TIMEOUT_SIGINT, sigterm_timeout=DEFAULT_TIMEOUT_SIGTERM):
+    def __init__(self, run_id, name, server_uri, pm):
         """
     ## Startup roslaunch remote client XML-RPC services. Blocks until shutdown
     ## @param name: name of remote client
     ## @type  name: str
     ## @param server_uri: XML-RPC URI of roslaunch server
     ## @type  server_uri: str
-    ## @param sigint_timeout: The SIGINT timeout used when killing nodes (in seconds).
-    ## @type  sigint_timeout: float
-    ## @param sigterm_timeout: The SIGTERM timeout used when killing nodes if SIGINT does not stop the node (
-    ##                         in seconds).
-    ## @type  sigterm_timeout: float
     ## @return: XML-RPC URI
     ## @rtype: str
         """        
@@ -507,8 +493,7 @@ class ROSLaunchChildNode(ROSLaunchNode):
         
         if self.pm is None:
             raise RLException("cannot create child node: pm is not initialized")
-        handler = ROSLaunchChildHandler(self.run_id, self.name, self.server_uri, self.pm,
-                                        sigint_timeout=sigint_timeout, sigterm_timeout=sigterm_timeout)
+        handler = ROSLaunchChildHandler(self.run_id, self.name, self.server_uri, self.pm)
         super(ROSLaunchChildNode, self).__init__(handler)
 
     def _register_with_server(self):

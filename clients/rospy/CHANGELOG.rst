@@ -2,33 +2,14 @@
 Changelog for package rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.15.7 (2020-05-28)
+1.14.6 (2020-05-29)
 -------------------
 
-1.15.6 (2020-05-21)
--------------------
-
-1.15.5 (2020-05-15)
--------------------
-
-1.15.4 (2020-03-19)
+1.14.5 (2020-03-19)
 -------------------
 * add exception for ConnectionAbortedError (`#1908 <https://github.com/ros/ros_comm/issues/1908>`_)
 * fix mac trying to use epoll instead of kqueue (`#1907 <https://github.com/ros/ros_comm/issues/1907>`_)
-* fix AttributeError: __exit_\_ (`#1915 <https://github.com/ros/ros_comm/issues/1915>`_, regression from 1.14.4)
-
-1.15.3 (2020-02-28)
--------------------
-
-1.15.2 (2020-02-25)
--------------------
-
-1.15.1 (2020-02-24)
--------------------
-* use setuptools instead of distutils (`#1870 <https://github.com/ros/ros_comm/issues/1870>`_)
-
-1.15.0 (2020-02-21)
--------------------
+* fix AttributeError: __exit_\_ (`#1915 <https://github.com/ros/ros_comm/issues/1915>`_)
 * fix dictionary changed size during iteration (`#1894 <https://github.com/ros/ros_comm/issues/1894>`_)
 
 1.14.4 (2020-02-20)

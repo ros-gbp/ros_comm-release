@@ -338,10 +338,7 @@ void Connection::drop(DropReason reason)
   if (did_drop)
   {
     transport_->close();
-    {
-      boost::recursive_mutex::scoped_lock lock(drop_mutex_);
-      drop_signal_(shared_from_this(), reason);
-    }
+    drop_signal_(shared_from_this(), reason);
   }
 }
 
