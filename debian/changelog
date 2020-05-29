@@ -1,0 +1,369 @@
+ros-melodic-rostopic (1.14.6-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 29 May 2020 07:00:00 -0000
+
+ros-melodic-rostopic (1.14.5-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 19 Mar 2020 07:00:00 -0000
+
+ros-melodic-rostopic (1.14.4-1bionic) bionic; urgency=high
+
+  * bump CMake minimum version to avoid CMP0048 warning (#1869 <https://github.com/ros/ros_comm/issues/1869>)
+  * [Windows] make test code to be more portable (#1726 <https://github.com/ros/ros_comm/issues/1726>)
+  * add --use-rostime for pub (#1717 <https://github.com/ros/ros_comm/issues/1717>)
+  * _rostopic_list_group_by_host: publisher/subscriber lists have correct type now (#1780 <https://github.com/ros/ros_comm/issues/1780>)
+  * more Python 3 compatibility (#1783 <https://github.com/ros/ros_comm/issues/1783>)
+  * switch to yaml.safe_load(_all) to prevent YAMLLoadWarning (#1688 <https://github.com/ros/ros_comm/issues/1688>)
+  * fix typo, confict -> conflict (#1690 <https://github.com/ros/ros_comm/issues/1690>)
+  * repeatedly republish message from file (#1635 <https://github.com/ros/ros_comm/issues/1635>)
+  * duplicate test nodes which aren't available to other packages, add missing dependencies (#1611 <https://github.com/ros/ros_comm/issues/1611>)
+  * update wiki.ros.org URLs (#1536 <https://github.com/ros/ros_comm/issues/1536>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 20 Feb 2020 08:00:00 -0000
+
+ros-melodic-rostopic (1.14.3-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 06 Aug 2018 07:00:00 -0000
+
+ros-melodic-rostopic (1.14.2-1bionic) bionic; urgency=high
+
+  * fix the count of subscribers, regression from 1.14.0 (#1407 <https://github.com/ros/ros_comm/issues/1407>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 06 Jun 2018 07:00:00 -0000
+
+ros-melodic-rostopic (1.14.1-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 21 May 2018 07:00:00 -0000
+
+ros-melodic-rostopic (1.14.0-1bionic) bionic; urgency=high
+
+  * add public get_topic_list() function for use in other scripts (#1154 <https://github.com/ros/ros_comm/issues/1154>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 21 May 2018 07:00:00 -0000
+
+ros-melodic-rostopic (1.13.6-1bionic) bionic; urgency=high
+
+  * add --tcpnodelay TransportHint option to hz and delay commands (#1296 <https://github.com/ros/ros_comm/issues/1296>)
+  * remove unreachable exceptions (#1260 <https://github.com/ros/ros_comm/issues/1260>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 05 Feb 2018 08:00:00 -0000
+
+ros-melodic-rostopic (1.13.5-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 09 Nov 2017 08:00:00 -0000
+
+ros-melodic-rostopic (1.13.4-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 02 Nov 2017 07:00:00 -0000
+
+ros-melodic-rostopic (1.13.3-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 25 Oct 2017 07:00:00 -0000
+
+ros-melodic-rostopic (1.13.2-1bionic) bionic; urgency=high
+
+  * fix rostopic hz and bw in Python 3 (#1126 <https://github.com/ros/ros_comm/issues/1126>)
+  * update tests to match stringify changes (#1125 <https://github.com/ros/ros_comm/issues/1125>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 15 Aug 2017 07:00:00 -0000
+
+ros-melodic-rostopic (1.13.1-1bionic) bionic; urgency=high
+
+  * fix rostopic prining long integers (#1110 <https://github.com/ros/ros_comm/pull/1110>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 27 Jul 2017 07:00:00 -0000
+
+ros-melodic-rostopic (1.13.0-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 22 Feb 2017 08:00:00 -0000
+
+ros-melodic-rostopic (1.12.7-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 17 Feb 2017 08:00:00 -0000
+
+ros-melodic-rostopic (1.12.6-1bionic) bionic; urgency=high
+
+  * fix typo of arg for _str_plot function (#915 <https://github.com/ros/ros_comm/issues/915>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 26 Oct 2016 07:00:00 -0000
+
+ros-melodic-rostopic (1.12.5-1bionic) bionic; urgency=high
+
+  * fix regression with rostopic echo for primitive fields from 1.12.3 (#909 <https://github.com/ros/ros_comm/issues/909>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 30 Sep 2016 07:00:00 -0000
+
+ros-melodic-rostopic (1.12.4-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 19 Sep 2016 07:00:00 -0000
+
+ros-melodic-rostopic (1.12.3-1bionic) bionic; urgency=high
+
+  * show topic field type with rostopic type (#860 <https://github.com/ros/ros_comm/issues/860>)
+  * show stat for rostopic echo --noarr/nostr (#724 <https://github.com/ros/ros_comm/pull/724>, #872 <https://github.com/ros/ros_comm/pull/872>)
+  * add support for multiple topics in rostopic hz (#712 <https://github.com/ros/ros_comm/pull/712>, #886 <https://github.com/ros/ros_comm/pull/886>, #888 <https://github.com/ros/ros_comm/pull/888>)
+  * more detailed help string for rostopic echo -p (#816 <https://github.com/ros/ros_comm/issues/816>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 17 Sep 2016 07:00:00 -0000
+
+ros-melodic-rostopic (1.12.2-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 03 Jun 2016 07:00:00 -0000
+
+ros-melodic-rostopic (1.12.1-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 18 Apr 2016 07:00:00 -0000
+
+ros-melodic-rostopic (1.12.0-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 18 Mar 2016 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.18-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 17 Mar 2016 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.17-1bionic) bionic; urgency=high
+
+  * add "rostopic delay" to measure message delay compared to the input from real world (#719 <https://github.com/ros/ros_comm/pull/719>)
+  * add option to perform keyword substitution for messages published with "rostopic pub" (#702 <https://github.com/ros/ros_comm/pull/702>)
+  * add wall-time option for rostopic hz (#674 <https://github.com/ros/ros_comm/pull/674>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 11 Mar 2016 08:00:00 -0000
+
+ros-melodic-rostopic (1.11.16-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 09 Nov 2015 08:00:00 -0000
+
+ros-melodic-rostopic (1.11.15-1bionic) bionic; urgency=high
+
+  * add warning to rostopic hz about simulated time (#672 <https://github.com/ros/ros_comm/pull/672>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 13 Oct 2015 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.14-1bionic) bionic; urgency=high
+
+  * support specifying multiple array indices (#606 <https://github.com/ros/ros_comm/pull/606>)
+  * fix string type check if variable is unicode
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 19 Sep 2015 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.13-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 28 Apr 2015 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.12-1bionic) bionic; urgency=high
+
+  * fix command parsing for rosservice and rostopic to not accept arbitrary substrings of 'list' (#609 <https://github.com/ros/ros_comm/issues/609>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Apr 2015 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.11-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 16 Apr 2015 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.10-1bionic) bionic; urgency=high
+
+  * add support for fixed-width floating-point and integer array values (#400 <https://github.com/ros/ros_comm/issues/400>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 22 Dec 2014 08:00:00 -0000
+
+ros-melodic-rostopic (1.11.9-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 18 Aug 2014 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.8-1bionic) bionic; urgency=high
+
+  * fix handling of array index when being part of the topic (#480 <https://github.com/ros/ros_comm/issues/480>)
+  * support splice arguments in 'rostopic echo' (#480 <https://github.com/ros/ros_comm/issues/480>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 04 Aug 2014 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.7-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 18 Jul 2014 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.6-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 10 Jul 2014 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.5-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 24 Jun 2014 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.4-1bionic) bionic; urgency=high
+
+  * Python 3 compatibility (#426 <https://github.com/ros/ros_comm/issues/426>, #427 <https://github.com/ros/ros_comm/issues/427>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Jun 2014 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.3-1bionic) bionic; urgency=high
+
+  * add publisher queue_size to rostopic
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 May 2014 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.2-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 08 May 2014 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.1-1bionic) bionic; urgency=high
+
+  * add check for message fields when determining message type (#376 <https://github.com/ros/ros_comm/issues/376>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 07 May 2014 07:00:00 -0000
+
+ros-melodic-rostopic (1.11.0-1bionic) bionic; urgency=high
+
+  * make rostest in CMakeLists optional (ros/rosdistro#3010 <https://github.com/ros/rosdistro/issues/3010>)
+  * use catkin_install_python() to install Python scripts (#361 <https://github.com/ros/ros_comm/issues/361>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 04 Mar 2014 08:00:00 -0000
+
+ros-melodic-rostopic (1.10.0-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 11 Feb 2014 08:00:00 -0000
+
+ros-melodic-rostopic (1.9.54-1bionic) bionic; urgency=high
+
+  * fix wrong time in csv export when using 'rostopic echo -p -b' (#330 <https://github.com/ros/ros_comm/issues/330>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 27 Jan 2014 08:00:00 -0000
+
+ros-melodic-rostopic (1.9.53-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 14 Jan 2014 08:00:00 -0000
+
+ros-melodic-rostopic (1.9.52-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 08 Jan 2014 08:00:00 -0000
+
+ros-melodic-rostopic (1.9.51-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 07 Jan 2014 08:00:00 -0000
+
+ros-melodic-rostopic (1.9.50-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 04 Oct 2013 07:00:00 -0000
+
+ros-melodic-rostopic (1.9.49-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Mon, 16 Sep 2013 07:00:00 -0000
+
+ros-melodic-rostopic (1.9.48-1bionic) bionic; urgency=high
+
+  * fix access to array fields by index (regression of #242 <https://github.com/ros/ros_comm/issues/242> in 1.9.47)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 21 Aug 2013 07:00:00 -0000
+
+ros-melodic-rostopic (1.9.47-1bionic) bionic; urgency=high
+
+  * fix 'rostopic echo' for submessages of type uint8[] (#242 <https://github.com/ros/ros_comm/issues/242>)
+  * check for CATKIN_ENABLE_TESTING to enable configure without tests
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 03 Jul 2013 07:00:00 -0000
+
+ros-melodic-rostopic (1.9.46-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Tue, 18 Jun 2013 07:00:00 -0000
+
+ros-melodic-rostopic (1.9.45-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 06 Jun 2013 07:00:00 -0000
+
+ros-melodic-rostopic (1.9.44-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 21 Mar 2013 07:00:00 -0000
+
+ros-melodic-rostopic (1.9.43-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Wed, 13 Mar 2013 07:00:00 -0000
+
+ros-melodic-rostopic (1.9.42-1bionic) bionic; urgency=high
+
+  * fix missing run_depend on rosbag (#179 <https://github.com/ros/ros_comm/issues/179>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Fri, 08 Mar 2013 08:00:00 -0000
+
+ros-melodic-rostopic (1.9.41-1bionic) bionic; urgency=high
+
+
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Thu, 24 Jan 2013 08:00:00 -0000
+
+ros-melodic-rostopic (1.9.40-1bionic) bionic; urgency=high
+
+  * add support for boolean in 'rostopic -p' (#3948 <https://code.ros.org/trac/ros/ticket/3948>)
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sun, 13 Jan 2013 08:00:00 -0000
+
+ros-melodic-rostopic (1.9.39-1bionic) bionic; urgency=high
+
+  * first public release for Groovy
+
+ -- Dirk Thomas <dthomas@osrfoundation.org>  Sat, 29 Dec 2012 08:00:00 -0000
+
+
