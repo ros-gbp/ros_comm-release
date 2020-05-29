@@ -1,3 +1,60 @@
+## ros_comm (noetic) - 1.15.7-1
+
+The packages in the `ros_comm` repository were released into the `noetic` distro by running `/usr/bin/bloom-release -r noetic -t noetic ros_comm` on `Fri, 29 May 2020 05:11:34 -0000`
+
+These packages were released:
+- `message_filters`
+- `ros_comm`
+- `rosbag`
+- `rosbag_storage`
+- `roscpp`
+- `rosgraph`
+- `roslaunch`
+- `roslz4`
+- `rosmaster`
+- `rosmsg`
+- `rosnode`
+- `rosout`
+- `rosparam`
+- `rospy`
+- `rosservice`
+- `rostest`
+- `rostopic`
+- `roswtf`
+- `topic_tools`
+- `xmlrpcpp`
+
+These packages were explicitly ignored:
+- `test_rosbag`
+- `test_rosbag_storage`
+- `test_roscpp`
+- `test_rosgraph`
+- `test_roslaunch`
+- `test_roslib_comm`
+- `test_rosmaster`
+- `test_rosparam`
+- `test_rospy`
+- `test_rosservice`
+- `test_rostest`
+- `test_rostopic`
+
+Version of package(s) in repository `ros_comm`:
+
+- upstream repository: git@github.com:ros/ros_comm.git
+- release repository: https://github.com/ros-gbp/ros_comm-release.git
+- rosdistro version: `1.15.6-1`
+- old version: `1.15.6-1`
+- new version: `1.15.7-1`
+
+Versions of tools used:
+
+- bloom version: `0.9.7`
+- catkin_pkg version: `0.4.20`
+- rosdep version: `0.19.0`
+- rosdistro version: `0.8.2`
+- vcstools version: `0.1.42`
+
+
 ## ros_comm (noetic) - 1.15.6-1
 
 The packages in the `ros_comm` repository were released into the `noetic` distro by running `/usr/bin/bloom-release -r noetic -t noetic ros_comm` on `Thu, 21 May 2020 18:32:12 -0000`
