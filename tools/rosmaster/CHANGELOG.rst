@@ -2,6 +2,10 @@
 Changelog for package rosmaster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.15.8 (2020-07-23)
+-------------------
+* improve shutdown message with duplicate node name (`#1992 <https://github.com/ros/ros_comm/issues/1992>`_)
+
 1.15.7 (2020-05-28)
 -------------------
 
