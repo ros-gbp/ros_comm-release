@@ -73,7 +73,6 @@ TransportPublisherLink::~TransportPublisherLink()
   }
 
   connection_->drop(Connection::Destructing);
-  connection_->removeDropListener(dropped_conn_);
 }
 
 bool TransportPublisherLink::initialize(const ConnectionPtr& connection)
@@ -83,7 +82,7 @@ bool TransportPublisherLink::initialize(const ConnectionPtr& connection)
   // and disconnect when this class' reference count is decremented to 0. It increments
   // then decrements the shared_from_this reference count around calls to the
   // onConnectionDropped function, preventing a coredump in the middle of execution.
-  dropped_conn_ = connection_->addDropListener(Connection::DropSignal::slot_type(&TransportPublisherLink::onConnectionDropped, this, _1, _2).track(shared_from_this()));
+  connection_->addDropListener(Connection::DropSignal::slot_type(&TransportPublisherLink::onConnectionDropped, this, _1, _2).track(shared_from_this()));
 
   if (connection_->getTransport()->requiresHeader())
   {

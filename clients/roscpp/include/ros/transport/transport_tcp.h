@@ -140,7 +140,6 @@ private:
   void socketUpdate(int events);
 
   socket_fd_t sock_;
-  bool async_connected_;
   bool closed_;
   boost::recursive_mutex close_mutex_;
 
