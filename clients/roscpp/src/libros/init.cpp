@@ -592,7 +592,8 @@ void shutdown()
   {
     g_internal_queue_thread.join();
   }
-
+  //ros::console::deregister_appender(g_rosout_appender);
+  delete g_rosout_appender;
   g_rosout_appender = 0;
 
   if (g_started)
@@ -603,8 +604,6 @@ void shutdown()
     ConnectionManager::instance()->shutdown();
     XMLRPCManager::instance()->shutdown();
   }
-
-  WallTime end = WallTime::now();
 
   g_started = false;
   g_ok = false;
