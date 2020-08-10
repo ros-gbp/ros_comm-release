@@ -120,13 +120,10 @@ TEST_F(Subscriptions, subPub)
     ros::getGlobalCallbackQueue()->callAvailable(ros::WallDuration(0.1));
   }
 
-  if(success) {
+  if(success)
     SUCCEED();
-  } else if (ros::Time::now() >= t1) {
-    FAIL() << "timed out after receiving " << msg_i << " of " << g_msg_count << " messages";
-  } else {
-    FAIL() << "message counter did not match";
-  }
+  else
+    FAIL();
 }
 
 #define USAGE "USAGE: sub_pub <count> <time>"

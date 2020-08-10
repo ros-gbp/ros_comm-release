@@ -42,11 +42,6 @@ WallTimer::Impl::~Impl()
   stop();
 }
 
-bool WallTimer::Impl::hasStarted() const
-{
-  return started_;
-}
-
 void WallTimer::Impl::start()
 {
   if (!started_)

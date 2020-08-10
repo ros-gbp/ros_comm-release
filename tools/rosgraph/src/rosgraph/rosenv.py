@@ -40,9 +40,6 @@ ROS_IPV6         ="ROS_IPV6"
 ROS_HOSTNAME     ="ROS_HOSTNAME"
 ROS_NAMESPACE    ="ROS_NAMESPACE"
 
-DEFAULT_MASTER_PORT = 11311  # default port for master's to bind to
-DEFAULT_MASTER_URI = 'http://localhost:%s/' % DEFAULT_MASTER_PORT
-
 def get_master_uri(env=None, argv=None):
     """
     Get the :envvar:`ROS_MASTER_URI` setting from the command-line args or
@@ -57,20 +54,22 @@ def get_master_uri(env=None, argv=None):
         env = os.environ
     if argv is None:
         argv = sys.argv
-    
-    for arg in argv:
-        if arg.startswith('__master:='):
-            val = None
-            try:
-                _, val = arg.split(':=')
-            except:
-                pass
-            
-            # we ignore required here because there really is no
-            # correct return value as the configuration is bad
-            # rather than unspecified
-            if not val:
-                raise ValueError("__master remapping argument '%s' improperly specified"%arg)
-            return val
-    return env.get(ROS_MASTER_URI, DEFAULT_MASTER_URI)
+    try:
+        for arg in argv:
+            if arg.startswith('__master:='):
+                val = None
+                try:
+                    _, val = arg.split(':=')
+                except:
+                    pass
+                
+                # we ignore required here because there really is no
+                # correct return value as the configuration is bad
+                # rather than unspecified
+                if not val:
+                    raise ValueError("__master remapping argument '%s' improperly specified"%arg)
+                return val
+        return env[ROS_MASTER_URI]
+    except KeyError as e:
+        return None
         

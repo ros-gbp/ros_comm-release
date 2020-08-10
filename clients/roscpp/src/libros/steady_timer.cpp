@@ -42,11 +42,6 @@ SteadyTimer::Impl::~Impl()
   stop();
 }
 
-bool SteadyTimer::Impl::hasStarted() const
-{
-  return started_;
-}
-
 void SteadyTimer::Impl::start()
 {
   if (!started_)

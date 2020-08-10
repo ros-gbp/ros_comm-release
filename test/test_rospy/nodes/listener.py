@@ -55,7 +55,7 @@ def listener():
     # run simultaenously.
     rospy.init_node('listener', anonymous=True)
 
-    sub = rospy.Subscriber("chatter", String, callback)
+    rospy.Subscriber("chatter", String, callback)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()

@@ -45,7 +45,7 @@ from roslaunch.core import RLException
 from roslaunch.config import load_config_default
 
 def get_args(roslaunch_files):
-    loader = roslaunch.xmlloader.XmlLoader(resolve_anon=False, args_only=True)
+    loader = roslaunch.xmlloader.XmlLoader(resolve_anon=False)
     config = load_config_default(roslaunch_files, None, loader=loader, verbose=False, assign_machines=False)
     return loader.root_context.resolve_dict.get('arg_doc', {})
 

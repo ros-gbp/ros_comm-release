@@ -31,6 +31,13 @@
 #include "ros/topic_manager.h"
 #include "ros/init.h"
 
+#ifdef _MSC_VER
+  #ifdef snprintf
+    #undef snprintf
+  #endif
+  #define snprintf _snprintf_s
+#endif
+
 namespace ros
 {
 
@@ -133,11 +140,16 @@ void ThisNode::init(const std::string& name, const M_string& remappings, uint32_
     namespace_ = it->second;
   }
 
-  namespace_ = names::clean(namespace_);
-  if (namespace_.empty() || (namespace_[0] != '/'))
+  if (namespace_.empty())
   {
-    namespace_ = "/" + namespace_;
+    namespace_ = "/";
   }
+
+  namespace_ = (namespace_ == "/")
+    ? std::string("/") 
+    : ("/" + namespace_)
+    ;
+
 
   std::string error;
   if (!names::validate(namespace_, error))
@@ -165,7 +177,7 @@ void ThisNode::init(const std::string& name, const M_string& remappings, uint32_
   if (options & init_options::AnonymousName && !disable_anon)
   {
     char buf[200];
-    std::snprintf(buf, sizeof(buf), "_%llu", (unsigned long long)WallTime::now().toNSec());
+    snprintf(buf, sizeof(buf), "_%llu", (unsigned long long)WallTime::now().toNSec());
     name_ += buf;
   }
 

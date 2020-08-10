@@ -45,7 +45,7 @@ def talker_shutdown():
     
 def talker():
     global pub
-    pub = rospy.Publisher('chatter', String, queue_size=0)
+    pub = rospy.Publisher('chatter', String)
     rospy.init_node('talker', anonymous=True)
 
     # register talker_shutdown() to be called when rospy exits
