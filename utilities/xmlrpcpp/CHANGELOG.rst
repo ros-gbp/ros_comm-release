@@ -2,6 +2,9 @@
 Changelog for package xmlrpcpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.14.8 (2020-08-12)
+-------------------
+
 1.14.7 (2020-07-31)
 -------------------
 * add const versions of XmlRpcValue converting operators (`#1978 <https://github.com/ros/ros_comm/issues/1978>`_)
