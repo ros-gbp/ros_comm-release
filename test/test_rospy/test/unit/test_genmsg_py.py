@@ -44,7 +44,13 @@ import random
 import math
 
 from roslib.message import SerializationError
-        
+
+try:
+    long
+except NameError:
+    long = int
+
+
 class TestGenmsgPy(unittest.TestCase):
 
     def test_PythonKeyword(self):
@@ -89,8 +95,8 @@ class TestGenmsgPy(unittest.TestCase):
         self.assertEquals([0., 0., 0.], m.f64_3)        
         self.assertEquals([0], m.i8_1)
         self.assertEquals([0, 0, 0], m.i8_3)        
-        self.assertEquals(chr(0), m.u8_1)
-        self.assertEquals(chr(0)*3, m.u8_3)        
+        self.assertEquals(chr(0).encode(), m.u8_1)
+        self.assertEquals((chr(0)*3).encode(), m.u8_3)
         self.assertEquals([0], m.i32_1)
         self.assertEquals([0, 0, 0], m.i32_3)        
         self.assertEquals([0], m.u32_1)
@@ -129,13 +135,13 @@ class TestGenmsgPy(unittest.TestCase):
         self._test_ser_deser(m, c)
         self.assertEquals((1., 2., 3.), c.f32_3)
         
-        m,c = TestFixedArray(u8_1 = 'x'), TestFixedArray()
+        m,c = TestFixedArray(u8_1 = b'x'), TestFixedArray()
         self._test_ser_deser(m, c)
-        self.assertEquals('x', c.u8_1)
+        self.assertEquals(b'x', c.u8_1)
 
-        m,c = TestFixedArray(u8_3 = 'xyz'), TestFixedArray()
+        m,c = TestFixedArray(u8_3 = b'xyz'), TestFixedArray()
         self._test_ser_deser(m, c)
-        self.assertEquals('xyz', c.u8_3)
+        self.assertEquals(b'xyz', c.u8_3)
 
         m,c = TestFixedArray(s_1 = ['']), TestFixedArray()
         self._test_ser_deser(m, c)
@@ -264,7 +270,7 @@ class TestGenmsgPy(unittest.TestCase):
         widths = [(8, Int8), (16, Int16), (32, Int32), (64, Int64)]
         for w, cls in widths:
             maxp = long(math.pow(2, w-1)) - 1
-            maxn = -long(math.pow(2, w-1)) + 1
+            maxn = -long(math.pow(2, w-1))
             self._test_ser_deser(cls(maxp), cls())
             self._test_ser_deser(cls(maxn), cls())
             try:
@@ -352,13 +358,13 @@ class TestGenmsgPy(unittest.TestCase):
         # test. the buff was with the uint8[] type consistency
         buff = StringIO()
         self.assertEquals(UInt8MultiArray(),UInt8MultiArray())
-        self.assertEquals('',UInt8MultiArray().data)        
+        self.assertEquals(b'', UInt8MultiArray().data)
         UInt8MultiArray().serialize(buff)
         self.assertEquals(UInt8MultiArray(layout=MultiArrayLayout()),UInt8MultiArray())
         UInt8MultiArray(layout=MultiArrayLayout()).serialize(buff)
         data = ''.join([chr(i) for i in range(0, 100)])
         v = UInt8MultiArray(data=data)
-        self._test_ser_deser(UInt8MultiArray(data=data),UInt8MultiArray())
+        self._test_ser_deser(UInt8MultiArray(data=data.encode()),UInt8MultiArray())
         
         self.assertEquals(Int32MultiArray(),Int32MultiArray())
         self.assertEquals(Int32MultiArray(layout=MultiArrayLayout()),Int32MultiArray())

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 
 project(test_rosbag_storage)
 
@@ -11,6 +11,10 @@ catkin_package()
 if(CATKIN_ENABLE_TESTING)
   include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
+  catkin_add_gtest(bag_player src/bag_player.cpp)
+  if(TARGET bag_player)
+    target_link_libraries(bag_player ${catkin_LIBRARIES})
+  endif()
   catkin_add_gtest(create_and_iterate_bag src/create_and_iterate_bag.cpp)
   if(TARGET create_and_iterate_bag)
     target_link_libraries(create_and_iterate_bag ${catkin_LIBRARIES})

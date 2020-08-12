@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(rostest)
 
 find_package(catkin COMPONENTS rosunit)
@@ -33,4 +33,5 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest(test/clean_master.test)
   add_rostest(test/distro_version.test)
   add_rostest(test/param.test)
+  add_rostest(test/advertisetest.test)
 endif()

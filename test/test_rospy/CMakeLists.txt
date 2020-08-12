@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 
 project(test_rospy)
 find_package(catkin REQUIRED COMPONENTS genmsg rosunit rostest std_msgs test_rosmaster)
@@ -58,4 +58,5 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest(test/rostest/on_shutdown.test)
   add_rostest(test/rostest/sub_to_multiple_pubs.test)
   add_rostest(test/rostest/latch_unsubscribe.test)
+  add_rostest(test/rostest/statistics.test)
 endif()

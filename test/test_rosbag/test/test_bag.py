@@ -209,9 +209,9 @@ class TestRosbag(unittest.TestCase):
             os.system(cmd % (inbag_filename, outbag1_filename))
             os.system(cmd % (outbag1_filename, outbag2_filename))
             
-            with open(outbag1_filename, 'r') as h:
+            with open(outbag1_filename, 'rb') as h:
                 outbag1_md5 = hashlib.md5(h.read()).hexdigest()
-            with open(outbag2_filename, 'r') as h:
+            with open(outbag2_filename, 'rb') as h:
                 outbag2_md5 = hashlib.md5(h.read()).hexdigest()
             self.assertEquals(outbag1_md5, outbag2_md5)
         finally:
@@ -431,6 +431,20 @@ class TestRosbag(unittest.TestCase):
                 data = bag._read_record_data(f)
 
                 print(bag._OP_CODES.get(op, op))
+
+    # #1209
+    def test_rosbag_exceptions_are_pickleable(self):
+        #bag_exception = rosbag.ROSBagException("msg string")
+        def test(bag_exception):
+            import pickle
+            pickle_str = pickle.dumps(bag_exception)
+            unpickled = pickle.loads(pickle_str)
+            self.assertTrue(bag_exception.value == unpickled.value)
+        test(bag.ROSBagException("msg string"))
+        test(bag.ROSBagFormatException("msg string 2"))
+        test(bag.ROSBagUnindexedException())
+        test(bag.ROSBagEncryptNotSupportedException("msg string 3"))
+        test(bag.ROSBagEncryptException("msg string 4"))
 
 if __name__ == '__main__':
     import rostest

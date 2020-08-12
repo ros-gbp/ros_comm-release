@@ -132,7 +132,7 @@ TEST_F(Synchronous, readWhileWriting)
   for (int i = 0; i < 10; ++i)
   {
     const uint32_t buf_size = 1024*1024;
-    std::auto_ptr<uint8_t> read_buf(new uint8_t[buf_size]);
+    boost::shared_ptr<uint8_t[]> read_buf(new uint8_t[buf_size]);
 
     std::stringstream ss;
     for (int i = 0; i < 100000; ++i)
@@ -417,7 +417,9 @@ int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
 
+#ifndef _WIN32
   signal(SIGPIPE, SIG_IGN);
+#endif
 
   return RUN_ALL_TESTS();
 }
