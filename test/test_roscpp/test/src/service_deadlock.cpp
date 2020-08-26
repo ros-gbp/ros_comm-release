@@ -60,7 +60,7 @@ TEST(roscpp, ServiceDeadlocking)
     ++j;
   }
   ROS_INFO("Made it through %u loops in %u seconds", j, seconds);
-  ASSERT_GE(j, 1000u);
+  ASSERT_GE(j, 1000);
 }
 
 int main(int argc, char **argv)

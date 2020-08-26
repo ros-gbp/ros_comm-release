@@ -55,7 +55,7 @@ public:
 /**
  * \brief Spinner which runs in a single thread.
  */
-class ROSCPP_DECL SingleThreadedSpinner : public Spinner
+class SingleThreadedSpinner : public Spinner
 {
 public:
   virtual void spin(CallbackQueue* queue = 0);

@@ -123,7 +123,7 @@ public:
     {
 
       bool ok = helper_->call(params);
-      if (ok)
+      if (ok != 0)
       {
         link_->processResponse(true, params.response);
       }

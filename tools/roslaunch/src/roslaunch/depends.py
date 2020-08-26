@@ -86,21 +86,21 @@ class RoslaunchDeps(object):
 
 def _get_arg_value(tag, context):
     name = tag.attributes['name'].value
-    if 'value' in tag.attributes.keys():
+    if tag.attributes.has_key('value'):
         return resolve_args(tag.attributes['value'].value, context)
     elif name in context['arg']:
         return context['arg'][name]
-    elif 'default' in tag.attributes.keys():
+    elif tag.attributes.has_key('default'):
         return resolve_args(tag.attributes['default'].value, context)
     else:
         raise RoslaunchDepsException("No value for arg [%s]"%(name))
 
 def _check_ifunless(tag, context):
-    if 'if' in tag.attributes.keys():
+    if tag.attributes.has_key('if'):
         val = resolve_args(tag.attributes['if'].value, context)
         if not convert_value(val, 'bool'):
             return False
-    elif 'unless' in tag.attributes.keys():
+    elif tag.attributes.has_key('unless'):
         val = resolve_args(tag.attributes['unless'].value, context)
         if convert_value(val, 'bool'):
             return False
@@ -296,9 +296,9 @@ def calculate_missing(base_pkg, missing, file_deps, use_test_depends=False):
             missing[pkg] = set()
         missing[pkg].update(diff)
     return missing
-
-
-def roslaunch_deps(files, verbose=False, use_test_depends=False, ignore_unset_args=False):
+        
+    
+def roslaunch_deps(files, verbose=False, use_test_depends=False):
     """
     @param packages: list of packages to check
     @type  packages: [str]
@@ -307,8 +307,6 @@ def roslaunch_deps(files, verbose=False, use_test_depends=False, ignore_unset_ar
     @type  files: [str]
     @param use_test_depends [bool]: use test_depends as installed package
     @type  use_test_depends: [bool]
-    @param ignore_unset_args [bool]: ignore exceptions raised by missing default value for <arg> tags
-    @type  ignore_unset_args: [bool]
     @return: base_pkg, file_deps, missing.
       base_pkg is the package of all files
       file_deps is a { filename : RoslaunchDeps } dictionary of
@@ -330,15 +328,7 @@ def roslaunch_deps(files, verbose=False, use_test_depends=False, ignore_unset_ar
         if base_pkg and pkg != base_pkg:
             raise RoslaunchDepsException("roslaunch files must be in the same package: %s vs. %s"%(base_pkg, pkg))
         base_pkg = pkg
-        try:
-            rl_file_deps(file_deps, launch_file, verbose)
-        except RoslaunchDepsException as e:
-            if ignore_unset_args:
-                import re
-                if not re.compile(r'No value for arg').search(str(e)):
-                    raise RoslaunchDepsException(str(e))
-            else:
-                raise RoslaunchDepsException(str(e))
+        rl_file_deps(file_deps, launch_file, verbose)
 
     calculate_missing(base_pkg, missing, file_deps, use_test_depends=use_test_depends)
     return base_pkg, file_deps, missing            
