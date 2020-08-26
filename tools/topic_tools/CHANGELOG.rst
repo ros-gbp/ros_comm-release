@@ -2,6 +2,9 @@
 Changelog for package topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.12.16 (2020-08-26)
+--------------------
+
 1.12.15 (2020-08-10)
 --------------------
 * transfom: create publisher before subscriber, because callback may use the publisher (`#1669 <https://github.com/ros/ros_comm/issues/1669>`_)
