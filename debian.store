@@ -1,1 +1,1 @@
-{"base": "43c96835bb", "parent": "debian/noetic/rospy", "previous": "b33522e104", "trim": "", "trimbase": ""}
+{"trim": "", "base": "80bb35909e", "trimbase": "", "parent": "debian/noetic/rospy", "previous": "12b360f8bd"}
