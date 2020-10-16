@@ -2,6 +2,13 @@
 Changelog for package rosmaster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.15.9 (2020-10-16)
+-------------------
+* Update maintainers (`#2075 <https://github.com/ros/ros_comm/issues/2075>`_)
+* Fix case where accessing cached parameters shuts down another node (`#2068 <https://github.com/ros/ros_comm/issues/2068>`_)
+* Fix spelling (`#2066 <https://github.com/ros/ros_comm/issues/2066>`_)
+* Contributors: Shane Loretz, tomoya
+
 1.15.8 (2020-07-23)
 -------------------
 * improve shutdown message with duplicate node name (`#1992 <https://github.com/ros/ros_comm/issues/1992>`_)
@@ -36,7 +43,7 @@ Changelog for package rosmaster
 * bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
 * use thread local storage for caching instances of ServerProxy (`#1732 <https://github.com/ros/ros_comm/issues/1732>`_)
 * use condition attributes to specify Python 2 and 3 dependencies (`#1792 <https://github.com/ros/ros_comm/issues/1792>`_)
-* fix issue occuring during alternating calls of getParamCached and setParam (`#1439 <https://github.com/ros/ros_comm/issues/1439>`_)
+* fix issue occurring during alternating calls of getParamCached and setParam (`#1439 <https://github.com/ros/ros_comm/issues/1439>`_)
 * fix docstring in unregisterSubscriber (`#1553 <https://github.com/ros/ros_comm/issues/1553>`_)
 * set correctly typed @apivalidate default return values (`#1472 <https://github.com/ros/ros_comm/issues/1472>`_)
 
