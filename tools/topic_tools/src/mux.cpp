@@ -50,6 +50,7 @@ const static string g_none_topic = "__none";
 
 static ros::NodeHandle *g_node = NULL;
 static bool g_lazy = false;
+static bool g_latch = false;
 static bool g_advertised = false;
 static string g_output_topic;
 static ros::Publisher g_pub;
@@ -74,7 +75,7 @@ void conn_cb(const ros::SingleSubscriberPublisher&)
   if(g_lazy && g_selected != g_subs.end() && !g_selected->sub)
   {
     ROS_DEBUG("lazy mode; resubscribing to %s", g_selected->topic_name.c_str());
-    g_selected->sub = new ros::Subscriber(g_node->subscribe<ShapeShifter>(g_selected->topic_name, 10, boost::bind(in_cb, _1, g_selected->msg)));
+    g_selected->sub = new ros::Subscriber(g_node->subscribe<ShapeShifter>(g_selected->topic_name, 10, boost::bind(in_cb, boost::placeholders::_1, g_selected->msg)));
   }
 }
 
@@ -120,7 +121,7 @@ bool sel_srv_cb( topic_tools::MuxSelect::Request  &req,
         ret = true;
         
         if (!g_selected->sub && (!g_advertised || (g_advertised && g_pub.getNumSubscribers()))) {
-          g_selected->sub = new ros::Subscriber(g_node->subscribe<ShapeShifter>(g_selected->topic_name, 10, boost::bind(in_cb, _1, g_selected->msg)));
+          g_selected->sub = new ros::Subscriber(g_node->subscribe<ShapeShifter>(g_selected->topic_name, 10, boost::bind(in_cb, boost::placeholders::_1, g_selected->msg)));
         }
       }
     }
@@ -150,7 +151,7 @@ void in_cb(const boost::shared_ptr<ShapeShifter const>& msg,
   if (!g_advertised)
   {
     ROS_INFO("advertising");
-    g_pub = msg->advertise(*g_node, g_output_topic, 10, false, conn_cb);
+    g_pub = msg->advertise(*g_node, g_output_topic, 10, g_latch, conn_cb);
     g_advertised = true;
     
     // If lazy, unregister from all but the selected topic
@@ -231,7 +232,7 @@ bool add_topic_cb(topic_tools::MuxAdd::Request& req,
     if (g_lazy)
       sub_info.sub = NULL;
     else
-      sub_info.sub = new ros::Subscriber(g_node->subscribe<ShapeShifter>(sub_info.topic_name, 10, boost::bind(in_cb, _1, sub_info.msg)));
+      sub_info.sub = new ros::Subscriber(g_node->subscribe<ShapeShifter>(sub_info.topic_name, 10, boost::bind(in_cb, boost::placeholders::_1, sub_info.msg)));
   }
   catch(ros::InvalidNameException& e)
   {
@@ -304,6 +305,7 @@ int main(int argc, char **argv)
   // Put our API into the "mux" namespace, which the user should usually remap
   ros::NodeHandle mux_nh("mux"), pnh("~");
   pnh.getParam("lazy", g_lazy);
+  pnh.getParam("latch", g_latch);
 
   // Latched publisher for selected input topic name
   g_pub_selected = mux_nh.advertise<std_msgs::String>(string("selected"), 1, true);
@@ -313,13 +315,48 @@ int main(int argc, char **argv)
     struct sub_info_t sub_info;
     sub_info.msg = new ShapeShifter;
     sub_info.topic_name = ros::names::resolve(topics[i]);
-    sub_info.sub = new ros::Subscriber(n.subscribe<ShapeShifter>(sub_info.topic_name, 10, boost::bind(in_cb, _1, sub_info.msg)));
+    sub_info.sub = new ros::Subscriber(n.subscribe<ShapeShifter>(sub_info.topic_name, 10, boost::bind(in_cb, boost::placeholders::_1, sub_info.msg)));
 
     g_subs.push_back(sub_info);
   }
-  g_selected = g_subs.begin(); // select first topic to start
+
+  // Set initial input topic from optional param, defaults to second argument
+  std::string initial_topic;
+  pnh.getParam("initial_topic", initial_topic);
   std_msgs::String t;
-  t.data = g_selected->topic_name;
+  if (initial_topic.empty()) // If param is not set, default to first in list
+  {
+    g_selected = g_subs.begin();
+    t.data = g_selected->topic_name;
+  }
+  else if (initial_topic == g_none_topic) // Set no initial input if param was __none
+  {
+    ROS_INFO("mux selected to no input.");
+    g_selected = g_subs.end();
+    t.data = g_none_topic;
+  }
+  else // Attempt to set initial topic if it is in the list
+  {
+    ROS_INFO("trying to switch mux to %s", initial_topic.c_str());
+    // spin through our vector of inputs and find this guy
+    for (list<struct sub_info_t>::iterator it = g_subs.begin();
+	 it != g_subs.end();
+	 ++it)
+    {
+      if (ros::names::resolve(it->topic_name) == ros::names::resolve(initial_topic))
+      {
+        g_selected = it;
+        t.data = initial_topic;
+        ROS_INFO("mux selected input: [%s]", it->topic_name.c_str());
+        break;
+      }
+    }
+    if (t.data.empty()) // If it wasn't in the list, default to no input. Or should we crash here?
+    {
+      g_selected = g_subs.end();
+      t.data = g_none_topic;
+    }
+  }
   g_pub_selected.publish(t);
 
   // Backward compatibility

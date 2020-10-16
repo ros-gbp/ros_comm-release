@@ -99,7 +99,7 @@ public:
 				  uint32_t queue_size) :
     input_(input), output_(output), output_position_(0), sync_(queue_size)
   {
-    sync_.registerCallback(boost::bind(&ApproximateTimeSynchronizerTest::callback, this, _1, _2));
+    sync_.registerCallback(boost::bind(&ApproximateTimeSynchronizerTest::callback, this, boost::placeholders::_1, boost::placeholders::_2));
   }
 
   void callback(const MsgConstPtr& p, const MsgConstPtr& q)
@@ -157,7 +157,7 @@ public:
 				      uint32_t queue_size) :
     input_(input), output_(output), output_position_(0), sync_(queue_size)
   {
-    sync_.registerCallback(boost::bind(&ApproximateTimeSynchronizerTestQuad::callback, this, _1, _2, _3, _4));
+    sync_.registerCallback(boost::bind(&ApproximateTimeSynchronizerTestQuad::callback, this, boost::placeholders::_1, boost::placeholders::_2, boost::placeholders::_3, boost::placeholders::_4));
   }
 
     void callback(const MsgConstPtr& p, const MsgConstPtr& q, const MsgConstPtr& r, const MsgConstPtr& s)
@@ -530,7 +530,43 @@ TEST(ApproxTimeSync, RateBound) {
   ApproximateTimeSynchronizerTest sync_test2(input, output, 10);
   sync_test2.sync_.setInterMessageLowerBound(0, s*2);
   sync_test2.run();
+}
 
+
+TEST(ApproxTimeSync, RateBoundAll) {
+  // Input A:  a..b..c.
+  // Input B:  .A..B..C
+  // Output:   .a..b...
+  //           .A..B...
+  std::vector<TimeAndTopic> input;
+  std::vector<TimePair> output;
+
+  ros::Time t(0, 0);
+  ros::Duration s(1, 0);
+
+  input.push_back(TimeAndTopic(t,0));     // a
+  input.push_back(TimeAndTopic(t+s,1));   // A
+  input.push_back(TimeAndTopic(t+s*3,0)); // b
+  input.push_back(TimeAndTopic(t+s*4,1)); // B
+  input.push_back(TimeAndTopic(t+s*6,0)); // c
+  input.push_back(TimeAndTopic(t+s*7,1)); // C
+  output.push_back(TimePair(t, t+s));
+  output.push_back(TimePair(t+s*3, t+s*4));
+
+  ApproximateTimeSynchronizerTest sync_test(input, output, 10);
+  sync_test.run();
+
+  // Rate bound: 2
+  // Input A:  a..b..c.
+  // Input B:  .A..B..C
+  // Output:   .a..b..c
+  //           .A..B..C
+
+  output.push_back(TimePair(t+s*6, t+s*7));
+
+  ApproximateTimeSynchronizerTest sync_test2(input, output, 10);
+  sync_test2.sync_.setInterMessageLowerBound(s*2);
+  sync_test2.run();
 }
 
 

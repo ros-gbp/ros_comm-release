@@ -35,7 +35,6 @@
 #ifndef ROSCPP_TRANSPORT_H
 #define ROSCPP_TRANSPORT_H
 
-#include <ros/common.h>
 #include <ros/types.h>
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
@@ -53,7 +52,7 @@ class Header;
 /**
  * \brief Abstract base class that allows abstraction of the transport type, eg. TCP, shared memory, UDP...
  */
-class ROSCPP_DECL Transport : public boost::enable_shared_from_this<Transport>
+class Transport : public boost::enable_shared_from_this<Transport>
 {
 public:
   Transport();

@@ -48,6 +48,7 @@ import rosgraph
 from roslaunch.core import printlog, printerrlog
 import roslaunch.pmon
 import roslaunch.server
+from roslaunch.nodeprocess import DEFAULT_TIMEOUT_SIGINT, DEFAULT_TIMEOUT_SIGTERM
 
 import logging
 _logger = logging.getLogger("roslaunch.remoteprocess")
@@ -126,18 +127,25 @@ class SSHChildROSLaunchProcess(roslaunch.server.ChildROSLaunchProcess):
     """
     Process wrapper for launching and monitoring a child roslaunch process over SSH
     """
-    def __init__(self, run_id, name, server_uri, machine, master_uri=None):
+    def __init__(self, run_id, name, server_uri, machine, master_uri=None, sigint_timeout=DEFAULT_TIMEOUT_SIGINT, sigterm_timeout=DEFAULT_TIMEOUT_SIGTERM):
         """
         :param machine: Machine instance. Must be fully configured.
             machine.env_loader is required to be set.
+        :param sigint_timeout: The SIGINT timeout used when killing nodes (in seconds).
+        :type sigint_timeout: float
+        :param sigterm_timeout: The SIGTERM timeout used when killing nodes if SIGINT does not stop the node (in seconds).
+        :type sigterm_timeout: float
         """
         if not machine.env_loader:
             raise ValueError("machine.env_loader must have been assigned before creating ssh child instance")
-        args = [machine.env_loader, 'roslaunch', '-c', name, '-u', server_uri, '--run_id', run_id]
+        args = [machine.env_loader, 'roslaunch', '-c', name, '-u', server_uri, '--run_id', run_id,
+                '--sigint-timeout', str(sigint_timeout), '--sigterm-timeout', str(sigterm_timeout)]
         # env is always empty dict because we only use env_loader
         super(SSHChildROSLaunchProcess, self).__init__(name, args, {})
         self.machine = machine
         self.master_uri = master_uri
+        self.sigint_timeout = sigint_timeout
+        self.sigterm_timeout = sigterm_timeout
         self.ssh = self.sshin = self.sshout = self.ssherr = None
         self.started = False
         self.uri = None
@@ -153,16 +161,11 @@ class SSHChildROSLaunchProcess(roslaunch.server.ChildROSLaunchProcess):
             env_command = 'env %s=%s' % (rosgraph.ROS_MASTER_URI, self.master_uri)
             command = '%s %s' % (env_command, command)
         try:
-            import Crypto
-        except ImportError as e:
-            _logger.error("cannot use SSH: pycrypto is not installed")
-            return None, "pycrypto is not installed"
-        try:
             import paramiko
         except ImportError as e:
             _logger.error("cannot use SSH: paramiko is not installed")
             return None, "paramiko is not installed"
-		#load user's ssh configuration
+        #load user's ssh configuration
         config_block = {'hostname': None, 'user': None, 'identityfile': None}
         ssh_config = paramiko.SSHConfig()
         try:
@@ -203,7 +206,7 @@ class SSHChildROSLaunchProcess(roslaunch.server.ChildROSLaunchProcess):
                 err_msg = "Unable to establish ssh connection to [%s%s:%s]: %s"%(username_str, address, port, e)
             except socket.error as e:
                 # #1824
-                if e[0] == 111:
+                if e.args[0] == 111:
                     err_msg = "network connection refused by [%s:%s]"%(address, port)
                 else:
                     err_msg = "network error connecting to [%s:%s]: %s"%(address, port, str(e))

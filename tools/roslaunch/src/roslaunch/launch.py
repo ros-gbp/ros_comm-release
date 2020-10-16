@@ -52,7 +52,7 @@ import rosgraph.network
 
 from roslaunch.core import *
 #from roslaunch.core import setup_env
-from roslaunch.nodeprocess import create_master_process, create_node_process
+from roslaunch.nodeprocess import create_master_process, create_node_process, DEFAULT_TIMEOUT_SIGINT, DEFAULT_TIMEOUT_SIGTERM
 from roslaunch.pmon import start_process_monitor, ProcessListener
 
 from roslaunch.rlutil import update_terminal_name
@@ -235,7 +235,8 @@ class ROSLaunchRunner(object):
     monitored.
     """
     
-    def __init__(self, run_id, config, server_uri=None, pmon=None, is_core=False, remote_runner=None, is_child=False, is_rostest=False, num_workers=NUM_WORKERS, timeout=None):
+    def __init__(self, run_id, config, server_uri=None, pmon=None, is_core=False, remote_runner=None, is_child=False, is_rostest=False, num_workers=NUM_WORKERS, timeout=None,
+                 master_logger_level=False, sigint_timeout=DEFAULT_TIMEOUT_SIGINT, sigterm_timeout=DEFAULT_TIMEOUT_SIGTERM):
         """
         @param run_id: /run_id for this launch. If the core is not
             running, this value will be used to initialize /run_id. If
@@ -264,9 +265,21 @@ class ROSLaunchRunner(object):
         @type num_workers: int
         @param timeout: If this is the core, the socket-timeout to use.
         @type timeout: Float or None
+        @param master_logger_level: Specify roscore's rosmaster.master logger level, use default if it is False.
+        @type master_logger_level: str or False
+        @param sigint_timeout: The SIGINT timeout used when killing nodes (in seconds).
+        @type sigint_timeout: float
+        @param sigterm_timeout: The SIGTERM timeout used when killing nodes if SIGINT does not stop the node (in seconds).
+        @type sigterm_timeout: float
+        @raise RLException: If sigint_timeout or sigterm_timeout are nonpositive.
         """
         if run_id is None:
             raise RLException("run_id is None")
+        if sigint_timeout <= 0:
+            raise RLException("sigint_timeout must be a positive number, received %f" % sigint_timeout)
+        if sigterm_timeout <= 0:
+            raise RLException("sigterm_timeout must be a positive number, received %f" % sigterm_timeout)
+
         self.run_id = run_id
 
         # In the future we should can separate the notion of a core
@@ -281,8 +294,11 @@ class ROSLaunchRunner(object):
         self.is_rostest = is_rostest
         self.num_workers = num_workers
         self.timeout = timeout
+        self.master_logger_level = master_logger_level
         self.logger = logging.getLogger('roslaunch')
         self.pm = pmon or start_process_monitor()
+        self.sigint_timeout = sigint_timeout
+        self.sigterm_timeout = sigterm_timeout
 
         # wire in ProcessMonitor events to our listeners
         # aggregator. We similarly wire in the remote events when we
@@ -397,7 +413,10 @@ class ROSLaunchRunner(object):
             validate_master_launch(m, self.is_core, self.is_rostest)
 
             printlog("auto-starting new master")
-            p = create_master_process(self.run_id, m.type, get_ros_root(), m.get_port(), self.num_workers, self.timeout)
+            p = create_master_process(
+                self.run_id, m.type, get_ros_root(), m.get_port(), self.num_workers,
+                self.timeout, master_logger_level=self.master_logger_level,
+                sigint_timeout=self.sigint_timeout, sigterm_timeout=self.sigterm_timeout)
             self.pm.register_core_proc(p)
             success = p.start()
             if not success:
@@ -461,7 +480,7 @@ class ROSLaunchRunner(object):
         Launch a single L{Executable} object. Blocks until executable finishes.
         @param e: Executable
         @type  e: L{Executable}
-        @raise RLException: if exectuable fails. Failure includes non-zero exit code.
+        @raise RLException: if executable fails. Failure includes non-zero exit code.
         """
         try:
             #kwc: I'm still debating whether shell=True is proper
@@ -480,7 +499,7 @@ class ROSLaunchRunner(object):
     #TODO: define and implement behavior for remote launch
     def _launch_setup_executables(self):
         """
-        @raise RLException: if exectuable fails. Failure includes non-zero exit code.
+        @raise RLException: if executable fails. Failure includes non-zero exit code.
         """
         exes = [e for e in self.config.executables if e.phase == PHASE_SETUP]
         for e in exes:
@@ -536,7 +555,7 @@ class ROSLaunchRunner(object):
         master = self.config.master
         import roslaunch.node_args
         try:
-            process = create_node_process(self.run_id, node, master.uri)
+            process = create_node_process(self.run_id, node, master.uri, sigint_timeout=self.sigint_timeout, sigterm_timeout=self.sigterm_timeout)
         except roslaunch.node_args.NodeParamsException as e:
             self.logger.error(e)
             printerrlog("ERROR: cannot launch node of type [%s/%s]: %s"%(node.package, node.type, str(e)))
@@ -633,7 +652,7 @@ class ROSLaunchRunner(object):
         if launched:
             self._launch_core_nodes()
         
-        # run exectuables marked as setup period. this will block
+        # run executables marked as setup period. this will block
         # until these executables exit. setup executable have to run
         # *before* parameters are uploaded so that commands like
         # rosparam delete can execute.

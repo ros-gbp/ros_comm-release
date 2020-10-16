@@ -73,6 +73,7 @@ TransportPublisherLink::~TransportPublisherLink()
   }
 
   connection_->drop(Connection::Destructing);
+  connection_->removeDropListener(dropped_conn_);
 }
 
 bool TransportPublisherLink::initialize(const ConnectionPtr& connection)
@@ -82,13 +83,17 @@ bool TransportPublisherLink::initialize(const ConnectionPtr& connection)
   // and disconnect when this class' reference count is decremented to 0. It increments
   // then decrements the shared_from_this reference count around calls to the
   // onConnectionDropped function, preventing a coredump in the middle of execution.
-  connection_->addDropListener(Connection::DropSignal::slot_type(&TransportPublisherLink::onConnectionDropped, this, _1, _2).track(shared_from_this()));
+  dropped_conn_ = connection_->addDropListener(Connection::DropSignal::slot_type(&TransportPublisherLink::onConnectionDropped, this, boost::placeholders::_1, boost::placeholders::_2).track(shared_from_this()));
 
   if (connection_->getTransport()->requiresHeader())
   {
-    connection_->setHeaderReceivedCallback(boost::bind(&TransportPublisherLink::onHeaderReceived, this, _1, _2));
+    connection_->setHeaderReceivedCallback(boost::bind(&TransportPublisherLink::onHeaderReceived, this, boost::placeholders::_1, boost::placeholders::_2));
 
     SubscriptionPtr parent = parent_.lock();
+    if (!parent)
+    {
+      return false;
+    }
 
     M_string header;
     header["topic"] = parent->getName();
@@ -96,11 +101,11 @@ bool TransportPublisherLink::initialize(const ConnectionPtr& connection)
     header["callerid"] = this_node::getName();
     header["type"] = parent->datatype();
     header["tcp_nodelay"] = transport_hints_.getTCPNoDelay() ? "1" : "0";
-    connection_->writeHeader(header, boost::bind(&TransportPublisherLink::onHeaderWritten, this, _1));
+    connection_->writeHeader(header, boost::bind(&TransportPublisherLink::onHeaderWritten, this, boost::placeholders::_1));
   }
   else
   {
-    connection_->read(4, boost::bind(&TransportPublisherLink::onMessageLength, this, _1, _2, _3, _4));
+    connection_->read(4, boost::bind(&TransportPublisherLink::onMessageLength, this, boost::placeholders::_1, boost::placeholders::_2, boost::placeholders::_3, boost::placeholders::_4));
   }
 
   return true;
@@ -140,7 +145,7 @@ bool TransportPublisherLink::onHeaderReceived(const ConnectionPtr& conn, const H
     retry_timer_handle_ = -1;
   }
 
-  connection_->read(4, boost::bind(&TransportPublisherLink::onMessageLength, this, _1, _2, _3, _4));
+  connection_->read(4, boost::bind(&TransportPublisherLink::onMessageLength, this, boost::placeholders::_1, boost::placeholders::_2, boost::placeholders::_3, boost::placeholders::_4));
 
   return true;
 }
@@ -158,7 +163,7 @@ void TransportPublisherLink::onMessageLength(const ConnectionPtr& conn, const bo
   if (!success)
   {
     if (connection_)
-      connection_->read(4, boost::bind(&TransportPublisherLink::onMessageLength, this, _1, _2, _3, _4));
+      connection_->read(4, boost::bind(&TransportPublisherLink::onMessageLength, this, boost::placeholders::_1, boost::placeholders::_2, boost::placeholders::_3, boost::placeholders::_4));
     return;
   }
 
@@ -177,7 +182,7 @@ void TransportPublisherLink::onMessageLength(const ConnectionPtr& conn, const bo
     return;
   }
 
-  connection_->read(len, boost::bind(&TransportPublisherLink::onMessage, this, _1, _2, _3, _4));
+  connection_->read(len, boost::bind(&TransportPublisherLink::onMessage, this, boost::placeholders::_1, boost::placeholders::_2, boost::placeholders::_3, boost::placeholders::_4));
 }
 
 void TransportPublisherLink::onMessage(const ConnectionPtr& conn, const boost::shared_array<uint8_t>& buffer, uint32_t size, bool success)
@@ -194,7 +199,7 @@ void TransportPublisherLink::onMessage(const ConnectionPtr& conn, const boost::s
 
   if (success || !connection_->getTransport()->requiresHeader())
   {
-    connection_->read(4, boost::bind(&TransportPublisherLink::onMessageLength, this, _1, _2, _3, _4));
+    connection_->read(4, boost::bind(&TransportPublisherLink::onMessageLength, this, boost::placeholders::_1, boost::placeholders::_2, boost::placeholders::_3, boost::placeholders::_4));
   }
 }
 
@@ -230,9 +235,10 @@ void TransportPublisherLink::onRetryTimer(const ros::SteadyTimerEvent&)
       {
         ConnectionPtr connection(boost::make_shared<Connection>());
         connection->initialize(transport, false, HeaderReceivedFunc());
-        initialize(connection);
-
-        ConnectionManager::instance()->addConnection(connection);
+        if (initialize(connection))
+        {
+          ConnectionManager::instance()->addConnection(connection);
+        }
       }
       else
       {
@@ -277,7 +283,7 @@ void TransportPublisherLink::onConnectionDropped(const ConnectionPtr& conn, Conn
       // shared_from_this() shared_ptr is used to ensure TransportPublisherLink is not
       // destroyed in the middle of onRetryTimer execution
       retry_timer_handle_ = getInternalTimerManager()->add(WallDuration(retry_period_),
-          boost::bind(&TransportPublisherLink::onRetryTimer, this, _1), getInternalCallbackQueue().get(),
+          boost::bind(&TransportPublisherLink::onRetryTimer, this, boost::placeholders::_1), getInternalCallbackQueue().get(),
           shared_from_this(), false);
     }
     else

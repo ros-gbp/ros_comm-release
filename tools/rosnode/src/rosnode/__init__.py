@@ -45,6 +45,7 @@ import errno
 import sys
 import socket
 import time
+import re
 try:
     from xmlrpc.client import ServerProxy
 except ImportError:
@@ -62,6 +63,8 @@ import rostopic
 
 NAME='rosnode'
 ID = '/rosnode'
+# The string is defined in clients/rospy/src/rospy/impl/tcpros_base.py TCPROSTransport.get_transport_info
+CONNECTION_PATTERN = re.compile(r'\w+ connection on port (\d+) to \[(.*) on socket (\d+)\]')
 
 class ROSNodeException(Exception):
     """
@@ -291,7 +294,7 @@ def rosnode_listnodes(namespace=None, list_uri=False, list_all=False):
     """
     print(_sub_rosnode_listnodes(namespace=namespace, list_uri=list_uri, list_all=list_all))
     
-def rosnode_ping(node_name, max_count=None, verbose=False):
+def rosnode_ping(node_name, max_count=None, verbose=False, skip_cache=False):
     """
     Test connectivity to node by calling its XMLRPC API
     @param node_name: name of node to ping
@@ -300,12 +303,14 @@ def rosnode_ping(node_name, max_count=None, verbose=False):
     @type  max_count: int
     @param verbose: print ping information to screen
     @type  verbose: bool
+    @param skip_cache: flag to skip cached data and force to lookup from master
+    @type  skip_cache: bool
     @return: True if node pinged
     @rtype: bool
     @raise ROSNodeIOException: if unable to communicate with master
     """
     master = rosgraph.Master(ID)
-    node_api = get_api_uri(master,node_name)
+    node_api = get_api_uri(master, node_name, skip_cache=skip_cache)
     if not node_api:
         print("cannot ping [%s]: unknown node"%node_name, file=sys.stderr)
         return False
@@ -362,6 +367,7 @@ def rosnode_ping(node_name, max_count=None, verbose=False):
                     return False
                 except ValueError:
                     print("unknown network error contacting node: %s"%(str(e)))
+                    return False
             if max_count and count >= max_count:
                 break
             time.sleep(1.0)
@@ -372,7 +378,7 @@ def rosnode_ping(node_name, max_count=None, verbose=False):
         print("ping average: %fms"%(acc/count))
     return True
 
-def rosnode_ping_all(verbose=False):
+def rosnode_ping_all(verbose=False, skip_cache=False):
     """
     Ping all running nodes
     @return [str], [str]: pinged nodes, un-pingable nodes
@@ -394,7 +400,7 @@ def rosnode_ping_all(verbose=False):
     pinged = []
     unpinged = []
     for node in nodes:
-        if rosnode_ping(node, max_count=1, verbose=verbose):
+        if rosnode_ping(node, max_count=1, verbose=verbose, skip_cache=skip_cache):
             pinged.append(node)
         else:
             unpinged.append(node)
@@ -402,7 +408,7 @@ def rosnode_ping_all(verbose=False):
     
 def cleanup_master_blacklist(master, blacklist):
     """
-    Remove registrations from ROS Master that match blacklist.    
+    Remove registrations from ROS Master and node cache (_caller_apis) that match blacklist.    
     @param master: rosgraph Master instance
     @type  master: rosgraph.Master
     @param blacklist: list of nodes to scrub
@@ -425,6 +431,7 @@ def cleanup_master_blacklist(master, blacklist):
                 service_api = master.lookupService(s)
                 master_n = rosgraph.Master(n)
                 master_n.unregisterService(s, service_api)
+        _caller_apis.pop(n, None)
 
 def cleanup_master_whitelist(master, whitelist):
     """
@@ -546,11 +553,16 @@ def get_node_connection_info_description(node_api, master):
                     # older ros publisher implementations don't report a URI
                     buff += "    * to: %s\n"%lookup_uri(master, system_state, topic, dest_id)
                     if direction == 'i':
-                        buff += "    * direction: inbound\n"
+                        buff += "    * direction: inbound"
                     elif direction == 'o':
-                        buff += "    * direction: outbound\n"
+                        buff += "    * direction: outbound"
                     else:
-                        buff += "    * direction: unknown\n"
+                        buff += "    * direction: unknown"
+                    if len(info) > 6:
+                        match = CONNECTION_PATTERN.match(info[6])
+                        if match is not None:
+                            buff += " (%s - %s) [%s]" % match.groups()
+                    buff += "\n"
                     buff += "    * transport: %s\n"%transport
     except socket.error:
         raise ROSNodeIOException("Communication with node[%s] failed!"%(node_api))

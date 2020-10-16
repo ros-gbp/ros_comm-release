@@ -55,6 +55,7 @@ import roslaunch.server
 import roslaunch.xmlloader 
 
 from rosmaster.master_api import NUM_WORKERS
+from roslaunch.nodeprocess import DEFAULT_TIMEOUT_SIGINT, DEFAULT_TIMEOUT_SIGTERM
 
 #TODO: probably move process listener infrastructure into here
 
@@ -73,7 +74,8 @@ class ROSLaunchParent(object):
     """
 
     def __init__(self, run_id, roslaunch_files, is_core=False, port=None, local_only=False, process_listeners=None,
-            verbose=False, force_screen=False, is_rostest=False, roslaunch_strs=None, num_workers=NUM_WORKERS, timeout=None):
+            verbose=False, force_screen=False, force_log=False, is_rostest=False, roslaunch_strs=None, num_workers=NUM_WORKERS, timeout=None, master_logger_level=False, show_summary=True, force_required=False,
+            sigint_timeout=DEFAULT_TIMEOUT_SIGINT, sigterm_timeout=DEFAULT_TIMEOUT_SIGTERM):
         """
         @param run_id: UUID of roslaunch session
         @type  run_id: str
@@ -91,8 +93,12 @@ class ROSLaunchParent(object):
         @type  port: int
         @param verbose: (optional) print verbose output
         @type  verbose: boolean
+        @param show_summary: (optional) whether to show a summary or not
+        @type  show_summary: boolean
         @param force_screen: (optional) force output of all nodes to screen
         @type  force_screen: boolean
+        @param force_log: (optional) force output of all nodes to log
+        @type  force_log: boolean
         @param is_rostest bool: if True, this launch is a rostest
             instance. This affects validation checks.
         @type  is_rostest: bool
@@ -101,7 +107,20 @@ class ROSLaunchParent(object):
         @param timeout: If this is the core, the socket-timeout to use.
         @type timeout: Float or None
         @throws RLException
+        @param master_logger_level: Specify roscore's rosmaster.master logger level, use default if it is False.
+        @type master_logger_level: str or False
+        @param force_required: (optional) whether to make all nodes required
+        @type force_required: boolean
+        @param sigint_timeout: The SIGINT timeout used when killing nodes (in seconds).
+        @type sigint_timeout: float
+        @param sigterm_timeout: The SIGTERM timeout used when killing nodes if SIGINT does not stop the node (in seconds).
+        @type sigterm_timeout: float
+        @raise RLException: If sigint_timeout or sigterm_timeout are nonpositive.
         """
+        if sigint_timeout <= 0:
+            raise RLException("sigint_timeout must be a positive number, received %f" % sigint_timeout)
+        if sigterm_timeout <= 0:
+            raise RLException("sigterm_timeout must be a positive number, received %f" % sigterm_timeout)
         
         self.logger = logging.getLogger('roslaunch.parent')
         self.run_id = run_id
@@ -114,13 +133,19 @@ class ROSLaunchParent(object):
         self.port = port
         self.local_only = local_only
         self.verbose = verbose
+        self.show_summary = show_summary
         self.num_workers = num_workers
         self.timeout = timeout
+        self.master_logger_level = master_logger_level
+        self.sigint_timeout = sigint_timeout
+        self.sigterm_timeout = sigterm_timeout
 
         # I don't think we should have to pass in so many options from
         # the outside into the roslaunch parent. One possibility is to
         # allow alternate config loaders to be passed in.
         self.force_screen = force_screen
+        self.force_log = force_log
+        self.force_required = force_required
         
         # flag to prevent multiple shutdown attempts
         self._shutting_down = False
@@ -135,6 +160,15 @@ class ROSLaunchParent(object):
         if self.force_screen:
             for n in self.config.nodes:
                 n.output = 'screen'
+        if self.force_log:
+            for n in self.config.nodes:
+                n.output = 'log'
+        if self.force_required:
+            for n in self.config.nodes:
+                n.required = True
+                if n.respawn and n.required:
+                  raise ValueError("respawn and required cannot both be set to true")
+
 
     def _start_pm(self):
         """
@@ -152,13 +186,14 @@ class ROSLaunchParent(object):
             raise RLException("pm is not initialized")
         if self.server is None:
             raise RLException("server is not initialized")
-        self.runner = roslaunch.launch.ROSLaunchRunner(self.run_id, self.config, server_uri=self.server.uri, pmon=self.pm, is_core=self.is_core, remote_runner=self.remote_runner, is_rostest=self.is_rostest, num_workers=self.num_workers, timeout=self.timeout)
+        self.runner = roslaunch.launch.ROSLaunchRunner(self.run_id, self.config, server_uri=self.server.uri, pmon=self.pm, is_core=self.is_core, remote_runner=self.remote_runner, is_rostest=self.is_rostest, num_workers=self.num_workers, timeout=self.timeout, master_logger_level=self.master_logger_level,
+                                                       sigint_timeout=self.sigint_timeout, sigterm_timeout=self.sigterm_timeout)
 
         # print runner info to user, put errors last to make the more visible
         if self.is_core:
             print("ros_comm version %s" % (self.config.params['/rosversion'].value))
-            
-        print(self.config.summary(local=self.remote_runner is None))
+        if self.show_summary:    
+            print(self.config.summary(local=self.remote_runner is None))
         if self.config:
             for err in self.config.config_errors:
                 printerrlog("WARNING: %s"%err)
@@ -194,7 +229,9 @@ class ROSLaunchParent(object):
         if not self.local_only and self.config.has_remote_nodes():
             # keep the remote package lazy-imported
             import roslaunch.remote
-            self.remote_runner = roslaunch.remote.ROSRemoteRunner(self.run_id, self.config, self.pm, self.server)
+            self.remote_runner = roslaunch.remote.ROSRemoteRunner(self.run_id, self.config, self.pm, self.server,
+                                                                  sigint_timeout=self.sigint_timeout,
+                                                                  sigterm_timeout=self.sigterm_timeout)
         elif self.local_only:
             printlog_bold("LOCAL\nlocal only launch specified, will not launch remote nodes\nLOCAL\n")
 

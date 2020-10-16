@@ -48,7 +48,11 @@ def ip_check(ctx):
     # best we can do is compare roslib's routine against socket resolution and make sure they agree
     local_addrs = rosgraph.network.get_local_addresses()
 
-    resolved_ips = [host[4][0] for host in socket.getaddrinfo(socket.gethostname(), 0, 0, 0, socket.SOL_TCP)]
+    if rosgraph.network.use_ipv6():
+        resolved_ips = [host[4][0] for host in socket.getaddrinfo(socket.gethostname(), 0, 0, 0, socket.SOL_TCP)]
+    else:
+        resolved_ips = [host[4][0] for host in socket.getaddrinfo(socket.gethostname(), 0, socket.AF_INET, 0, socket.SOL_TCP)]
+
     global_ips = [ ip for ip in resolved_ips if not ip.startswith('127.') and not ip == '::1']
 
     remote_ips = list(set(global_ips) - set(local_addrs))
@@ -88,8 +92,11 @@ def ros_ip_check(ctx):
     # best we can do is compare roslib's routine against socket resolution and make sure they agree
     addrs = rosgraph.network.get_local_addresses()
 
+    if " " in ip:
+        return "ROS_IP [%s] contains whitespace. This is not a valid IP."%ip
+
     if ip not in addrs:
-        return "ROS_IP [%s] does not appear to be a local IP address %s."%(ip, str(addrs))
+        return "ROS_IP [%s] does not appear to be an IP address of a local network interface (one of %s)."%(ip, str(addrs))
     
 # Error/Warning Rules
 

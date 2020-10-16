@@ -38,9 +38,8 @@
 #include <ros/message_forward.h>
 #include "common.h"
 
-#include "ros/internal/condition_variable.h"
-
 #include <boost/shared_ptr.hpp>
+#include <boost/thread/condition_variable.hpp>
 #include <boost/weak_ptr.hpp>
 
 #include <boost/thread.hpp>
@@ -75,8 +74,9 @@ protected:
   typedef std::vector<rosgraph_msgs::LogPtr> V_Log;
   V_Log log_queue_;
   boost::mutex queue_mutex_;
-  ros::internal::condition_variable_monotonic queue_condition_;
+  boost::condition_variable queue_condition_;
   bool shutting_down_;
+  bool disable_topics_;
 
   boost::thread publish_thread_;
 };

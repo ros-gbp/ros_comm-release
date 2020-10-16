@@ -55,6 +55,7 @@
 #include <ros/time.h>
 
 #include <std_msgs/Empty.h>
+#include <std_msgs/String.h>
 #include <topic_tools/shape_shifter.h>
 
 #include "rosbag/bag.h"
@@ -96,6 +97,8 @@ struct ROSBAG_DECL RecorderOptions
     bool            append_date;
     bool            snapshot;
     bool            verbose;
+    bool            publish;
+    bool            repeat_latched;
     CompressionType compression;
     std::string     prefix;
     std::string     name;
@@ -163,10 +166,12 @@ private:
     std::string                   write_filename_;
     std::list<std::string>        current_files_;
 
-    std::set<std::string>         currently_recording_;  //!< set of currenly recording topics
+    std::set<std::string>         currently_recording_;  //!< set of currently recording topics
     int                           num_subscribers_;      //!< used for book-keeping of our number of subscribers
 
     int                           exit_code_;            //!< eventual exit code
+
+    std::map<std::pair<std::string, std::string>, OutgoingMessage> latched_msgs_;
 
     boost::condition_variable_any queue_condition_;      //!< conditional variable for queue
     boost::mutex                  queue_mutex_;          //!< mutex for queue
@@ -186,6 +191,8 @@ private:
     boost::mutex                  check_disk_mutex_;
     ros::WallTime                 check_disk_next_;
     ros::WallTime                 warn_next_;
+
+    ros::Publisher                pub_begin_write;
 };
 
 } // namespace rosbag

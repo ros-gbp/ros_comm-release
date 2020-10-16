@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 
 project(test_rosbag)
 
@@ -50,6 +50,8 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest(${PROJECT_BINARY_DIR}/test/latched_sub.test)
   add_rostest(test/record_two_publishers.test)
   add_rostest(test/record_one_publisher_two_topics.test)
+  add_rostest(test/record_sigint_cleanup.test)
+  add_rostest(test/record_sigterm_cleanup.test)
 
   include_directories(${GTEST_INCLUDE_DIRS})
   add_executable(double_pub EXCLUDE_FROM_ALL test/double_pub.cpp)

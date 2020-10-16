@@ -32,13 +32,13 @@
 #include "ros/time.h"
 #include "ros/file_log.h"
 
+#include <boost/thread/condition_variable.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 
 #include "ros/assert.h"
 #include "ros/callback_queue_interface.h"
-#include "ros/internal/condition_variable.h"
 
 #include <vector>
 #include <list>
@@ -52,6 +52,7 @@ namespace {
   {
   public:
     typedef boost::chrono::system_clock::time_point time_point;
+    typedef boost::chrono::system_clock::duration duration;
   };
 
   template<>
@@ -59,6 +60,7 @@ namespace {
   {
   public:
     typedef boost::chrono::steady_clock::time_point time_point;
+    typedef boost::chrono::steady_clock::duration duration;
   };
 }
 
@@ -80,6 +82,7 @@ private:
     T next_expected;
 
     T last_real;
+    T last_expired;
 
     bool removed;
 
@@ -127,7 +130,7 @@ private:
 
   V_TimerInfo timers_;
   boost::mutex timers_mutex_;
-  ros::internal::condition_variable_monotonic timers_cond_;
+  boost::condition_variable timers_cond_;
   volatile bool new_timer_;
 
   boost::mutex waiting_mutex_;
@@ -145,12 +148,14 @@ private:
   class TimerQueueCallback : public CallbackInterface
   {
   public:
-    TimerQueueCallback(TimerManager<T, D, E>* parent, const TimerInfoPtr& info, T last_expected, T last_real, T current_expected)
+    TimerQueueCallback(TimerManager<T, D, E>* parent, const TimerInfoPtr& info, T last_expected, T last_real, T current_expected, T last_expired, T current_expired)
     : parent_(parent)
     , info_(info)
     , last_expected_(last_expected)
     , last_real_(last_real)
     , current_expected_(current_expected)
+    , last_expired_(last_expired)
+    , current_expired_(current_expired)
     , called_(false)
     {
       boost::mutex::scoped_lock lock(info->waiting_mutex);
@@ -192,8 +197,10 @@ private:
         E event;
         event.last_expected = last_expected_;
         event.last_real = last_real_;
+        event.last_expired = last_expired_;
         event.current_expected = current_expected_;
         event.current_real = T::now();
+        event.current_expired = current_expired_;
         event.profile.last_duration = info->last_cb_duration;
 
         SteadyTime cb_start = SteadyTime::now();
@@ -202,6 +209,7 @@ private:
         info->last_cb_duration = cb_end - cb_start;
 
         info->last_real = event.current_real;
+        info->last_expired = event.current_expired;
 
         parent_->schedule(info);
       }
@@ -215,6 +223,8 @@ private:
     T last_expected_;
     T last_real_;
     T current_expected_;
+    T last_expired_;
+    T current_expired_;
 
     bool called_;
   };
@@ -223,7 +233,15 @@ private:
 template<class T, class D, class E>
 TimerManager<T, D, E>::TimerManager() :
   new_timer_(false), id_counter_(0), thread_started_(false), quit_(false)
-{}
+{
+#if !defined(BOOST_THREAD_HAS_CONDATTR_SET_CLOCK_MONOTONIC) && !defined(BOOST_THREAD_INTERNAL_CLOCK_IS_MONO)
+  ROS_ASSERT_MSG(false,
+                 "ros::TimerManager was instantiated by package " ROS_PACKAGE_NAME ", but "
+                 "neither BOOST_THREAD_HAS_CONDATTR_SET_CLOCK_MONOTONIC nor BOOST_THREAD_INTERNAL_CLOCK_IS_MONO is defined! "
+                 "Be aware that timers might misbehave when system time jumps, "
+                 "e.g. due to network time corrections.");
+#endif
+}
 
 template<class T, class D, class E>
 TimerManager<T, D, E>::~TimerManager()
@@ -331,7 +349,7 @@ int32_t TimerManager<T, D, E>::add(const D& period, const boost::function<void(c
     {
       boost::mutex::scoped_lock lock(waiting_mutex_);
       waiting_.push_back(info->handle);
-      waiting_.sort(boost::bind(&TimerManager::waitingCompare, this, _1, _2));
+      waiting_.sort(boost::bind(&TimerManager::waitingCompare, this, boost::placeholders::_1, boost::placeholders::_2));
     }
 
     new_timer_ = true;
@@ -398,7 +416,7 @@ void TimerManager<T, D, E>::schedule(const TimerInfoPtr& info)
 
     waiting_.push_back(info->handle);
     // waitingCompare requires a lock on the timers_mutex_
-    waiting_.sort(boost::bind(&TimerManager::waitingCompare, this, _1, _2));
+    waiting_.sort(boost::bind(&TimerManager::waitingCompare, this, boost::placeholders::_1, boost::placeholders::_2));
   }
 
   new_timer_ = true;
@@ -472,7 +490,7 @@ void TimerManager<T, D, E>::setPeriod(int32_t handle, const D& period, bool rese
     // In this case, let next_expected be updated only in updateNext
     
     info->period = period;
-    waiting_.sort(boost::bind(&TimerManager::waitingCompare, this, _1, _2));
+    waiting_.sort(boost::bind(&TimerManager::waitingCompare, this, boost::placeholders::_1, boost::placeholders::_2));
   }
 
   new_timer_ = true;
@@ -529,7 +547,7 @@ void TimerManager<T, D, E>::threadFunc()
           current = T::now();
 
           //ROS_DEBUG("Scheduling timer callback for timer [%d] of period [%f], [%f] off expected", info->handle, info->period.toSec(), (current - info->next_expected).toSec());
-          CallbackInterfacePtr cb(boost::make_shared<TimerQueueCallback>(this, info, info->last_expected, info->last_real, info->next_expected));
+          CallbackInterfacePtr cb(boost::make_shared<TimerQueueCallback>(this, info, info->last_expected, info->last_real, info->next_expected, info->last_expired, current));
           info->callback_queue->addCallback(cb, (uint64_t)info.get());
 
           waiting_.pop_front();
@@ -576,7 +594,11 @@ void TimerManager<T, D, E>::threadFunc()
       {
         // On system time we can simply sleep for the rest of the wait time, since anything else requiring processing will
         // signal the condition variable
-        typename TimerManagerTraits<T>::time_point end_tp(boost::chrono::nanoseconds(sleep_end.toNSec()));
+        typename TimerManagerTraits<T>::time_point end_tp(
+          boost::chrono::duration_cast<typename TimerManagerTraits<T>::duration>(
+            boost::chrono::nanoseconds(sleep_end.toNSec())
+          )
+        );
         timers_cond_.wait_until(lock, end_tp);
       }
     }

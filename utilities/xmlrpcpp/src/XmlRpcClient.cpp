@@ -2,7 +2,8 @@
 #include "xmlrpcpp/XmlRpcClient.h"
 
 #include "xmlrpcpp/XmlRpcSocket.h"
-#include "xmlrpcpp/XmlRpc.h"
+#include "xmlrpcpp/XmlRpcUtil.h"
+#include "xmlrpcpp/XmlRpcValue.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,20 +29,42 @@ const char XmlRpcClient::METHODRESPONSE_TAG[] = "<methodResponse>";
 const char XmlRpcClient::FAULT_TAG[] = "<fault>";
 
 
+const char * XmlRpcClient::connectionStateStr(ClientConnectionState state) {
+  switch(state) {
+    case NO_CONNECTION:
+      return "NO_CONNECTION";
+    case CONNECTING:
+      return "CONNECTING";
+    case WRITE_REQUEST:
+      return "WRITE_REQUEST";
+    case READ_HEADER:
+      return "READ_HEADER";
+    case READ_RESPONSE:
+      return "READ_RESPONSE";
+    case IDLE:
+      return "IDLE";
+    default:
+      return "UNKNOWN";
+  }
+}
 
 XmlRpcClient::XmlRpcClient(const char* host, int port, const char* uri/*=0*/)
+  : _connectionState(NO_CONNECTION),
+  _host(host),
+  _port(port),
+  _sendAttempts(0),
+  _bytesWritten(0),
+  _executing(false),
+  _eof(false),
+  _isFault(false),
+  _contentLength(0)
 {
   XmlRpcUtil::log(1, "XmlRpcClient new client: host %s, port %d.", host, port);
 
-  _host = host;
-  _port = port;
   if (uri)
     _uri = uri;
   else
     _uri = "/RPC2";
-  _connectionState = NO_CONNECTION;
-  _executing = false;
-  _eof = false;
 
   // Default to keeping the connection open until an explicit close is done
   setKeepOpen();
@@ -79,7 +102,7 @@ struct ClearFlagOnExit {
 bool
 XmlRpcClient::execute(const char* method, XmlRpcValue const& params, XmlRpcValue& result)
 {
-  XmlRpcUtil::log(1, "XmlRpcClient::execute: method %s (_connectionState %d).", method, _connectionState);
+  XmlRpcUtil::log(1, "XmlRpcClient::execute: method %s (_connectionState %s).", method, connectionStateStr(_connectionState));
 
   // This is not a thread-safe operation, if you want to do multithreading, use separate
   // clients for each thread. If you want to protect yourself from multiple threads
@@ -107,7 +130,6 @@ XmlRpcClient::execute(const char* method, XmlRpcValue const& params, XmlRpcValue
     return false;
 
   XmlRpcUtil::log(1, "XmlRpcClient::execute: method %s completed.", method);
-  _header = "";
   _response = "";
   return true;
 }
@@ -119,7 +141,7 @@ XmlRpcClient::execute(const char* method, XmlRpcValue const& params, XmlRpcValue
 bool
 XmlRpcClient::executeNonBlock(const char* method, XmlRpcValue const& params)
 {
-  XmlRpcUtil::log(1, "XmlRpcClient::execute: method %s (_connectionState %d).", method, _connectionState);
+  XmlRpcUtil::log(1, "XmlRpcClient::executeNonBlock: method %s (_connectionState %s).", method, connectionStateStr(_connectionState));
 
   // This is not a thread-safe operation, if you want to do multithreading, use separate
   // clients for each thread. If you want to protect yourself from multiple threads
@@ -147,8 +169,16 @@ XmlRpcClient::executeCheckDone(XmlRpcValue& result)
 {
   result.clear();
   // Are we done yet?
-  if (_connectionState != IDLE)
+  // If we lost connection, the call failed.
+  if (_connectionState == NO_CONNECTION) {
+    return true;
+  }
+
+  // Otherwise, assume the call is still in progress.
+  if (_connectionState != IDLE) {
     return false;
+  }
+
   if (! parseResponse(result))
   {
     // Hopefully the caller can determine that parsing failed.
@@ -169,8 +199,9 @@ XmlRpcClient::handleEvent(unsigned eventType)
       XmlRpcUtil::error("Error in XmlRpcClient::handleEvent: could not connect to server (%s).", 
                        XmlRpcSocket::getErrorMsg().c_str());
     else
-      XmlRpcUtil::error("Error in XmlRpcClient::handleEvent (state %d): %s.", 
-                        _connectionState, XmlRpcSocket::getErrorMsg().c_str());
+      XmlRpcUtil::error("Error in XmlRpcClient::handleEvent (state %s): %s.", 
+                        connectionStateStr(_connectionState),
+                        XmlRpcSocket::getErrorMsg().c_str());
     return 0;
   }
 
@@ -276,17 +307,24 @@ XmlRpcClient::generateRequest(const char* methodName, XmlRpcValue const& params)
   }
   body += REQUEST_END;
 
-  std::string header = generateHeader(body);
+  std::string header = generateHeader(body.length());
   XmlRpcUtil::log(4, "XmlRpcClient::generateRequest: header is %d bytes, content-length is %d.", 
                   header.length(), body.length());
 
   _request = header + body;
+  // Limit the size of the request to avoid integer overruns
+  if (_request.length() > size_t(__INT_MAX__)) {
+    XmlRpcUtil::error("XmlRpcClient::generateRequest: request length (%u) exceeds maximum allowed size (%u).",
+                      _request.length(), __INT_MAX__);
+    _request.clear();
+    return false;
+  }
   return true;
 }
 
 // Prepend http headers
 std::string
-XmlRpcClient::generateHeader(std::string const& body)
+XmlRpcClient::generateHeader(size_t length) const
 {
   std::string header = 
     "POST " + _uri + " HTTP/1.1\r\n"
@@ -296,20 +334,12 @@ XmlRpcClient::generateHeader(std::string const& body)
   header += _host;
 
   char buff[40];
-#ifdef _MSC_VER
-  sprintf_s(buff,40,":%d\r\n", _port);
-#else
-  sprintf(buff,":%d\r\n", _port);
-#endif
+  std::snprintf(buff,40,":%d\r\n", _port);
 
   header += buff;
   header += "Content-Type: text/xml\r\nContent-length: ";
 
-#ifdef _MSC_VER
-  sprintf_s(buff,40,"%d\r\n\r\n", (int)body.size());
-#else
-  sprintf(buff,"%d\r\n\r\n", (int)body.size());
-#endif
+  std::snprintf(buff,40,"%zu\r\n\r\n", length);
 
   return header + buff;
 }
@@ -323,6 +353,8 @@ XmlRpcClient::writeRequest()
   // Try to write the request
   if ( ! XmlRpcSocket::nbWrite(this->getfd(), _request, &_bytesWritten)) {
     XmlRpcUtil::error("Error in XmlRpcClient::writeRequest: write error (%s).",XmlRpcSocket::getErrorMsg().c_str());
+    // If the write fails, we had an unrecoverable error. Close the socket.
+    close();
     return false;
   }
     
@@ -333,6 +365,11 @@ XmlRpcClient::writeRequest()
     _header = "";
     _response = "";
     _connectionState = READ_HEADER;
+  } else {
+    // On partial write, remove the portion of the output that was written from
+    // the request buffer.
+    _request = _request.substr(_bytesWritten);
+    _bytesWritten = 0;
   }
   return true;
 }
@@ -356,8 +393,12 @@ XmlRpcClient::readHeader()
       return setupConnection();
     }
 
-    XmlRpcUtil::error("Error in XmlRpcClient::readHeader: error while reading header (%s) on fd %d.",
+    XmlRpcUtil::error("Error in XmlRpcClient::readHeader: error while reading "
+                      "header (%s) on fd %d.",
                       XmlRpcSocket::getErrorMsg().c_str(), getfd());
+    // Read failed; this means the socket is in an unrecoverable state.
+    // Close the socket.
+    close();
     return false;
   }
 
@@ -382,6 +423,7 @@ XmlRpcClient::readHeader()
     if (_eof)          // EOF in the middle of a response is an error
     {
       XmlRpcUtil::error("Error in XmlRpcClient::readHeader: EOF while reading header");
+      close();
       return false;   // Close the connection
     }
     
@@ -391,19 +433,27 @@ XmlRpcClient::readHeader()
   // Decode content length
   if (lp == 0) {
     XmlRpcUtil::error("Error XmlRpcClient::readHeader: No Content-length specified");
+    // Close the socket because we can't make further use of it.
+    close();
     return false;   // We could try to figure it out by parsing as we read, but for now...
   }
 
-  _contentLength = atoi(lp);
-  if (_contentLength <= 0) {
-    XmlRpcUtil::error("Error in XmlRpcClient::readHeader: Invalid Content-length specified (%d).", _contentLength);
+  // avoid overly large or improperly formatted content-length
+  long int clength = 0;
+  clength = strtol(lp, nullptr, 10);
+  if ((clength <= 0) || (clength > __INT_MAX__)) {
+    XmlRpcUtil::error("Error in XmlRpcClient::readHeader: Invalid Content-length specified.");
+    // Close the socket because we can't make further use of it.
+    close();
     return false;
   }
+  _contentLength = int(clength);
   	
   XmlRpcUtil::log(4, "client read content length: %d", _contentLength);
 
   // Otherwise copy non-header data to response buffer and set state to read response.
   _response = bp;
+  _header = "";   // should parse out any interesting bits from the header (connection, etc)...
   _connectionState = READ_RESPONSE;
   return true;    // Continue monitoring this source
 }
@@ -414,15 +464,31 @@ XmlRpcClient::readResponse()
 {
   // If we dont have the entire response yet, read available data
   if (int(_response.length()) < _contentLength) {
-    if ( ! XmlRpcSocket::nbRead(this->getfd(), _response, &_eof)) {
+    std::string buff;
+    if ( ! XmlRpcSocket::nbRead(this->getfd(), buff, &_eof)) {
       XmlRpcUtil::error("Error in XmlRpcClient::readResponse: read error (%s).",XmlRpcSocket::getErrorMsg().c_str());
+      // nbRead returned an error, indicating that the socket is in a bad state.
+      // close it and stop monitoring this client.
+      close();
       return false;
     }
+    _response += buff;
 
+    // Avoid an overly large response
+    if (_response.length() > size_t(__INT_MAX__)) {
+      XmlRpcUtil::error("XmlRpcClient::readResponse: response length (%u) exceeds the maximum allowed size (%u).",
+                        _response.length(), __INT_MAX__);
+      _response.clear();
+      close();
+      return false;
+    }
     // If we haven't gotten the entire _response yet, return (keep reading)
     if (int(_response.length()) < _contentLength) {
       if (_eof) {
         XmlRpcUtil::error("Error in XmlRpcClient::readResponse: EOF while reading response");
+        // nbRead returned an eof, indicating that the socket is disconnected.
+        // close it and stop monitoring this client.
+        close();
         return false;
       }
       return true;
@@ -447,7 +513,6 @@ XmlRpcClient::parseResponse(XmlRpcValue& result)
   int offset = 0;
   if ( ! XmlRpcUtil::findTag(METHODRESPONSE_TAG,_response,&offset)) {
     XmlRpcUtil::error("Error in XmlRpcClient::parseResponse: Invalid response - no methodResponse. Response:\n%s", _response.c_str());
-    _header = "";
     return false;
   }
 
@@ -459,25 +524,15 @@ XmlRpcClient::parseResponse(XmlRpcValue& result)
     if ( ! result.fromXml(_response, &offset)) {
       XmlRpcUtil::error("Error in XmlRpcClient::parseResponse: Invalid response value. Response:\n%s", _response.c_str());
       _response = "";
-      _header = "";
       return false;
     }
   } else {
     XmlRpcUtil::error("Error in XmlRpcClient::parseResponse: Invalid response - no param or fault tag. Response:\n%s", _response.c_str());
     _response = "";
-    _header = "";
     return false;
   }
       
   _response = "";
-
-  // Close connection if protocol is HTTP/1.0
-  if (_header.rfind("HTTP/1.0", 0) == 0) {
-    setKeepOpen(false);
-    close();
-  }
-
-  _header = "";
   return result.valid();
 }
 

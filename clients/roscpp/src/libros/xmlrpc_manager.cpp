@@ -139,6 +139,9 @@ void XMLRPCManager::shutdown()
     return;
   }
 
+  // before shutting down, unsubscribe all the cached parameter
+  ros::param::unsubscribeCachedParam();
+
   shutting_down_ = true;
   server_thread_.join();
 
@@ -370,7 +373,7 @@ void XMLRPCManager::releaseXMLRPCClient(XmlRpcClient *c)
   {
     if (c == i->client_)
     {
-      if (shutting_down_ || !c->getKeepOpen())
+      if (shutting_down_)
       {
         // if we are shutting down we won't be re-using the client
         i->client_->close();

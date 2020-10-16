@@ -39,6 +39,7 @@ Core roslaunch model and lower-level utility routines.
 import os
 import logging
 
+import re
 import socket
 import sys
 try:
@@ -456,6 +457,7 @@ class Node(object):
         self.type = node_type
         self.name = name or None
         self.namespace = rosgraph.names.make_global_ns(namespace or '/')
+        self.namespace = re.sub("//+", "/", self.namespace)
         self.machine_name = machine_name or None
         self.respawn = respawn
         self.respawn_delay = respawn_delay
@@ -635,7 +637,7 @@ class Test(Node):
         
 class Executable(object):
     """
-    Executable is a generic container for exectuable commands.
+    Executable is a generic container for executable commands.
     """
     
     def __init__(self, cmd, args, phase=PHASE_RUN):
@@ -655,7 +657,7 @@ class Executable(object):
         
 class RosbinExecutable(Executable):
     """
-    RosbinExecutables are exectuables stored in ROS_ROOT/bin. 
+    RosbinExecutables are executables stored in ROS_ROOT/bin.
     """
     def __init__(self, cmd, args, phase=PHASE_RUN):
         super(RosbinExecutable, self).__init__(cmd, args, phase)

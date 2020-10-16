@@ -63,15 +63,18 @@ public:
   /**
    * Callback function. Must be called for every message received.
    */
-  void callback(const boost::shared_ptr<M_string>& connection_header, const std::string& topic, const std::string& callerid, const SerializedMessage& m, const uint64_t& bytes_sent, const ros::Time& received_time, bool dropped);
+  void callback(const boost::shared_ptr<M_string>& connection_header, const std::string& topic, const std::string& callerid, const SerializedMessage& m, const uint64_t& bytes_sent, const ros::Time& received_time, bool dropped, int connection_id);
 
 private:
 
-  // these are hard constrains
+  // Range of window length, in seconds
   int max_window;
   int min_window;
+  int previous_connection_id;
 
-  // these are soft constrains
+  // Range of acceptable messages in window.
+  // Window size will be adjusted if number of observed is
+  // outside this range.
   int max_elements;
   int min_elements;
 
@@ -95,7 +98,7 @@ private:
     std::list<ros::Duration> age_list;
     // number of dropped messages
     uint64_t dropped_msgs;
-    // latest sequence number observered (if available)
+    // latest sequence number observed (if available)
     uint64_t last_seq;
     // latest total traffic volume observed
     uint64_t stat_bytes_last;

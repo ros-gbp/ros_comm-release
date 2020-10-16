@@ -36,6 +36,7 @@
 #include "rosbag/exceptions.h"
 
 #include "boost/program_options.hpp"
+#include <signal.h>
 #include <string>
 #include <sstream>
 
@@ -53,6 +54,7 @@ rosbag::RecorderOptions parseOptions(int argc, char** argv) {
       ("regex,e", "match topics using regular expressions")
       ("exclude,x", po::value<std::string>(), "exclude topics matching regular expressions")
       ("quiet,q", "suppress console output")
+      ("publish,p", "Publish a msg when the record begin")
       ("output-prefix,o", po::value<std::string>(), "prepend PREFIX to beginning of bag name")
       ("output-name,O", po::value<std::string>(), "record bagnamed NAME.bag")
       ("buffsize,b", po::value<int>()->default_value(256), "Use an internal buffer of SIZE MB (Default: 256)")
@@ -68,7 +70,8 @@ rosbag::RecorderOptions parseOptions(int argc, char** argv) {
       ("duration", po::value<std::string>(), "Record a bag of maximum duration in seconds, unless 'm', or 'h' is appended.")
       ("node", po::value<std::string>(), "Record all topics subscribed to by a specific node.")
       ("tcpnodelay", "Use the TCP_NODELAY transport hint when subscribing to topics.")
-      ("udp", "Use the UDP transport hint when subscribing to topics.");
+      ("udp", "Use the UDP transport hint when subscribing to topics.")
+      ("repeat-latched", "Repeat latched msgs at the start of each new bag file.");
 
   
     po::positional_options_description p;
@@ -79,10 +82,10 @@ rosbag::RecorderOptions parseOptions(int argc, char** argv) {
     try 
     {
       po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-    } catch (boost::program_options::invalid_command_line_syntax& e)
+    } catch (const boost::program_options::invalid_command_line_syntax& e)
     {
       throw ros::Exception(e.what());
-    }  catch (boost::program_options::unknown_option& e)
+    } catch (const boost::program_options::unknown_option& e)
     {
       throw ros::Exception(e.what());
     }
@@ -103,6 +106,10 @@ rosbag::RecorderOptions parseOptions(int argc, char** argv) {
     }
     if (vm.count("quiet"))
       opts.quiet = true;
+    if (vm.count("publish"))
+      opts.publish = true;
+    if (vm.count("repeat-latched"))
+      opts.repeat_latched = true;
     if (vm.count("output-prefix"))
     {
       opts.prefix = vm["output-prefix"].as<std::string>();
@@ -273,19 +280,32 @@ rosbag::RecorderOptions parseOptions(int argc, char** argv) {
     return opts;
 }
 
+/**
+ * Handle SIGTERM to allow the recorder to cleanup by requesting a shutdown.
+ * \param signal
+ */
+void signal_handler(int signal)
+{
+  (void) signal;
+  ros::requestShutdown();
+}
+
 int main(int argc, char** argv) {
     ros::init(argc, argv, "record", ros::init_options::AnonymousName);
+
+    // handle SIGTERM signals
+    signal(SIGTERM, signal_handler);
 
     // Parse the command-line options
     rosbag::RecorderOptions opts;
     try {
         opts = parseOptions(argc, argv);
     }
-    catch (ros::Exception const& ex) {
+    catch (const ros::Exception& ex) {
         ROS_ERROR("Error reading options: %s", ex.what());
         return 1;
     }
-    catch(boost::regex_error const& ex) {
+    catch(const boost::regex_error& ex) {
         ROS_ERROR("Error reading options: %s\n", ex.what());
         return 1;
     }
