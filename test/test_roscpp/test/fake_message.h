@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, Willow Garage, Inc.
+ * Copyright (c) 2009, Willow Garage, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,47 +27,65 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* Author: Brian Gerkey */
+/* Author: Josh Faust */
 
 /*
- * Publish an empty message N times, back to back
+ * Subscription queue test helper classes
  */
+#ifndef TEST_ROSCPP_FAKE_MESSAGE_H
+#define TEST_ROSCPP_FAKE_MESSAGE_H
 
-#include <string>
-#include <cstdio>
-#include <time.h>
-#include <stdlib.h>
+#include "ros/subscription_callback_helper.h"
 
-#include "ros/ros.h"
-#include <test_roscpp/TestEmpty.h>
-
-int32_t g_msg_count = 0;
-void subscriberCallback(const ros::SingleSubscriberPublisher& pub)
+class FakeMessage
 {
-  test_roscpp::TestEmpty msg;
-  for(int i = 0; i < g_msg_count; i++)
-  {
-    pub.publish(msg);
-    ROS_INFO("published message %d", i);
-  }
-}
+public:
+  virtual const std::string __getDataType() const { return ""; }
+  virtual const std::string __getMD5Sum() const { return ""; }
+  virtual const std::string __getMessageDefinition() const { return ""; }
+  virtual uint32_t serializationLength() const { return 0; }
+  virtual uint8_t *serialize(uint8_t *write_ptr, uint32_t seq) const { (void)seq; return write_ptr; }
+  virtual uint8_t *deserialize(uint8_t *read_ptr) { return read_ptr; }
+};
 
-#define USAGE "USAGE: publish_empty <count>"
-
-int main(int argc, char** argv)
+class FakeSubHelper : public ros::SubscriptionCallbackHelper
 {
-  ros::init(argc, argv, "publish_onsub");
+public:
+  FakeSubHelper()
+    : calls_(0)
+  {}
 
-  if(argc != 2)
+  virtual ros::VoidConstPtr deserialize(const ros::SubscriptionCallbackHelperDeserializeParams&)
   {
-    puts(USAGE);
-    exit(-1);
+    return boost::make_shared<FakeMessage>();
   }
 
-  g_msg_count = atoi(argv[1]);
+  virtual std::string getMD5Sum() { return ""; }
+  virtual std::string getDataType() { return ""; }
 
-  ros::NodeHandle nh;
-  ros::Publisher pub = nh.advertise<test_roscpp::TestEmpty>("roscpp/pubsub_test", g_msg_count, boost::bind(subscriberCallback, _1));
+  virtual void call(ros::SubscriptionCallbackHelperCallParams& params)
+  {
+    (void)params;
+    {
+      boost::mutex::scoped_lock lock(mutex_);
+      ++calls_;
+    }
 
-  ros::spin();
-}
+    if (cb_)
+    {
+      cb_();
+    }
+  }
+
+  virtual const std::type_info& getTypeInfo() { return typeid(FakeMessage); }
+  virtual bool isConst() { return true; }
+  virtual bool hasHeader() { return false; }
+
+  boost::mutex mutex_;
+  uint32_t calls_;
+
+  boost::function<void(void)> cb_;
+};
+typedef boost::shared_ptr<FakeSubHelper> FakeSubHelperPtr;
+
+#endif // TEST_ROSCPP_FAKE_MESSAGE_H

@@ -200,38 +200,23 @@ class TimeSynchronizer(SimpleFilter):
     while waiting for messages to arrive and complete their "set".
     """
 
-    def __init__(self, fs, queue_size, reset=False):
+    def __init__(self, fs, queue_size):
         SimpleFilter.__init__(self)
         self.connectInput(fs)
         self.queue_size = queue_size
         self.lock = threading.Lock()
-        self.enable_reset = reset
 
     def connectInput(self, fs):
         self.queues = [{} for f in fs]
-        self.latest_stamps = [rospy.Time(0) for f in fs]
         self.input_connections = [
             f.registerCallback(self.add, q, i_q)
             for i_q, (f, q) in enumerate(zip(fs, self.queues))]
 
     def add(self, msg, my_queue, my_queue_index=None):
         self.lock.acquire()
-        now = rospy.Time.now()
-        is_simtime = not rospy.rostime.is_wallclock()
-        if is_simtime and self.enable_reset and my_queue_index is not None:
-            if now < self.latest_stamps[my_queue_index]:
-                rospy.logdebug("Detected jump back in time. Clearing message filter queue")
-                my_queue.clear()
-            self.latest_stamps[my_queue_index] = now
         my_queue[msg.header.stamp] = msg
         while len(my_queue) > self.queue_size:
             del my_queue[min(my_queue)]
-
-        if is_simtime and self.enable_reset:
-            if max(self.latest_stamps) != now:
-                self.lock.release()
-                return
-
         # common is the set of timestamps that occur in all queues
         common = reduce(set.intersection, [set(q) for q in self.queues])
         for t in sorted(common):
@@ -255,12 +240,11 @@ class ApproximateTimeSynchronizer(TimeSynchronizer):
     avoid this as much as you can, since the delays are unpredictable.
     """
 
-    def __init__(self, fs, queue_size, slop, allow_headerless=False, reset=False):
+    def __init__(self, fs, queue_size, slop, allow_headerless=False):
         TimeSynchronizer.__init__(self, fs, queue_size)
         self.slop = rospy.Duration.from_sec(slop)
         self.allow_headerless = allow_headerless
         self.last_added = rospy.Time()
-        self.enable_reset = reset
 
     def add(self, msg, my_queue, my_queue_index=None):
         if not hasattr(msg, 'header') or not hasattr(msg.header, 'stamp'):
@@ -274,13 +258,6 @@ class ApproximateTimeSynchronizer(TimeSynchronizer):
             stamp = msg.header.stamp
 
         self.lock.acquire()
-        now = rospy.Time.now()
-        is_simtime = not rospy.rostime.is_wallclock()
-        if is_simtime and self.enable_reset and my_queue_index is not None:
-            if now < self.latest_stamps[my_queue_index]:
-                rospy.logdebug("Detected jump back in time. Clearing message filter queue")
-                my_queue.clear()
-            self.latest_stamps[my_queue_index] = now
         my_queue[stamp] = msg
 
         # clear all buffers if jump backwards in time is detected
@@ -293,11 +270,6 @@ class ApproximateTimeSynchronizer(TimeSynchronizer):
 
         while len(my_queue) > self.queue_size:
             del my_queue[min(my_queue)]
-
-        if is_simtime and self.enable_reset:
-            if max(self.latest_stamps) != now:
-                self.lock.release()
-                return
         # self.queues = [topic_0 {stamp: msg}, topic_1 {stamp: msg}, ...]
         if my_queue_index is None:
             search_queues = self.queues
