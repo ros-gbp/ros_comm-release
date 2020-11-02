@@ -152,15 +152,12 @@ public:
     int res = 0;
     {
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
-      boost::thread_cv_detail::lock_on_exit<boost::unique_lock<boost::mutex>> guard;
+      boost::thread_cv_detail::lock_on_exit<boost::unique_lock<boost::mutex> > guard;
       boost::detail::interruption_checker check_for_interruption(&internal_mutex, &cond);
       pthread_mutex_t *the_mutex = &internal_mutex;
       guard.activate(m);
       res = pthread_cond_wait(&cond, the_mutex);
-#if BOOST_VERSION >= 106600
-      check_for_interruption.unlock_if_locked();
-      guard.deactivate();
-#elif BOOST_VERSION >= 106500
+#if BOOST_VERSION >= 106500
       check_for_interruption.check();
       guard.deactivate();
 #endif
@@ -185,15 +182,12 @@ public:
     int cond_res;
     {
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
-      boost::thread_cv_detail::lock_on_exit<boost::unique_lock<boost::mutex>> guard;
+      boost::thread_cv_detail::lock_on_exit<boost::unique_lock<boost::mutex> > guard;
       boost::detail::interruption_checker check_for_interruption(&internal_mutex, &cond);
       pthread_mutex_t *the_mutex = &internal_mutex;
       guard.activate(m);
       cond_res = pthread_cond_timedwait(&cond, the_mutex, &timeout);
-#if BOOST_VERSION >= 106600
-      check_for_interruption.unlock_if_locked();
-      guard.deactivate();
-#elif BOOST_VERSION >= 106500
+#if BOOST_VERSION >= 106500
       check_for_interruption.check();
       guard.deactivate();
 #endif
@@ -216,10 +210,6 @@ public:
     return true;
   }
 };
-static_assert(
-    sizeof(condition_variable_monotonic) == sizeof(boost::condition_variable),
-    "sizeof(ros::internal::condition_variable_monotonic) != sizeof(boost::condition_variable)");
-
 #endif
 
 }  // namespace internal

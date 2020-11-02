@@ -2,84 +2,43 @@
 Changelog for package topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.14.10 (2020-10-16)
+1.12.17 (2020-10-26)
 --------------------
 * Update maintainers (`#2075 <https://github.com/ros/ros_comm/issues/2075>`_)
 * Contributors: Jacob Perron, Shane Loretz
 
-1.14.9 (2020-08-20)
--------------------
+1.12.16 (2020-08-26)
+--------------------
 
-1.14.8 (2020-08-12)
--------------------
-
-1.14.7 (2020-07-31)
--------------------
-* add latch param to throttle (`#1944 <https://github.com/ros/ros_comm/issues/1944>`_)
-
-1.14.6 (2020-05-29)
--------------------
-* avoid infinite recursion in rosrun tab completion when rosbash is not installed (`#1948 <https://github.com/ros/ros_comm/issues/1948>`_)
-
-1.14.5 (2020-03-19)
--------------------
-* fix flakyness of transform test (`#1890 <https://github.com/ros/ros_comm/issues/1890>`_)
-
-1.14.4 (2020-02-20)
--------------------
-* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
-* use node namespace when looking up topic  (`#1663 <https://github.com/ros/ros_comm/issues/1663>`_)
-* more Windows test code fixes (`#1727 <https://github.com/ros/ros_comm/issues/1727>`_)
-* more Python 3 compatibility (`#1795 <https://github.com/ros/ros_comm/issues/1795>`_)
-* relay: fix boost::lock exception (`#1696 <https://github.com/ros/ros_comm/issues/1696>`_)
-* relay_field: add --tcpnodely (`#1682 <https://github.com/ros/ros_comm/issues/1682>`_)
-* switch to yaml.safe_load(_all) to prevent YAMLLoadWarning (`#1688 <https://github.com/ros/ros_comm/issues/1688>`_)
-* fix flaky hztests (`#1661 <https://github.com/ros/ros_comm/issues/1661>`_)
-* transform: create publisher before subscriber, because callback may use the publisher (`#1669 <https://github.com/ros/ros_comm/issues/1669>`_)
-* duplicate test nodes which aren't available to other packages, add missing dependencies (`#1611 <https://github.com/ros/ros_comm/issues/1611>`_)
+1.12.15 (2020-08-10)
+--------------------
+* transfom: create publisher before subscriber, because callback may use the publisher (`#1669 <https://github.com/ros/ros_comm/issues/1669>`_)
 * mux: do not dereference the end-iterator (`#1579 <https://github.com/ros/ros_comm/issues/1579>`_)
 * fix topic_tools environment hook (`#1486 <https://github.com/ros/ros_comm/issues/1486>`_)
-* mux: add ~latch option (`#1489 <https://github.com/ros/ros_comm/issues/1489>`_)
 
-1.14.3 (2018-08-06)
--------------------
-
-1.14.2 (2018-06-06)
--------------------
-
-1.14.1 (2018-05-21)
--------------------
-
-1.14.0 (2018-05-21)
--------------------
-* throttling when rostime jump backward (`#1397 <https://github.com/ros/ros_comm/issues/1397>`_)
+1.12.14 (2018-08-23)
+--------------------
 * check that output topic is valid in demux (`#1367 <https://github.com/ros/ros_comm/issues/1367>`_)
-* add latch functionality to topic_tools/transform (`#1341 <https://github.com/ros/ros_comm/issues/1341>`_)
 
-1.13.6 (2018-02-05)
--------------------
+1.12.13 (2018-02-21)
+--------------------
 * replace deprecated syntax (backticks with repr()) (`#1259 <https://github.com/ros/ros_comm/issues/1259>`_)
 
-1.13.5 (2017-11-09)
+1.12.12 (2017-11-16)
+--------------------
+
+1.12.11 (2017-11-07)
+--------------------
+
+1.12.10 (2017-11-06)
+--------------------
+
+1.12.9 (2017-11-06)
 -------------------
 
-1.13.4 (2017-11-02)
+1.12.8 (2017-11-06)
 -------------------
-
-1.13.3 (2017-10-25)
--------------------
-* add initial_topic param (`#1199 <https://github.com/ros/ros_comm/issues/1199>`_)
 * make demux more agile (`#1196 <https://github.com/ros/ros_comm/issues/1196>`_)
-* add stealth mode for topic_tools/relay (`#1155 <https://github.com/ros/ros_comm/issues/1155>`_)
-
-1.13.2 (2017-08-15)
--------------------
-
-1.13.1 (2017-07-27)
--------------------
-
-1.13.0 (2017-02-22)
--------------------
 
 1.12.7 (2017-02-17)
 -------------------

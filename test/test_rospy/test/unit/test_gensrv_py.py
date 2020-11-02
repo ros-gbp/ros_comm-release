@@ -38,7 +38,7 @@ import unittest
 try:
     from cStringIO import StringIO
 except ImportError:
-    from io import BytesIO as StringIO
+    from io import StringIO
 import time
 import random
 import math

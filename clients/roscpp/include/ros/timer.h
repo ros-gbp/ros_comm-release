@@ -49,7 +49,6 @@ public:
   Timer() {}
   Timer(const Timer& rhs);
   ~Timer();
-  Timer& operator=(const Timer& other) = default;
 
   /**
    * \brief Start the timer.  Does nothing if the timer is already started.

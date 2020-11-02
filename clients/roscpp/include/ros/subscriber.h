@@ -49,7 +49,6 @@ public:
   Subscriber() {}
   Subscriber(const Subscriber& rhs);
   ~Subscriber();
-  Subscriber& operator=(const Subscriber& other) = default;
 
   /**
    * \brief Unsubscribe the callback associated with this Subscriber

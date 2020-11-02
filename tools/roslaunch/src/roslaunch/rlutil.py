@@ -59,7 +59,7 @@ def check_log_disk_usage():
     """
     try:
         d = rospkg.get_log_dir()
-        roslaunch.core.printlog("Checking log directory for disk usage. This may take a while.\nPress Ctrl-C to interrupt") 
+        roslaunch.core.printlog("Checking log directory for disk usage. This may take awhile.\nPress Ctrl-C to interrupt") 
         disk_usage = rosclean.get_disk_usage(d)
         # warn if over a gig
         if disk_usage > 1073741824:
@@ -179,19 +179,18 @@ def get_or_generate_uuid(options_runid, options_wait_for_master):
             if not options_wait_for_master:
                 val = roslaunch.core.generate_run_id()
     return val
-
-def check_roslaunch(f, use_test_depends=False, ignore_unset_args=False):
+    
+def check_roslaunch(f, use_test_depends=False):
     """
     Check roslaunch file for errors, returning error message if check fails. This routine
     is mainly to support rostest's roslaunch_check.
 
     :param f: roslaunch file name, ``str``
     :param use_test_depends: Consider test_depends, ``Bool``
-    :param ignore_unset_args: Consider ignore default arg requirements, ``Bool``
     :returns: error message or ``None``
     """
     try:
-        rl_config = roslaunch.config.load_config_default([f], DEFAULT_MASTER_PORT, verbose=False, ignore_unset_args=ignore_unset_args)
+        rl_config = roslaunch.config.load_config_default([f], DEFAULT_MASTER_PORT, verbose=False)
     except roslaunch.core.RLException as e:
         return str(e)
     
@@ -199,7 +198,7 @@ def check_roslaunch(f, use_test_depends=False, ignore_unset_args=False):
     errors = []
     # check for missing deps
     try:
-        base_pkg, file_deps, missing = roslaunch.depends.roslaunch_deps([f], use_test_depends=use_test_depends, ignore_unset_args=ignore_unset_args)
+        base_pkg, file_deps, missing = roslaunch.depends.roslaunch_deps([f], use_test_depends=use_test_depends)
     except rospkg.common.ResourceNotFound as r:
         errors.append("Could not find package [%s] included from [%s]"%(str(r), f))
         missing = {}
@@ -220,10 +219,10 @@ def check_roslaunch(f, use_test_depends=False, ignore_unset_args=False):
             print(e, file=sys.stderr)
             miss_all = True
         if miss_all:
-            roslaunch.core.printerrlog("Missing package dependencies: %s/package.xml: %s"%(pkg, ', '.join(miss)))
+            print("Missing package dependencies: %s/package.xml: %s"%(pkg, ', '.join(miss)), file=sys.stderr)
             errors.append("Missing package dependencies: %s/package.xml: %s"%(pkg, ', '.join(miss)))
         elif miss:
-            roslaunch.core.printerrlog("Missing package dependencies: %s/package.xml: %s (notify upstream maintainer)"%(pkg, ', '.join(miss)))
+            print("Missing package dependencies: %s/package.xml: %s (notify upstream maintainer)"%(pkg, ', '.join(miss)), file=sys.stderr)
     
     # load all node defs
     nodes = []

@@ -160,6 +160,7 @@ def sleep(duration):
 
         if rospy.rostime.get_rostime() < initial_rostime:
             time_jump = (initial_rostime - rospy.rostime.get_rostime()).to_sec()
+            rospy.core.logerr("ROS time moved backwards: %ss", time_jump)
             raise rospy.exceptions.ROSTimeMovedBackwardsException(time_jump)
         if rospy.core.is_shutdown():
             raise rospy.exceptions.ROSInterruptException("ROS shutdown request")
@@ -207,7 +208,7 @@ class Timer(threading.Thread):
         self._oneshot  = oneshot
         self._reset = reset
         self._shutdown = False
-        self.daemon = True
+        self.setDaemon(True)
         self.start()
 
     def shutdown(self):

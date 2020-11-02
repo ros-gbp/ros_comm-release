@@ -2,9 +2,7 @@
 #include "xmlrpcpp/XmlRpcValue.h"
 #include "xmlrpcpp/XmlRpcException.h"
 #include "xmlrpcpp/XmlRpcUtil.h"
-
-#include <b64/encode.h>
-#include <b64/decode.h>
+#include "xmlrpcpp/base64.h"
 
 #ifndef MAKEDEPEND
 # include <iostream>
@@ -14,7 +12,6 @@
 #endif
 
 #include <sstream>
-#include <mutex>
 
 namespace XmlRpc {
 
@@ -71,12 +68,6 @@ namespace XmlRpc {
 
   
   // Type checking
-  void XmlRpcValue::assertTypeOrInvalid(Type t) const
-  {
-    if (_type != t)
-      throw XmlRpcException("type error");
-  }
-
   void XmlRpcValue::assertTypeOrInvalid(Type t)
   {
     if (_type == TypeInvalid)
@@ -331,7 +322,7 @@ namespace XmlRpc {
   std::string XmlRpcValue::intToXml() const
   {
     char buf[256];
-    std::snprintf(buf, sizeof(buf)-1, "%d", _value.asInt);
+    snprintf(buf, sizeof(buf)-1, "%d", _value.asInt);
     buf[sizeof(buf)-1] = 0;
     std::string xml = VALUE_TAG;
     xml += I4_TAG;
@@ -441,7 +432,7 @@ namespace XmlRpc {
   {
     struct tm* t = _value.asTime;
     char buf[20];
-    std::snprintf(buf, sizeof(buf)-1, "%4d%02d%02dT%02d:%02d:%02d", 
+    snprintf(buf, sizeof(buf)-1, "%4d%02d%02dT%02d:%02d:%02d", 
       t->tm_year,t->tm_mon,t->tm_mday,t->tm_hour,t->tm_min,t->tm_sec);
     buf[sizeof(buf)-1] = 0;
 
@@ -453,29 +444,6 @@ namespace XmlRpc {
     return xml;
   }
 
-  namespace {
-    std::size_t base64EncodedSize(std::size_t raw_size)
-    {
-      // encoder will still write to output buffer for empty input.
-      if (raw_size == 0) return 1;
-
-      // 4 encoded character per 3 input bytes, rounded up,
-      // plus a newline character per 72 output characters, rounded up.
-      std::size_t encoded = (raw_size + 2) / 3 * 4;
-      encoded += (encoded + 71) / 72;
-      return encoded;
-    }
-
-    std::size_t base64DecodedSize(std::size_t encoded_size)
-    {
-      // decoded will still write to output buffer for empty input.
-      if (encoded_size == 0) return 1;
-
-      // 3 decoded bytes per 4 encoded characters, rounded up just to be sure.
-      return (encoded_size + 3) / 4 * 3;
-    }
-
-  }
 
   // Base64
   bool XmlRpcValue::binaryFromXml(std::string const& valueXml, int* offset)
@@ -484,36 +452,35 @@ namespace XmlRpc {
     if (valueEnd == std::string::npos)
       return false;     // No end tag;
 
-    std::size_t encoded_size = valueEnd - *offset;
-
-
     _type = TypeBase64;
-    // might reserve too much, we'll shrink later
-    _value.asBinary = new BinaryData(base64DecodedSize(encoded_size), '\0');
+    std::string asString = valueXml.substr(*offset, valueEnd-*offset);
+    _value.asBinary = new BinaryData();
+    // check whether base64 encodings can contain chars xml encodes...
 
-    base64::decoder decoder;
-    std::size_t size = decoder.decode(&valueXml[*offset], encoded_size, &(*_value.asBinary)[0]);
-    _value.asBinary->resize(size);
+    // convert from base64 to binary
+    int iostatus = 0;
+	  base64<char> decoder;
+    std::back_insert_iterator<BinaryData> ins = std::back_inserter(*(_value.asBinary));
+		decoder.get(asString.begin(), asString.end(), ins, iostatus);
 
-    *offset += encoded_size;
+    *offset += int(asString.length());
     return true;
   }
 
+
   std::string XmlRpcValue::binaryToXml() const
   {
+    // convert to base64
+    std::vector<char> base64data;
+    int iostatus = 0;
+	  base64<char> encoder;
+    std::back_insert_iterator<std::vector<char> > ins = std::back_inserter(base64data);
+		encoder.put(_value.asBinary->begin(), _value.asBinary->end(), ins, iostatus, base64<>::crlf());
+
     // Wrap with xml
     std::string xml = VALUE_TAG;
     xml += BASE64_TAG;
-
-    std::size_t offset = xml.size();
-    // might reserve too much, we'll shrink later
-    xml.resize(xml.size() + base64EncodedSize(_value.asBinary->size()));
-
-    base64::encoder encoder;
-    offset += encoder.encode(_value.asBinary->data(), _value.asBinary->size(), &xml[offset]);
-    offset += encoder.encode_end(&xml[offset]);
-    xml.resize(offset);
-
+    xml.append(base64data.begin(), base64data.end());
     xml += BASE64_ETAG;
     xml += VALUE_ETAG;
     return xml;
@@ -611,34 +578,13 @@ namespace XmlRpc {
       default:           break;
       case TypeBoolean:  os << _value.asBool; break;
       case TypeInt:      os << _value.asInt; break;
-      case TypeDouble:
-        {
-          static std::once_flag once;
-          char buf[128]; // Should be long enough
-          int required_size = std::snprintf(buf, sizeof(buf)-1,
-                                getDoubleFormat().c_str(), _value.asDouble);
-          if (required_size < 0) {
-            std::call_once(once,
-              [](){XmlRpcUtil::error("Failed to format with %s", getDoubleFormat().c_str());});
-            os << _value.asDouble;
-          } else if (required_size < static_cast<int>(sizeof(buf))) {
-            buf[sizeof(buf)-1] = 0;
-            os << buf;
-          } else { // required_size >= static_cast<int>(sizeof(buf)
-            char required_buf[required_size+1];
-            std::snprintf(required_buf, required_size,
-              getDoubleFormat().c_str(), _value.asDouble);
-            required_buf[required_size] = 0;
-            os << required_buf;
-          }
-          break;
-        }
+      case TypeDouble:   os << _value.asDouble; break;
       case TypeString:   os << *_value.asString; break;
       case TypeDateTime:
         {
           struct tm* t = _value.asTime;
           char buf[20];
-          std::snprintf(buf, sizeof(buf)-1, "%4d%02d%02dT%02d:%02d:%02d", 
+          snprintf(buf, sizeof(buf)-1, "%4d%02d%02dT%02d:%02d:%02d", 
             t->tm_year,t->tm_mon,t->tm_mday,t->tm_hour,t->tm_min,t->tm_sec);
           buf[sizeof(buf)-1] = 0;
           os << buf;
@@ -646,10 +592,10 @@ namespace XmlRpc {
         }
       case TypeBase64:
         {
-          std::stringstream buffer;
-          buffer.write(_value.asBinary->data(), _value.asBinary->size());
-          base64::encoder encoder;
-          encoder.encode(buffer, os);
+          int iostatus = 0;
+          std::ostreambuf_iterator<char> out(os);
+          base64<char> encoder;
+          encoder.put(_value.asBinary->begin(), _value.asBinary->end(), out, iostatus, base64<>::crlf());
           break;
         }
       case TypeArray:

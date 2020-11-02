@@ -49,7 +49,6 @@ public:
   WallTimer() {}
   WallTimer(const WallTimer& rhs);
   ~WallTimer();
-  WallTimer& operator=(const WallTimer& other) = default;
 
   /**
    * \brief Start the timer.  Does nothing if the timer is already started.
@@ -72,7 +71,6 @@ public:
    */
   void setPeriod(const WallDuration& period, bool reset=true);
 
-  bool hasStarted() const { return impl_ && impl_->hasStarted(); }
   bool isValid() { return impl_ && impl_->isValid(); }
   operator void*() { return isValid() ? (void*)1 : (void*)0; }
 
@@ -100,7 +98,6 @@ private:
     Impl();
     ~Impl();
 
-    bool hasStarted() const;
     bool isValid();
     bool hasPending();
     void setPeriod(const WallDuration& period, bool reset=true);

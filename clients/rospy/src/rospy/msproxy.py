@@ -87,6 +87,7 @@ class MasterProxy(object):
         @type  uri: str
         """
         self.target = rospy.core.xmlrpcapi(uri)        
+        self._lock = Lock()
 
     def __getattr__(self, key): #forward api calls to target
         if key in _master_arg_remap:
@@ -100,8 +101,9 @@ class MasterProxy(object):
                 i = i + 1 #callerId does not count
                 #print "Remap %s => %s"%(args[i], rospy.names.resolve_name(args[i]))
                 args[i] = rospy.names.resolve_name(args[i])
-            f = getattr(self.target, key)
-            return f(*args, **kwds)
+            with self._lock:
+                f = getattr(self.target, key)
+                return f(*args, **kwds)
         return wrappedF
 
     def __getitem__(self, key):
@@ -114,14 +116,25 @@ class MasterProxy(object):
         """
         #NOTE: remapping occurs here!
         resolved_key = rospy.names.resolve_name(key)
+        if 1: # disable param cache
+            with self._lock:
+                code, msg, value = self.target.getParam(rospy.names.get_caller_id(), resolved_key)
+            if code != 1: #unwrap value with Python semantics
+                raise KeyError(key)
+            return value
+
         try:
+            # check for value in the parameter server cache
             return rospy.impl.paramserver.get_param_server_cache().get(resolved_key)
         except KeyError:
-            pass
-        code, msg, value = self.target.getParam(rospy.names.get_caller_id(), resolved_key)
-        if code != 1: #unwrap value with Python semantics
-            raise KeyError(key)
-        return value
+            # first access, make call to parameter server
+            with self._lock:
+                code, msg, value = self.target.subscribeParam(rospy.names.get_caller_id(), rospy.core.get_node_uri(), resolved_key)
+            if code != 1: #unwrap value with Python semantics
+                raise KeyError(key)
+            # set the value in the cache so that it's marked as subscribed
+            rospy.impl.paramserver.get_param_server_cache().set(resolved_key, value)
+            return value
         
     def __setitem__(self, key, val):
         """
@@ -133,7 +146,8 @@ class MasterProxy(object):
         """
         resolved_key = rospy.names.resolve_name(key)
 
-        self.target.setParam(rospy.names.get_caller_id(), resolved_key, val)
+        with self._lock:
+            self.target.setParam(rospy.names.get_caller_id(), resolved_key, val)
         try:
             rospy.impl.paramserver.get_param_server_cache().update(resolved_key, val)
         except KeyError:
@@ -150,29 +164,14 @@ class MasterProxy(object):
         mappings = rospy.names.get_mappings()
         if key in mappings:
             key = mappings[key]
-        code, msg, val = self.target.searchParam(rospy.names.get_caller_id(), key)
+        with self._lock:
+            code, msg, val = self.target.searchParam(rospy.names.get_caller_id(), key)
         if code == 1:
             return val
         elif code == -1:
             return None
         else:
             raise rospy.exceptions.ROSException("cannot search for parameter: %s"%msg)
-
-    def get_param_cached(self, key):
-        resolved_key = rospy.names.resolve_name(key)
-        try:
-            # check for value in the parameter server cache
-            return rospy.impl.paramserver.get_param_server_cache().get(resolved_key)
-        except KeyError:
-            # first access, make call to parameter server
-            code, msg, value = self.target.subscribeParam(rospy.names.get_caller_id(), rospy.core.get_node_uri(), resolved_key)
-            if code != 1: #unwrap value with Python semantics
-                raise KeyError(key)
-            # set the value in the cache so that it's marked as subscribed
-            rospy.impl.paramserver.get_param_server_cache().set(resolved_key, value)
-            if isinstance(value, dict) and not value:
-                raise KeyError(key)
-            return value
         
     def __delitem__(self, key):
         """
@@ -181,11 +180,15 @@ class MasterProxy(object):
         @raise ROSException: if parameter server reports an error
         """
         resolved_key = rospy.names.resolve_name(key)
-        code, msg, _ = self.target.deleteParam(rospy.names.get_caller_id(), resolved_key)
+        with self._lock:
+            code, msg, _ = self.target.deleteParam(rospy.names.get_caller_id(), resolved_key)
         if code == -1:
             raise KeyError(key)
         elif code != 1:
             raise rospy.exceptions.ROSException("cannot delete parameter: %s"%msg)
+        elif 0: #disable parameter cache
+            # set the value in the cache so that it's marked as subscribed
+            rospy.impl.paramserver.get_param_server_cache().delete(resolved_key)
 
     def __contains__(self, key):
         """
@@ -194,7 +197,8 @@ class MasterProxy(object):
         @type key: str
         @raise ROSException: if parameter server reports an error
         """        
-        code, msg, value = self.target.hasParam(rospy.names.get_caller_id(), rospy.names.resolve_name(key))
+        with self._lock:
+            code, msg, value = self.target.hasParam(rospy.names.get_caller_id(), rospy.names.resolve_name(key))
         if code != 1:
             raise rospy.exceptions.ROSException("cannot check parameter on server: %s"%msg)
         return value
@@ -203,7 +207,8 @@ class MasterProxy(object):
         """
         @raise ROSException: if parameter server reports an error
         """
-        code, msg, value = self.target.getParamNames(rospy.names.get_caller_id())
+        with self._lock:
+            code, msg, value = self.target.getParamNames(rospy.names.get_caller_id())
         if code == 1:
             return value.__iter__()
         else:

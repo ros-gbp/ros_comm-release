@@ -44,13 +44,13 @@ from std_msgs.msg import String
 
 def talker():
     # create our publish handle
-    pub = rospy.Publisher('chatter', String, queue_size=0)
+    pub = rospy.Publisher('chatter', String)
 
     # in ROS, nodes are unique named. If two nodes with the same
     # node are launched, the previous one is kicked off. The 
     # anonymous=True flag means that rospy will choose a unique
     # name for our 'talker' node so that multiple talkers can
-    # run simultaneously.
+    # run simultaenously.
     rospy.init_node('talker', anonymous=True)
 
     count = 0

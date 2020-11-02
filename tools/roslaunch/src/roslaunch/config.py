@@ -267,15 +267,14 @@ class ROSLaunchConfig(object):
                 namespaces[ns] = [n]
             else:
                 namespaces[ns].append(n)
-        for k in sorted(namespaces):
-            v = namespaces[k]
+        for k,v in namespaces.items():
             summary += '  %s\n'%k + '\n'.join(sorted(['    %s'%_summary_name(n) for n in v]))
             summary += '\n'
         return summary
 
     def add_executable(self, exe):
         """
-        Declare an executable to be run during the launch
+        Declare an exectuable to be run during the launch
         @param exe: Executable
         @type  exe: L{Executable}
         @raises ValueError
@@ -408,16 +407,14 @@ class ROSLaunchConfig(object):
             # assign to local machine
             return self.machines['']            
 
-def load_config_default(roslaunch_files, port, roslaunch_strs=None, loader=None, verbose=False, assign_machines=True, ignore_unset_args=False):
+def load_config_default(roslaunch_files, port, roslaunch_strs=None, loader=None, verbose=False, assign_machines=True):
     """
     Base routine for creating a ROSLaunchConfig from a set of 
     roslaunch_files and or launch XML strings and initializing it. This
     config will have a core definition and also set the master to run
     on port.
-    @param roslaunch_files: list of launch files to load. Each item may also
-      be a tuple where the first item is the launch file and the second item
-      is a string containing arguments.
-    @type  roslaunch_files: [str|(str, str)]
+    @param roslaunch_files: list of launch files to load
+    @type  roslaunch_files: [str]
     @param port: roscore/master port override. Set to 0 or None to use default.
     @type  port: int
     @param roslaunch_strs: (optional) roslaunch XML strings to load
@@ -426,8 +423,6 @@ def load_config_default(roslaunch_files, port, roslaunch_strs=None, loader=None,
     @type  verbose: bool
     @param assign_machines: (optional) assign nodes to machines (default: True)
     @type  assign_machines: bool
-    @param ignore_unset_args: (optional) ignore default arg requirements (default: False)
-    @type ignore_unset_args: bool
     @return: initialized rosconfig instance
     @rytpe: L{ROSLaunchConfig} initialized rosconfig instance
     @raises: RLException
@@ -443,7 +438,6 @@ def load_config_default(roslaunch_files, port, roslaunch_strs=None, loader=None,
         config.master.uri = rosgraph.network.create_local_xmlrpc_uri(port)
 
     loader = loader or roslaunch.xmlloader.XmlLoader()
-    loader.ignore_unset_args = ignore_unset_args
 
     # load the roscore file first. we currently have
     # last-declaration wins rules.  roscore is just a
@@ -452,13 +446,9 @@ def load_config_default(roslaunch_files, port, roslaunch_strs=None, loader=None,
 
     # load the roslaunch_files into the config
     for f in roslaunch_files:
-        if isinstance(f, tuple):
-            f, args = f
-        else:
-            args = None
         try:
             logger.info('loading config file %s'%f)
-            loader.load(f, config, argv=args, verbose=verbose)
+            loader.load(f, config, verbose=verbose)
         except roslaunch.xmlloader.XmlParseException as e:
             raise RLException(e)
         except roslaunch.loader.LoadException as e:

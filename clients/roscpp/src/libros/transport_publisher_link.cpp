@@ -89,10 +89,6 @@ bool TransportPublisherLink::initialize(const ConnectionPtr& connection)
     connection_->setHeaderReceivedCallback(boost::bind(&TransportPublisherLink::onHeaderReceived, this, _1, _2));
 
     SubscriptionPtr parent = parent_.lock();
-    if (!parent)
-    {
-      return false;
-    }
 
     M_string header;
     header["topic"] = parent->getName();
@@ -234,10 +230,9 @@ void TransportPublisherLink::onRetryTimer(const ros::SteadyTimerEvent&)
       {
         ConnectionPtr connection(boost::make_shared<Connection>());
         connection->initialize(transport, false, HeaderReceivedFunc());
-        if (initialize(connection))
-        {
-          ConnectionManager::instance()->addConnection(connection);
-        }
+        initialize(connection);
+
+        ConnectionManager::instance()->addConnection(connection);
       }
       else
       {

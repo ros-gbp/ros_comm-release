@@ -79,10 +79,7 @@ class _MasterTestCase(TestRosClient):
 
     ## validates a URI as being http(s)
     def _checkUri(self, uri):
-        try:
-            import urllib.parse as urlparse
-        except ImportError:
-            import urlparse
+        import urlparse
         parsed = urlparse.urlparse(uri)
         self.assert_(parsed[0] in ['http', 'https'], 'protocol [%s] in [%s] invalid'%(parsed[0], uri))
         self.assert_(parsed[1], 'host missing [%s]'%uri)
@@ -101,10 +98,7 @@ class MasterApiTestCase(_MasterTestCase):
         self._checkUri(uri)
 
         # make sure we agree on ports
-        try:
-            import urllib.parse as urlparse
-        except ImportError:
-            import urlparse
+        import urlparse
         parsed = urlparse.urlparse(uri)
         parsed2 = urlparse.urlparse(self.master_uri)        
         

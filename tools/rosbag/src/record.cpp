@@ -54,7 +54,6 @@ rosbag::RecorderOptions parseOptions(int argc, char** argv) {
       ("regex,e", "match topics using regular expressions")
       ("exclude,x", po::value<std::string>(), "exclude topics matching regular expressions")
       ("quiet,q", "suppress console output")
-      ("publish,p", "Publish a msg when the record begin")
       ("output-prefix,o", po::value<std::string>(), "prepend PREFIX to beginning of bag name")
       ("output-name,O", po::value<std::string>(), "record bagnamed NAME.bag")
       ("buffsize,b", po::value<int>()->default_value(256), "Use an internal buffer of SIZE MB (Default: 256)")
@@ -81,10 +80,10 @@ rosbag::RecorderOptions parseOptions(int argc, char** argv) {
     try 
     {
       po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-    } catch (const boost::program_options::invalid_command_line_syntax& e)
+    } catch (boost::program_options::invalid_command_line_syntax& e)
     {
       throw ros::Exception(e.what());
-    } catch (const boost::program_options::unknown_option& e)
+    }  catch (boost::program_options::unknown_option& e)
     {
       throw ros::Exception(e.what());
     }
@@ -105,8 +104,6 @@ rosbag::RecorderOptions parseOptions(int argc, char** argv) {
     }
     if (vm.count("quiet"))
       opts.quiet = true;
-    if (vm.count("publish"))
-      opts.publish = true;
     if (vm.count("output-prefix"))
     {
       opts.prefix = vm["output-prefix"].as<std::string>();
@@ -298,11 +295,11 @@ int main(int argc, char** argv) {
     try {
         opts = parseOptions(argc, argv);
     }
-    catch (const ros::Exception& ex) {
+    catch (ros::Exception const& ex) {
         ROS_ERROR("Error reading options: %s", ex.what());
         return 1;
     }
-    catch(const boost::regex_error& ex) {
+    catch(boost::regex_error const& ex) {
         ROS_ERROR("Error reading options: %s\n", ex.what());
         return 1;
     }

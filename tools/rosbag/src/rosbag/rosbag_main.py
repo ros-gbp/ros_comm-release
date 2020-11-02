@@ -47,7 +47,7 @@ except ImportError:
 import roslib.message
 import roslib.packages
 
-from .bag import Bag, Compression, ROSBagException, ROSBagFormatException, ROSBagUnindexedException, ROSBagEncryptNotSupportedException, ROSBagEncryptException
+from .bag import Bag, Compression, ROSBagException, ROSBagFormatException, ROSBagUnindexedException
 from .migration import MessageMigrator, fixbag2, checkbag
 
 def print_trans(old, new, indent):
@@ -85,7 +85,6 @@ def record_cmd(argv):
 
     parser.add_option("-a", "--all",           dest="all",           default=False, action="store_true",          help="record all topics")
     parser.add_option("-e", "--regex",         dest="regex",         default=False, action="store_true",          help="match topics using regular expressions")
-    parser.add_option("-p", "--publish",       dest="publish",       default=False, action="store_true",          help="publish a msg when the record begin")
     parser.add_option("-x", "--exclude",       dest="exclude_regex", default="",    action="store",               help="exclude topics matching the follow regular expression (subtracts from -a or regex)")
     parser.add_option("-q", "--quiet",         dest="quiet",         default=False, action="store_true",          help="suppress console output")
     parser.add_option("-o", "--output-prefix", dest="prefix",        default=None,  action="store",               help="prepend PREFIX to beginning of bag name (name will always end with date stamp)")
@@ -126,7 +125,6 @@ def record_cmd(argv):
     if options.exclude_regex: cmd.extend(["--exclude", options.exclude_regex])
     if options.all:           cmd.extend(["--all"])
     if options.regex:         cmd.extend(["--regex"])
-    if options.publish:       cmd.extend(["--publish"])
     if options.compression:   cmd.extend(["--%s" % options.compression])
     if options.split:
         if not options.duration and not options.size:
@@ -185,8 +183,6 @@ def info_cmd(argv):
             if i < len(args) - 1:
                 print('---')
         
-        except (ROSBagEncryptNotSupportedException, ROSBagEncryptException) as ex:
-            print('ERROR: %s' % str(ex), file=sys.stderr)
         except ROSBagUnindexedException as ex:
             print('ERROR bag unindexed: %s.  Run rosbag reindex.' % arg,
                   file=sys.stderr)
@@ -245,8 +241,6 @@ def play_cmd(argv):
     parser.add_option("--pause-topics", dest="pause_topics", default=[],  callback=handle_pause_topics, action="callback", help="topics to pause on during playback")
     parser.add_option("--bags",  help="bags files to play back from")
     parser.add_option("--wait-for-subscribers",  dest="wait_for_subscribers", default=False, action="store_true", help="wait for at least one subscriber on each topic before publishing")
-    parser.add_option("--rate-control-topic", dest="rate_control_topic", default='', type='str', help="watch the given topic, and if the last publish was more than <rate-control-max-delay> ago, wait until the topic publishes again to continue playback")
-    parser.add_option("--rate-control-max-delay", dest="rate_control_max_delay", default=1.0, type='float', help="maximum time difference from <rate-control-topic> before pausing")
 
     (options, args) = parser.parse_args(argv)
 
@@ -296,12 +290,6 @@ def play_cmd(argv):
 
     cmd.extend(args)
 
-    if options.rate_control_topic:
-        cmd.extend(['--rate-control-topic', str(options.rate_control_topic)])
-
-    if options.rate_control_max_delay:
-        cmd.extend(['--rate-control-max-delay', str(options.rate_control_max_delay)])
-
     old_handler = signal.signal(
         signal.SIGTERM,
         lambda signum, frame: _stop_process(signum, frame, old_handler, process)
@@ -314,7 +302,9 @@ def play_cmd(argv):
 
 def filter_cmd(argv):
     def expr_eval(expr):
-        return eval("lambda topic, m, t: %s" % expr)
+        def eval_fn(topic, m, t):
+            return eval(expr)
+        return eval_fn
 
     parser = optparse.OptionParser(usage="""rosbag filter [options] INBAG OUTBAG EXPRESSION
 
@@ -353,9 +343,6 @@ The following variables are available:
     
     try:
         inbag = Bag(inbag_filename)
-    except (ROSBagEncryptNotSupportedException, ROSBagEncryptException) as ex:
-        print('ERROR: %s' % str(ex), file=sys.stderr)
-        return
     except ROSBagUnindexedException as ex:
         print('ERROR bag unindexed: %s.  Run rosbag reindex.' % inbag_filename, file=sys.stderr)
         sys.exit(1)
@@ -367,27 +354,27 @@ The following variables are available:
         if options.verbose_pattern:
             verbose_pattern = expr_eval(options.verbose_pattern)
     
-            for topic, raw_msg, t, conn_header in inbag.read_messages(raw=True, return_connection_header=True):
+            for topic, raw_msg, t in inbag.read_messages(raw=True):
                 msg_type, serialized_bytes, md5sum, pos, pytype = raw_msg
                 msg = pytype()
                 msg.deserialize(serialized_bytes)
 
                 if filter_fn(topic, msg, t):
                     print('MATCH', verbose_pattern(topic, msg, t))
-                    outbag.write(topic, msg, t, connection_header=conn_header)
+                    outbag.write(topic, msg, t)
                 else:
                     print('NO MATCH', verbose_pattern(topic, msg, t))          
 
                 total_bytes += len(serialized_bytes) 
                 meter.step(total_bytes)
         else:
-            for topic, raw_msg, t, conn_header in inbag.read_messages(raw=True, return_connection_header=True):
+            for topic, raw_msg, t in inbag.read_messages(raw=True):
                 msg_type, serialized_bytes, md5sum, pos, pytype = raw_msg
                 msg = pytype()
                 msg.deserialize(serialized_bytes)
 
                 if filter_fn(topic, msg, t):
-                    outbag.write(topic, msg, t, connection_header=conn_header)
+                    outbag.write(topic, msg, t)
 
                 total_bytes += len(serialized_bytes)
                 meter.step(total_bytes)
@@ -453,9 +440,6 @@ def fix_cmd(argv):
     
     try:
         migrations = fixbag2(migrator, inbag_filename, outname, options.force)
-    except (ROSBagEncryptNotSupportedException, ROSBagEncryptException) as ex:
-        print('ERROR: %s' % str(ex), file=sys.stderr)
-        return
     except ROSBagUnindexedException as ex:
         print('ERROR bag unindexed: %s.  Run rosbag reindex.' % inbag_filename,
               file=sys.stderr)
@@ -504,9 +488,6 @@ def check_cmd(argv):
     # First check that the bag is not unindexed 
     try:
         Bag(args[0])
-    except (ROSBagEncryptNotSupportedException, ROSBagEncryptException) as ex:
-        print('ERROR: %s' % str(ex), file=sys.stderr)
-        return
     except ROSBagUnindexedException as ex:
         print('ERROR bag unindexed: %s.  Run rosbag reindex.' % args[0], file=sys.stderr)
         sys.exit(1)
@@ -588,7 +569,7 @@ def compress_cmd(argv):
 
     op = lambda inbag, outbag, quiet: change_compression_op(inbag, outbag, options.compression, options.quiet)
 
-    bag_op(args, False, True, lambda b: False, op, options.output_dir, options.force, options.quiet)
+    bag_op(args, False, lambda b: False, op, options.output_dir, options.force, options.quiet)
 
 def decompress_cmd(argv):
     parser = optparse.OptionParser(usage='rosbag decompress [options] BAGFILE1 [BAGFILE2 ...]',
@@ -604,7 +585,7 @@ def decompress_cmd(argv):
     
     op = lambda inbag, outbag, quiet: change_compression_op(inbag, outbag, Compression.NONE, options.quiet)
     
-    bag_op(args, False, True, lambda b: False, op, options.output_dir, options.force, options.quiet)
+    bag_op(args, False, lambda b: False, op, options.output_dir, options.force, options.quiet)
 
 def reindex_cmd(argv):
     parser = optparse.OptionParser(usage='rosbag reindex [options] BAGFILE1 [BAGFILE2 ...]',
@@ -620,63 +601,24 @@ def reindex_cmd(argv):
     
     op = lambda inbag, outbag, quiet: reindex_op(inbag, outbag, options.quiet)
 
-    bag_op(args, True, True, lambda b: b.version > 102, op, options.output_dir, options.force, options.quiet)
+    bag_op(args, True, lambda b: b.version > 102, op, options.output_dir, options.force, options.quiet)
 
-def encrypt_cmd(argv):
-    parser = optparse.OptionParser(usage='rosbag encrypt [options] BAGFILE1 [BAGFILE2 ...]',
-                                   description='Encrypt one or more bag files.')
-    parser.add_option(      '--output-dir', action='store',       dest='output_dir',  help='write to directory DIR', metavar='DIR')
-    parser.add_option('-f', '--force',      action='store_true',  dest='force',       help='force overwriting of backup file if it exists')
-    parser.add_option('-q', '--quiet',      action='store_true',  dest='quiet',       help='suppress noncritical messages')
-    parser.add_option("-p", "--plugin",     action='store',       dest="plugin",      default='rosbag/AesCbcEncryptor', help='encryptor plugin name')
-    parser.add_option("-r", "--param",      action='store',       dest="param",       default='*', help='encryptor plugin parameter')
-    parser.add_option('-j', '--bz2',        action='store_const', dest='compression', help='use BZ2 compression', const=Compression.BZ2, default=Compression.NONE)
-    parser.add_option(      '--lz4',        action='store_const', dest='compression', help='use lz4 compression', const=Compression.LZ4)
-    (options, args) = parser.parse_args(argv)
-
-    if len(args) < 1:
-        parser.error('You must specify at least one bag file.')
-
-    op = lambda inbag, outbag, quiet: change_encryption_op(inbag, outbag, options.plugin, options.param, options.compression, options.quiet)
-
-    bag_op(args, False, True, lambda b: False, op, options.output_dir, options.force, options.quiet)
-
-def decrypt_cmd(argv):
-    parser = optparse.OptionParser(usage='rosbag decrypt [options] BAGFILE1 [BAGFILE2 ...]',
-                                   description='Decrypt one or more bag files.')
-    parser.add_option(      '--output-dir', action='store',       dest='output_dir',  help='write to directory DIR', metavar='DIR')
-    parser.add_option('-f', '--force',      action='store_true',  dest='force',       help='force overwriting of backup file if it exists')
-    parser.add_option('-q', '--quiet',      action='store_true',  dest='quiet',       help='suppress noncritical messages')
-    parser.add_option('-j', '--bz2',        action='store_const', dest='compression', help='use BZ2 compression', const=Compression.BZ2, default=Compression.NONE)
-    parser.add_option(      '--lz4',        action='store_const', dest='compression', help='use lz4 compression', const=Compression.LZ4)
-    (options, args) = parser.parse_args(argv)
-
-    if len(args) < 1:
-        parser.error('You must specify at least one bag file.')
-
-    op = lambda inbag, outbag, quiet: change_encryption_op(inbag, outbag, 'rosbag/NoEncryptor', '*', options.compression, options.quiet)
-    # Note the second paramater is True: Python Bag class cannot read index information from encrypted bag files
-    bag_op(args, True, False, lambda b: False, op, options.output_dir, options.force, options.quiet)
-
-def bag_op(inbag_filenames, allow_unindexed, open_inbag, copy_fn, op, output_dir=None, force=False, quiet=False):
+def bag_op(inbag_filenames, allow_unindexed, copy_fn, op, output_dir=None, force=False, quiet=False):
     for inbag_filename in inbag_filenames:
-        if open_inbag:
-            # Check we can read the file
-            try:
-                inbag = Bag(inbag_filename, 'r', allow_unindexed=allow_unindexed)
-            except ROSBagUnindexedException:
-                print('ERROR bag unindexed: %s.  Run rosbag reindex.' % inbag_filename, file=sys.stderr)
-                continue
-            except (ROSBagException, IOError) as ex:
-                print('ERROR reading %s: %s' % (inbag_filename, str(ex)), file=sys.stderr)
-                continue
+        # Check we can read the file
+        try:
+            inbag = Bag(inbag_filename, 'r', allow_unindexed=allow_unindexed)
+        except ROSBagUnindexedException:
+            print('ERROR bag unindexed: %s.  Run rosbag reindex.' % inbag_filename, file=sys.stderr)
+            continue
+        except (ROSBagException, IOError) as ex:
+            print('ERROR reading %s: %s' % (inbag_filename, str(ex)), file=sys.stderr)
+            continue
 
-            # Determine whether we should copy the bag
-            copy = copy_fn(inbag)
-
-            inbag.close()
-        else:
-            copy = False
+        # Determine whether we should copy the bag    
+        copy = copy_fn(inbag)
+        
+        inbag.close()
 
         # Determine filename for output bag
         if output_dir is None:
@@ -712,51 +654,30 @@ def bag_op(inbag_filenames, allow_unindexed, open_inbag, copy_fn, op, output_dir
                 source_filename = inbag_filename
 
         try:
-            if open_inbag:
-                inbag = Bag(source_filename, 'r', allow_unindexed=allow_unindexed)
+            inbag = Bag(source_filename, 'r', allow_unindexed=allow_unindexed)
 
-                # Open the output bag file for writing
-                try:
-                    if copy:
-                        outbag = Bag(outbag_filename, 'a', allow_unindexed=allow_unindexed)
-                    else:
-                        outbag = Bag(outbag_filename, 'w')
-                except (ROSBagException, IOError) as ex:
-                    print('ERROR writing to %s: %s' % (outbag_filename, str(ex)), file=sys.stderr)
-                    inbag.close()
-                    continue
-
-                # Perform the operation
-                try:
-                    op(inbag, outbag, quiet=quiet)
-                except ROSBagException as ex:
-                    print('\nERROR operating on %s: %s' % (source_filename, str(ex)), file=sys.stderr)
-                    inbag.close()
-                    outbag.close()
-                    continue
-
-                outbag.close()
+            # Open the output bag file for writing
+            try:
+                if copy:
+                    outbag = Bag(outbag_filename, 'a', allow_unindexed=allow_unindexed)
+                else:
+                    outbag = Bag(outbag_filename, 'w')
+            except (ROSBagException, IOError) as ex:
+                print('ERROR writing to %s: %s' % (outbag_filename, str(ex)), file=sys.stderr)
                 inbag.close()
-            else:
-                # Open the output bag file for writing
-                try:
-                    if copy:
-                        outbag = Bag(outbag_filename, 'a', allow_unindexed=allow_unindexed)
-                    else:
-                        outbag = Bag(outbag_filename, 'w')
-                except (ROSBagException, IOError) as ex:
-                    print('ERROR writing to %s: %s' % (outbag_filename, str(ex)), file=sys.stderr)
-                    continue
+                continue
 
-                # Perform the operation
-                try:
-                    op(source_filename, outbag, quiet=quiet)
-                except ROSBagException as ex:
-                    print('\nERROR operating on %s: %s' % (source_filename, str(ex)), file=sys.stderr)
-                    outbag.close()
-                    continue
-
+            # Perform the operation
+            try:
+                op(inbag, outbag, quiet=quiet)
+            except ROSBagException as ex:
+                print('\nERROR operating on %s: %s' % (source_filename, str(ex)), file=sys.stderr)
+                inbag.close()
                 outbag.close()
+                continue
+                
+            outbag.close()
+            inbag.close()
 
         except KeyboardInterrupt:
             if backup_filename is not None:
@@ -776,16 +697,16 @@ def change_compression_op(inbag, outbag, compression, quiet):
     outbag.compression = compression
 
     if quiet:
-        for topic, msg, t, conn_header in inbag.read_messages(raw=True, return_connection_header=True):
-            outbag.write(topic, msg, t, raw=True, connection_header=conn_header)
+        for topic, msg, t in inbag.read_messages(raw=True):
+            outbag.write(topic, msg, t, raw=True)
     else:
         meter = ProgressMeter(outbag.filename, inbag._uncompressed_size)
 
         total_bytes = 0
-        for topic, msg, t, conn_header in inbag.read_messages(raw=True, return_connection_header=True):
+        for topic, msg, t in inbag.read_messages(raw=True):
             msg_type, serialized_bytes, md5sum, pos, pytype = msg
     
-            outbag.write(topic, msg, t, raw=True, connection_header=conn_header)
+            outbag.write(topic, msg, t, raw=True)
             
             total_bytes += len(serialized_bytes) 
             meter.step(total_bytes)
@@ -801,8 +722,8 @@ def reindex_op(inbag, outbag, quiet):
             except:
                 pass
 
-            for (topic, msg, t, conn_header) in inbag.read_messages(return_connection_header=True):
-                outbag.write(topic, msg, t, connection_header=conn_header)
+            for (topic, msg, t) in inbag.read_messages():
+                outbag.write(topic, msg, t)
         else:
             meter = ProgressMeter(outbag.filename, inbag.size)
             try:
@@ -813,8 +734,8 @@ def reindex_op(inbag, outbag, quiet):
             meter.finish()
 
             meter = ProgressMeter(outbag.filename, inbag.size)
-            for (topic, msg, t, conn_header) in inbag.read_messages(return_connection_header=True):
-                outbag.write(topic, msg, t, connection_header=conn_header)
+            for (topic, msg, t) in inbag.read_messages():
+                outbag.write(topic, msg, t)
                 meter.step(inbag._file.tell())
             meter.finish()
     else:
@@ -822,8 +743,6 @@ def reindex_op(inbag, outbag, quiet):
             try:
                 for offset in outbag.reindex():
                     pass
-            except (ROSBagEncryptNotSupportedException, ROSBagEncryptException) as ex:
-                raise
             except:
                 pass
         else:
@@ -831,41 +750,9 @@ def reindex_op(inbag, outbag, quiet):
             try:
                 for offset in outbag.reindex():
                     meter.step(offset)
-            except (ROSBagEncryptNotSupportedException, ROSBagEncryptException) as ex:
-                raise
             except:
                 pass
             meter.finish()
-
-def change_encryption_op(inbag, outbag, plugin, param, compression, quiet):
-    # Output file must be closed before written by the encrypt process
-    outbag.close()
-
-    encryptpath = roslib.packages.find_node('rosbag', 'encrypt')
-    if not encryptpath:
-        parser.error("Cannot find rosbag/encrypt executable")
-    cmd = [encryptpath[0]]
-    if type(inbag) is str:
-        cmd.extend([inbag])
-    else:
-        cmd.extend([inbag.filename])
-    cmd.extend(['-o', outbag.filename])
-    cmd.extend(['-p', plugin])
-    cmd.extend(['-r', param])
-    if compression == 'bz2':
-        cmd.extend(['-j'])
-    elif compression == 'lz4':
-        cmd.extend(['--lz4'])
-    if quiet:
-        cmd.extend(['-q'])
-
-    old_handler = signal.signal(
-        signal.SIGTERM,
-        lambda signum, frame: _stop_process(signum, frame, old_handler, process)
-    )
-
-    process = subprocess.Popen(cmd)
-    process.wait()
 
 class RosbagCmds(UserDict):
     def __init__(self):
@@ -1003,9 +890,6 @@ def rosbagmain(argv=None):
     cmds.add_cmd('compress', compress_cmd, 'Compress one or more bag files.')
     cmds.add_cmd('decompress', decompress_cmd, 'Decompress one or more bag files.')
     cmds.add_cmd('reindex', reindex_cmd, 'Reindexes one or more bag files.')
-    if sys.platform != 'win32':
-        cmds.add_cmd('encrypt', encrypt_cmd, 'Encrypt one or more bag files.')
-        cmds.add_cmd('decrypt', decrypt_cmd, 'Decrypt one or more bag files.')
 
     if argv is None:
         argv = sys.argv

@@ -2,75 +2,45 @@
 Changelog for package rosnode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.14.10 (2020-10-16)
+1.12.17 (2020-10-26)
 --------------------
 * Update maintainers (`#2075 <https://github.com/ros/ros_comm/issues/2075>`_)
-* Fix spelling (`#2066 <https://github.com/ros/ros_comm/issues/2066>`_)
 * Remove unavailable nodes from local node cache _caller_apis (`#2010 <https://github.com/ros/ros_comm/issues/2010>`_)
 * Add skip_cache parameter to rosnode_ping() (`#2009 <https://github.com/ros/ros_comm/issues/2009>`_)
-* Contributors: Jacob Perron, Shane Loretz, mabaue, tomoya
+* Contributors: Jacob Perron, Shane Loretz, mabaue
 
-1.14.9 (2020-08-20)
--------------------
+1.12.16 (2020-08-26)
+--------------------
 
-1.14.8 (2020-08-12)
--------------------
-
-1.14.7 (2020-07-31)
--------------------
-
-1.14.6 (2020-05-29)
--------------------
-
-1.14.5 (2020-03-19)
--------------------
-
-1.14.4 (2020-02-20)
--------------------
-* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
-* prevent indefinitely trapping in unknown error state (`#1854 <https://github.com/ros/ros_comm/issues/1854>`_)
-* duplicate test nodes which aren't available to other packages, add missing dependencies (`#1611 <https://github.com/ros/ros_comm/issues/1611>`_)
-* update wiki.ros.org URLs (`#1536 <https://github.com/ros/ros_comm/issues/1536>`_)
+1.12.15 (2020-08-10)
+--------------------
 * explicitly handle socket.timeout in rosnode ping (`#1517 <https://github.com/ros/ros_comm/issues/1517>`_)
-* show connection info on rosnode info (`#1497 <https://github.com/ros/ros_comm/issues/1497>`_)
 
-1.14.3 (2018-08-06)
--------------------
+1.12.14 (2018-08-23)
+--------------------
 
-1.14.2 (2018-06-06)
--------------------
-
-1.14.1 (2018-05-21)
--------------------
-
-1.14.0 (2018-05-21)
--------------------
-
-1.13.6 (2018-02-05)
--------------------
+1.12.13 (2018-02-21)
+--------------------
 * fix docstrings (`#1278 <https://github.com/ros/ros_comm/issues/1278>`_)
 * fix documentation for cleanup_master_blacklist() (`#1253 <https://github.com/ros/ros_comm/issues/1253>`_)
 
-1.13.5 (2017-11-09)
+1.12.12 (2017-11-16)
+--------------------
+
+1.12.11 (2017-11-07)
+--------------------
+
+1.12.10 (2017-11-06)
+--------------------
+
+1.12.9 (2017-11-06)
 -------------------
 
-1.13.4 (2017-11-02)
--------------------
-
-1.13.3 (2017-10-25)
+1.12.8 (2017-11-06)
 -------------------
 * return exit code 1 in case of errors (`#1178 <https://github.com/ros/ros_comm/issues/1178>`_)
 * sort output of rosnode info (`#1160 <https://github.com/ros/ros_comm/issues/1160>`_)
 * fix Python 3 compatibility (`#1166 <https://github.com/ros/ros_comm/issues/1166>`_)
-
-1.13.2 (2017-08-15)
--------------------
-
-1.13.1 (2017-07-27)
--------------------
-
-1.13.0 (2017-02-22)
--------------------
 
 1.12.7 (2017-02-17)
 -------------------

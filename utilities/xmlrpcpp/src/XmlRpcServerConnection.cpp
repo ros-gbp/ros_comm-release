@@ -121,7 +121,7 @@ XmlRpcServerConnection::readHeader()
 
   // avoid overly large or improperly formatted content-length
   long int clength = 0;
-  clength = strtol(lp, nullptr, 10);
+  clength = strtol(lp, NULL, 10);
   if ((clength < 0) || (clength > __INT_MAX__)) {
     XmlRpcUtil::error("XmlRpcServerConnection::readHeader: Invalid Content-length specified.");
     return false;

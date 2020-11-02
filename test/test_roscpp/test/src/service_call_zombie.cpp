@@ -65,11 +65,7 @@ main(int argc, char** argv)
   ros::init(argc, argv, "service_call");
   ros::NodeHandle nh;
 
-#ifndef _WIN32
   sleep(10);
-#else
-  Sleep(10 * 1000);
-#endif
 
   int ret = RUN_ALL_TESTS();
 

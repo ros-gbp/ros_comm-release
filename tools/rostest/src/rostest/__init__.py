@@ -160,7 +160,7 @@ run = rosrun
 import warnings
 def deprecated(func):
     """This is a decorator which can be used to mark functions
-    as deprecated. It will result in a warning being emitted
+    as deprecated. It will result in a warning being emmitted
     when the function is used."""
     def newFunc(*args, **kwargs):
         warnings.warn("Call to deprecated function %s." % func.__name__,

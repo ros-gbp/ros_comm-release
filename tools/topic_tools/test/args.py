@@ -38,15 +38,13 @@ PKG = 'topic_tools'
 
 import unittest
 import os
-import sys
 from subprocess import call
 
-rosrun_script = 'rosrun.bat' if sys.platform == 'win32' else 'rosrun'
 
 class TopicToolsTestCase(unittest.TestCase):
 
     def test_drop_invalid(self):
-        cmd = [rosrun_script, 'topic_tools', 'drop']
+        cmd = ['rosrun', 'topic_tools', 'drop']
         self.assertNotEquals(0, call(cmd))
         self.assertNotEquals(0, call(cmd + ['//', '1', '2', 'output']))
         self.assertNotEquals(0, call(cmd + ['input', '1', '2', 'output', 'extra']))
@@ -54,17 +52,17 @@ class TopicToolsTestCase(unittest.TestCase):
         self.assertNotEquals(0, call(cmd + ['input', '1', '0', 'output']))
 
     def test_mux_invalid(self):
-        cmd = [rosrun_script, 'topic_tools', 'mux']
+        cmd = ['rosrun', 'topic_tools', 'mux']
         self.assertNotEquals(0, call(cmd))
         self.assertNotEquals(0, call(cmd + ['//', 'input']))
 
     def test_switch_mux_invalid(self):
-        cmd = [rosrun_script, 'topic_tools', 'switch_mux']
+        cmd = ['rosrun', 'topic_tools', 'switch_mux']
         self.assertNotEquals(0, call(cmd))
         self.assertNotEquals(0, call(cmd + ['//', 'input']))
 
     def test_relay_invalid(self):
-        cmd = [rosrun_script, 'topic_tools', 'relay']
+        cmd = ['rosrun', 'topic_tools', 'relay']
         self.assertNotEquals(0, call(cmd))
         self.assertNotEquals(0, call(cmd + ['//', 'input']))
 

@@ -2,72 +2,41 @@
 Changelog for package roslz4
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.14.10 (2020-10-16)
+1.12.17 (2020-10-26)
 --------------------
 * Update maintainers (`#2075 <https://github.com/ros/ros_comm/issues/2075>`_)
-* Fix spelling (`#2066 <https://github.com/ros/ros_comm/issues/2066>`_)
-* Contributors: Jacob Perron, Shane Loretz, tomoya
+* Contributors: Jacob Perron, Shane Loretz
 
-1.14.9 (2020-08-20)
--------------------
+1.12.16 (2020-08-26)
+--------------------
 
-1.14.8 (2020-08-12)
--------------------
-
-1.14.7 (2020-07-31)
--------------------
-
-1.14.6 (2020-05-29)
--------------------
-* use undefined dynamic_lookup on macOS (`#1923 <https://github.com/ros/ros_comm/issues/1923>`_)
-
-1.14.5 (2020-03-19)
--------------------
-
-1.14.4 (2020-02-20)
--------------------
-* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
-* add alternative lz4 name for Windows (`#1821 <https://github.com/ros/ros_comm/issues/1821>`_)
+1.12.15 (2020-08-10)
+--------------------
 * check for XXH_malloc NULL return (`#1778 <https://github.com/ros/ros_comm/issues/1778>`_)
-* update install destination for roslz4 (`#1620 <https://github.com/ros/ros_comm/issues/1620>`_)
-* fix issues when built or run on Windows (`#1466 <https://github.com/ros/ros_comm/issues/1466>`_)
 
-1.14.3 (2018-08-06)
--------------------
+1.12.14 (2018-08-23)
+--------------------
 
-1.14.2 (2018-06-06)
--------------------
-
-1.14.1 (2018-05-21)
--------------------
-
-1.14.0 (2018-05-21)
--------------------
-
-1.13.6 (2018-02-05)
--------------------
+1.12.13 (2018-02-21)
+--------------------
 * adding decompress to free(state) before return (`#1313 <https://github.com/ros/ros_comm/issues/1313>`_)
-* allow building on Trusty (`#1236 <https://github.com/ros/ros_comm/issues/1236>`_)
 
-1.13.5 (2017-11-09)
+1.12.12 (2017-11-16)
+--------------------
+
+1.12.11 (2017-11-07)
+--------------------
+* revert replace deprecated lz4 function call (`#1220 <https://github.com/ros/ros_comm/issues/1220>`_, regression from 1.12.8 on Debian Jessie)
+
+1.12.10 (2017-11-06)
+--------------------
+
+1.12.9 (2017-11-06)
 -------------------
 
-1.13.4 (2017-11-02)
--------------------
-
-1.13.3 (2017-10-25)
--------------------
-
-1.13.2 (2017-08-15)
+1.12.8 (2017-11-06)
 -------------------
 * replace deprecated lz4 function call (`#1136 <https://github.com/ros/ros_comm/issues/1136>`_)
-
-1.13.1 (2017-07-27)
--------------------
-* add XXH_NAMESPACE, for namespace emulation in C (`#1065 <https://github.com/ros/ros_comm/pull/1065>`_)
-
-1.13.0 (2017-02-22)
--------------------
 
 1.12.7 (2017-02-17)
 -------------------

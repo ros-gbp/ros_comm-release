@@ -48,7 +48,7 @@ class ConnectionOverride(rospy.impl.transport.Transport):
     def __init__(self, endpoint_id):
         super(ConnectionOverride, self).__init__(rospy.impl.transport.OUTBOUND, endpoint_id)
         self.endpoint_id = endpoint_id
-        self.data = b''
+        self.data = ''
 
     def set_cleanup_callback(self, cb): pass
     def write_data(self, data):
@@ -122,7 +122,7 @@ class TestRospyTopics(unittest.TestCase):
         # round 1: test basic params
         pub = Publisher(name, data_class)
         self.assertEquals(rname, pub.resolved_name)
-        # - pub.name is left in for backwards compatibility, but resolved_name is preferred
+        # - pub.name is left in for backwards compatiblity, but resolved_name is preferred
         self.assertEquals(rname, pub.name)        
         self.assertEquals(data_class, pub.data_class)
         self.assertEquals('test_rospy/Val', pub.type)
@@ -164,7 +164,7 @@ class TestRospyTopics(unittest.TestCase):
         try:
             from cStringIO import StringIO
         except ImportError:
-            from io import BytesIO as StringIO
+            from io import StringIO
         buff = StringIO()
         Val('hello world-1').serialize(buff)
         # - check equals, but strip length field first
@@ -222,14 +222,14 @@ class TestRospyTopics(unittest.TestCase):
         self.failIf(impl.has_connections())
 
         # test publish() latch on a new Publisher object (this was encountered in testing, so I want a test case for it)
-        pub = Publisher('bar', data_class, latch=True, queue_size=0)
+        pub = Publisher('bar', data_class, latch=True)
         v = Val('no connection test')
         pub.impl.publish(v)
         self.assert_(v == pub.impl.latch)
 
         # test connection header
         h = {'foo': 'bar', 'fuga': 'hoge'}
-        pub = Publisher('header_test', data_class, headers=h, queue_size=0)
+        pub = Publisher('header_test', data_class, headers=h)
         self.assertEquals(h, pub.impl.headers)
         
     def test_Subscriber_unregister(self):

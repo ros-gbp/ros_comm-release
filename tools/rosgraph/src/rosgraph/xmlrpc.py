@@ -42,7 +42,6 @@ calculation based on ROS environment variables.
 The common entry point for most libraries is the L{XmlRpcNode} class.
 """
 
-import errno
 import logging
 import select
 import socket
@@ -77,9 +76,6 @@ def isstring(s):
         return isinstance(s, str)
 
 class SilenceableXMLRPCRequestHandler(SimpleXMLRPCRequestHandler):
-
-    protocol_version = 'HTTP/1.1'
-
     def log_message(self, format, *args):
         if 0:
             SimpleXMLRPCRequestHandler.log_message(self, format, *args)
@@ -89,9 +85,6 @@ class ThreadingXMLRPCServer(socketserver.ThreadingMixIn, SimpleXMLRPCServer):
     Adds ThreadingMixin to SimpleXMLRPCServer to support multiple concurrent
     requests via threading. Also makes logging toggleable.
     """
-
-    daemon_threads = True
-
     def __init__(self, addr, log_requests=1):
         """
         Overrides SimpleXMLRPCServer to set option to allow_reuse_address.
@@ -129,17 +122,14 @@ class ThreadingXMLRPCServer(socketserver.ThreadingMixIn, SimpleXMLRPCServer):
             logger = logging.getLogger('xmlrpc')
             if logger:
                 logger.error(traceback.format_exc())
-
-
-# ForkingMixIn and the Forking classes mentioned below are only available on POSIX platforms.
-if hasattr(socketserver, "ForkingMixIn"):
-    class ForkingXMLRPCServer(socketserver.ForkingMixIn, SimpleXMLRPCServer):
-        """
-        Adds ThreadingMixin to SimpleXMLRPCServer to support multiple concurrent
-        requests via forking. Also makes logging toggleable.      
-        """
-        def __init__(self, addr, request_handler=SilenceableXMLRPCRequestHandler, log_requests=1):
-            SimpleXMLRPCServer.__init__(self, addr, request_handler, log_requests)
+    
+class ForkingXMLRPCServer(socketserver.ForkingMixIn, SimpleXMLRPCServer):
+    """
+    Adds ThreadingMixin to SimpleXMLRPCServer to support multiple concurrent
+    requests via forking. Also makes logging toggleable.      
+    """
+    def __init__(self, addr, request_handler=SilenceableXMLRPCRequestHandler, log_requests=1):
+        SimpleXMLRPCServer.__init__(self, addr, request_handler, log_requests)
     
 
 class XmlRpcHandler(object):
@@ -273,7 +263,7 @@ class XmlRpcNode(object):
             self.server.register_instance(self.handler)
 
         except socket.error as e:
-            if e.errno == errno.EADDRINUSE:
+            if e.errno == 98:
                 msg = "ERROR: Unable to start XML-RPC server, port %s is already in use"%self.port
             else:
                 msg = "ERROR: Unable to start XML-RPC server: %s" % e.strerror
@@ -301,7 +291,7 @@ class XmlRpcNode(object):
                 # exceptions break _run.
                 if self.is_shutdown:
                     pass
-                elif e.errno != errno.EINTR:
+                elif e.errno != 4:
                     self.is_shutdown = True
                     logging.getLogger('xmlrpc').error("serve forever IOError: %s, %s"%(e.errno, e.strerror))
                     

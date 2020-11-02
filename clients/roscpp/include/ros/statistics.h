@@ -67,13 +67,11 @@ public:
 
 private:
 
-  // Range of window length, in seconds
+  // these are hard constrains
   int max_window;
   int min_window;
 
-  // Range of acceptable messages in window.
-  // Window size will be adjusted if number of observed is
-  // outside this range.
+  // these are soft constrains
   int max_elements;
   int min_elements;
 
@@ -97,7 +95,7 @@ private:
     std::list<ros::Duration> age_list;
     // number of dropped messages
     uint64_t dropped_msgs;
-    // latest sequence number observed (if available)
+    // latest sequence number observered (if available)
     uint64_t last_seq;
     // latest total traffic volume observed
     uint64_t stat_bytes_last;
