@@ -1,1 +1,1 @@
-{"trim": "", "base": "e8f6094da7", "trimbase": "", "parent": "debian/noetic/ros_comm", "previous": "849d293883"}
+{"base": "bdaa4360b9", "parent": "debian/noetic/ros_comm", "previous": "72e4d606ec", "trim": "", "trimbase": ""}
