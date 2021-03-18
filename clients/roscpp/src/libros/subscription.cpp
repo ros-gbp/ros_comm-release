@@ -141,8 +141,19 @@ void Subscription::getInfo(XmlRpc::XmlRpcValue& info)
 
 uint32_t Subscription::getNumPublishers()
 {
-	boost::mutex::scoped_lock lock(publisher_links_mutex_);
-	return (uint32_t)publisher_links_.size();
+  boost::mutex::scoped_lock lock(publisher_links_mutex_);
+  uint32_t num_connected_publishers = 0;
+  for (V_PublisherLink::iterator c = publisher_links_.begin();
+       c != publisher_links_.end(); ++c)
+  {
+    // Only count a connection with a received header.
+    // Discern this by a non-zero length callerid.
+    if ((*c)->getCallerID().size() > 0)
+    {
+      num_connected_publishers++;
+    }
+  }
+  return num_connected_publishers;
 }
 
 void Subscription::drop()
@@ -660,7 +671,7 @@ uint32_t Subscription::handleMessage(const SerializedMessage& m, bool ser, bool 
   }
 
   // measure statistics
-  statistics_.callback(connection_header, name_, link->getCallerID(), m, link->getStats().bytes_received_, receipt_time, drops > 0);
+  statistics_.callback(connection_header, name_, link->getCallerID(), m, link->getStats().bytes_received_, receipt_time, drops > 0, link->getConnectionID());
 
   // If this link is latched, store off the message so we can immediately pass it to new subscribers later
   if (link->isLatched())

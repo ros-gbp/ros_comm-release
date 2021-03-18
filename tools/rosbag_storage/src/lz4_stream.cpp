@@ -38,10 +38,6 @@
 #include <cstring>
 #include "console_bridge/console.h"
 
-// Remove this include when no longer supporting platforms with libconsole-bridge-dev < 0.3.0,
-// in particular Debian Jessie: https://packages.debian.org/jessie/libconsole-bridge-dev
-#include "rosbag/console_bridge_compatibility.h"
-
 using std::string;
 
 namespace rosbag {
@@ -179,9 +175,9 @@ void LZ4Stream::read(void* ptr, size_t size) {
     switch (ret) {
     case ROSLZ4_OK: break;
     case ROSLZ4_STREAM_END:
-        if (getUnused() || getUnusedLength() > 0)
+        if (getUnused() || getUnusedLength() > 0) {
             CONSOLE_BRIDGE_logError("unused data already available");
-        else {
+	} else {
             setUnused(lz4s_.input_next);
             setUnusedLength(lz4s_.input_left);
         }

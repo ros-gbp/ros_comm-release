@@ -39,6 +39,7 @@
 
 #include <ros/io.h>
 #include <ros/assert.h> // don't need if we dont call the pipe functions.
+#include <ros/file_log.h>
 #include <errno.h> // for EFAULT and co.
 #include <iostream>
 #include <sstream>
@@ -71,15 +72,24 @@ int last_socket_error() {
 		return errno;
 	#endif
 }
+
+const char* socket_error_string(int err) {
+#ifdef WIN32
+    // could fix this to use FORMAT_MESSAGE and print a real string later,
+    // but not high priority.
+    std::stringstream ostream;
+    ostream << "WSA Error: " << err;
+    return ostream.str().c_str();
+#else
+    return strerror(err);
+#endif
+}
+
 const char* last_socket_error_string() {
 	#ifdef WIN32
-		// could fix this to use FORMAT_MESSAGE and print a real string later,
-		// but not high priority.
-		std::stringstream ostream;
-		ostream << "WSA Error: " << WSAGetLastError();
-		return ostream.str().c_str();
+        return socket_error_string(WSAGetLastError());
 	#else
-		return strerror(errno);
+        return socket_error_string(errno);
 	#endif
 }
 
@@ -364,6 +374,126 @@ pollfd_vector_ptr poll_sockets(int epfd, socket_pollfd *fds, nfds_t nfds, int ti
 /*****************************************************************************
 ** Socket Utilities
 *****************************************************************************/
+/**
+ * Checks if the async socket connection is success, failure or connecting.
+ * @param err - WSAGetLastError()/errno on failure.
+ * @return int : 1 on connected, 0 on connecting, -1 on failure.
+ */
+int is_async_connected(socket_fd_t &socket, int &err) {
+#ifdef HAVE_EPOLL
+    int nfds = 1;
+    int epfd = create_socket_watcher();
+    add_socket_to_watcher(epfd, socket);
+    set_events_on_socket(epfd, socket, EPOLLIN | EPOLLOUT);
+    struct epoll_event ev[nfds];
+    int fd_cnt = ::epoll_wait(epfd, ev, nfds, 0);
+    close_socket_watcher(epfd);
+    if (fd_cnt < 0) {
+      if (errno != EINTR) {
+        ROS_ERROR("Error in epoll_wait! %s", strerror(errno));
+        err = errno;
+        return -1;
+      }
+    } else if (fd_cnt == 0) {
+      err = 0;
+      return 0;
+    } else if (ev[0].events & EPOLLERR || ev[0].events & EPOLLHUP) {
+      // attempt to retrieve the error on the file descriptor epoll is waiting on
+      err = 0;
+      socklen_t errlen = sizeof(err);
+      getsockopt(socket, SOL_SOCKET, SO_ERROR, (void *)&err, &errlen);
+      return -1;
+    }
+#else // HAVE_EPOLL
+    // use zero-timeout select to check if async socket
+    fd_set wfds, exceptfds;
+    FD_ZERO(&wfds);
+    FD_ZERO(&exceptfds);
+    FD_SET(socket, &wfds);
+    FD_SET(socket, &exceptfds);
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
+    int ret = select(socket + 1, NULL, &wfds, &exceptfds, &tv);
+    if (ret == -1)
+    {
+      // select() error
+      ROSCPP_CONN_LOG_DEBUG("select() on socket[%d] failed with error [%s]",
+                            socket, last_socket_error_string());
+      err = last_socket_error();
+      return -1;
+    }
+    else if (ret == 0)
+    {
+      // select() timeout, socket is still connecting
+      err = 0;
+      return 0;
+    }
+    // select() fake wakeup?
+    ROS_ASSERT(FD_ISSET(socket, &wfds) || FD_ISSET(socket, &exceptfds));
+
+    // check connection is success or failure
+#ifdef WIN32
+    // In Windows:
+    //    Success is reported in the writefds set and failure is reported in the exceptfds set.
+    //    If failure, we must then call getsockopt SO_ERROR to determine the error value to describe why the failure occurred
+    ROS_ASSERT((FD_ISSET(socket, &wfds) && !FD_ISSET(socket, &exceptfds)) ||
+               (!FD_ISSET(socket, &wfds) && FD_ISSET(socket, &exceptfds)));
+    if (FD_ISSET(socket, &exceptfds)) {
+      // an error occurred during connection
+      int errinfo = 0;
+      socklen_t errlen = sizeof(int);
+      if (getsockopt(socket, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&errinfo), &errlen) == -1)
+      {
+        // getsockopt() error
+        ROSCPP_CONN_LOG_DEBUG("getsockopt() on socket[%d] failed with error [%s]",
+                              socket, last_socket_error_string());
+        err = last_socket_error();
+        return -1;
+      }
+      ROS_ASSERT(errlen == sizeof(int));
+      ROS_ASSERT(errinfo != 0);
+      ROSCPP_CONN_LOG_DEBUG("Async connect on socket[%d] failed with error [%s]",
+                            socket, socket_error_string(errinfo));
+      err = errinfo;
+      return -1;
+    }
+#else // WIN32
+    // In Linux:
+    //    Both success and failure is reported in the writefds set.
+    //    We must use getsockopt() to read the SO_ERROR option at level SOL_SOCKET to determine whether
+    //    connect() completed successfully (SO_ERROR is zero) or unsuccessfully (SO_ERROR is error code).
+    if (!FD_ISSET(socket, &wfds)) {
+      // wfds is not set, socket is still connecting
+      err = 0;
+      return 0;
+    }
+    // use getsockopt() to check connection is success or failure
+    int errinfo;
+    socklen_t errlen = sizeof(int);
+    if (getsockopt(socket, SOL_SOCKET, SO_ERROR, &errinfo, &errlen) == -1)
+    {
+      // getsockopt() error
+      ROSCPP_CONN_LOG_DEBUG("getsockopt() on socket[%d] failed with error [%s]",
+                            socket, last_socket_error_string());
+      err = last_socket_error();
+      return -1;
+    }
+    ROS_ASSERT(errlen == sizeof(int));
+    if (errinfo != 0)
+    {
+      // an error occurred during connection
+      ROSCPP_CONN_LOG_DEBUG("Async connect on socket[%d] failed with error [%s]",
+                            socket, socket_error_string(errinfo));
+      err = errinfo;
+      return -1;
+    }
+#endif // WIN32
+#endif // HAVE_EPOLL
+    err = 0;
+    return 1;
+}
+
 /**
  * Sets the socket as non blocking.
  * @return int : 0 on success, WSAGetLastError()/errno on failure.

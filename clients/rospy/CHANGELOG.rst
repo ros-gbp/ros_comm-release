@@ -2,52 +2,133 @@
 Changelog for package rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.12.17 (2020-10-26)
+1.15.10 (2021-03-18)
 --------------------
+* Fix "TypeError: not enough arguments for format string" (`#2127 <https://github.com/ros/ros_comm/issues/2127>`_)
+* Use Logger.warning() instead of the deprecated warn() (`#2120 <https://github.com/ros/ros_comm/issues/2120>`_)
+* Fix AttributeError isAlive (`#2092 <https://github.com/ros/ros_comm/issues/2092>`_)
+* Contributors: Brutus The Tschiepel, mikolajz, 金梦磊
+
+1.15.9 (2020-10-16)
+-------------------
 * Update maintainers (`#2075 <https://github.com/ros/ros_comm/issues/2075>`_)
-* Fix log*_throttle with sim time (`#2044 <https://github.com/ros/ros_comm/issues/2044>`_)
-* Update local parameter cache on set_param (`#2021 <https://github.com/ros/ros_comm/issues/2021>`_)
-* Contributors: Jacob Perron, Markus Grimm, Shane Loretz, salihmarangoz
+* Fix spelling (`#2066 <https://github.com/ros/ros_comm/issues/2066>`_)
+* Fix error handling with Python 3 (`#2050 <https://github.com/ros/ros_comm/issues/2050>`_)
+* Contributors: Markus Grimm, Sean Yen, Shane Loretz, larslue, salihmarangoz, tomoya
 
-1.12.16 (2020-08-26)
---------------------
-
-1.12.15 (2020-08-10)
---------------------
+1.15.8 (2020-07-23)
+-------------------
 * remove not existing NodeProxy from rospy __all_\_ (`#2007 <https://github.com/ros/ros_comm/issues/2007>`_)
-* fix dictionary changed size during iteration (`#1894 <https://github.com/ros/ros_comm/issues/1894>`_)
-* do not raise socket exception during shutdown (`#1720 <https://github.com/ros/ros_comm/issues/1720>`_)
-* add missing comma in the list of strings (`#1760 <https://github.com/ros/ros_comm/issues/1760>`_)
-* fix error handling for Topic constructor (`#1701 <https://github.com/ros/ros_comm/issues/1701>`_)
+* fix typo in topics.py (`#1977 <https://github.com/ros/ros_comm/issues/1977>`_)
 
-1.12.14 (2018-08-23)
---------------------
+1.15.7 (2020-05-28)
+-------------------
+
+1.15.6 (2020-05-21)
+-------------------
+
+1.15.5 (2020-05-15)
+-------------------
+
+1.15.4 (2020-03-19)
+-------------------
+* add exception for ConnectionAbortedError (`#1908 <https://github.com/ros/ros_comm/issues/1908>`_)
+* fix mac trying to use epoll instead of kqueue (`#1907 <https://github.com/ros/ros_comm/issues/1907>`_)
+* fix AttributeError: __exit_\_ (`#1915 <https://github.com/ros/ros_comm/issues/1915>`_, regression from 1.14.4)
+
+1.15.3 (2020-02-28)
+-------------------
+
+1.15.2 (2020-02-25)
+-------------------
+
+1.15.1 (2020-02-24)
+-------------------
+* use setuptools instead of distutils (`#1870 <https://github.com/ros/ros_comm/issues/1870>`_)
+
+1.15.0 (2020-02-21)
+-------------------
+* fix dictionary changed size during iteration (`#1894 <https://github.com/ros/ros_comm/issues/1894>`_)
+
+1.14.4 (2020-02-20)
+-------------------
+* add default ROS_MASTER_URI (`#1666 <https://github.com/ros/ros_comm/issues/1666>`_)
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* reuse xmlrpc connections everywhere (`#1471 <https://github.com/ros/ros_comm/issues/1471>`_)
+* use cached parameter for rosout_disable_topics_generation (`#1881 <https://github.com/ros/ros_comm/issues/1881>`_)
+* add args and kwargs to rospy.log* (`#1289 <https://github.com/ros/ros_comm/issues/1289>`_)
+* add kwargs to internal logging functions (`#1290 <https://github.com/ros/ros_comm/issues/1290>`_)
+* add get_param_cached (`#1515 <https://github.com/ros/ros_comm/issues/1515>`_)
+* more Python 3 compatibility (`#1795 <https://github.com/ros/ros_comm/issues/1795>`_)
+* fix line endings to be LF (`#1794 <https://github.com/ros/ros_comm/issues/1794>`_)
+* use condition attributes to specify Python 2 and 3 dependencies (`#1792 <https://github.com/ros/ros_comm/issues/1792>`_)
+* fix dynamic windowing for Topic Statistics (`#1695 <https://github.com/ros/ros_comm/issues/1695>`_)
+* do not raise socket exception during shutdown (`#1720 <https://github.com/ros/ros_comm/issues/1720>`_)
+* add possibility to pass rospy.Duration as timeout to wait_for_service and wait_for_message (`#1703 <https://github.com/ros/ros_comm/issues/1703>`_)
+* add is_legal_remap() to rosgraph to make remap-detection more precise (`#1683 <https://github.com/ros/ros_comm/issues/1683>`_)
+* add missing comma in the list of strings (`#1760 <https://github.com/ros/ros_comm/issues/1760>`_)
+* switch to yaml.safe_load(_all) to prevent YAMLLoadWarning (`#1688 <https://github.com/ros/ros_comm/issues/1688>`_)
+* fix error handling for Topic constructor (`#1701 <https://github.com/ros/ros_comm/issues/1701>`_)
+* make sigterm handling Python 3 compatible (`#1559 <https://github.com/ros/ros_comm/issues/1559>`_)
+* update wiki.ros.org URLs (`#1536 <https://github.com/ros/ros_comm/issues/1536>`_)
+* show connection info on rosnode info (`#1497 <https://github.com/ros/ros_comm/issues/1497>`_)
+* import socket, threading in udpros.py (`#1494 <https://github.com/ros/ros_comm/issues/1494>`_)
+
+1.14.3 (2018-08-06)
+-------------------
+* maintain exception info in RosOutHandler (`#1442 <https://github.com/ros/ros_comm/issues/1442>`_)
+
+1.14.2 (2018-06-06)
+-------------------
 * fix some errors in some probably not frequented code paths (`#1415 <https://github.com/ros/ros_comm/issues/1415>`_)
 * fix thread problem with get_topics() (`#1416 <https://github.com/ros/ros_comm/issues/1416>`_)
 
-1.12.13 (2018-02-21)
---------------------
-* raise the correct exception from AnyMsg.serialize (`#1311 <https://github.com/ros/ros_comm/issues/1311>`_)
-
-1.12.12 (2017-11-16)
---------------------
-
-1.12.11 (2017-11-07)
---------------------
-
-1.12.10 (2017-11-06)
---------------------
-
-1.12.9 (2017-11-06)
+1.14.1 (2018-05-21)
 -------------------
 
-1.12.8 (2017-11-06)
+1.14.0 (2018-05-21)
+-------------------
+* add API to suppress sequential identical messages (`#1309 <https://github.com/ros/ros_comm/issues/1309>`_)
+* add parameter to stop clients from generating rosout topics list (`#1241 <https://github.com/ros/ros_comm/issues/1241>`_)
+* add rosconsole echo (`#1324 <https://github.com/ros/ros_comm/issues/1324>`_)
+
+1.13.6 (2018-02-05)
+-------------------
+* raise the correct exception from AnyMsg.serialize (`#1311 <https://github.com/ros/ros_comm/issues/1311>`_)
+* remove unreachable exceptions (`#1260 <https://github.com/ros/ros_comm/issues/1260>`_)
+* replace Thread.setDaemon() using new API (`#1276 <https://github.com/ros/ros_comm/issues/1276>`_)
+
+1.13.5 (2017-11-09)
+-------------------
+* fix regresssion from 1.13.3 (`#1224 <https://github.com/ros/ros_comm/issues/1224>`_)
+
+1.13.4 (2017-11-02)
+-------------------
+* fix uri in message (`#1213 <https://github.com/ros/ros_comm/issues/1213>`_, regression from 1.13.3)
+
+1.13.3 (2017-10-25)
 -------------------
 * change rospy.Rate hz type from int to float (`#1177 <https://github.com/ros/ros_comm/issues/1177>`_)
+* use defined error codes rather than hardcoded integers (`#1174 <https://github.com/ros/ros_comm/issues/1174>`_)
+* improve log messages when waiting for service (`#1026 <https://github.com/ros/ros_comm/issues/1026>`_)
+* improve logger tests (`#1144 <https://github.com/ros/ros_comm/issues/1144>`_)
+
+1.13.2 (2017-08-15)
+-------------------
+* fix stack frame identification in rospy logging (`#1141 <https://github.com/ros/ros_comm/issues/1141>`_, regression from 1.13.1)
+
+1.13.1 (2017-07-27)
+-------------------
 * improve rospy.logXXX_throttle performance (`#1091 <https://github.com/ros/ros_comm/pull/1091>`_)
 * add option to reset timer when time moved backwards (`#1083 <https://github.com/ros/ros_comm/issues/1083>`_)
 * abort topic lookup on connection refused (`#1044 <https://github.com/ros/ros_comm/pull/1044>`_)
+* add rospy.logXXX_once (`#1041 <https://github.com/ros/ros_comm/issues/1041>`_)
+* remove "ROS time moved backwards" log message (`#1027 <https://github.com/ros/ros_comm/pull/1027>`_)
 * sleep in rospy wait_for_service even if exceptions raised (`#1025 <https://github.com/ros/ros_comm/pull/1025>`_)
+* add named loggers (`#948 <https://github.com/ros/ros_comm/pull/948>`_)
+
+1.13.0 (2017-02-22)
+-------------------
 
 1.12.7 (2017-02-17)
 -------------------

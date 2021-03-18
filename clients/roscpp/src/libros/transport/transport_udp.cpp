@@ -38,6 +38,9 @@
 
 #include <ros/assert.h>
 #include <boost/bind.hpp>
+#ifndef _WIN32
+  #include <sys/socket.h>  // explicit include required for FreeBSD
+#endif
 
 #include <fcntl.h>
 #if defined(__APPLE__)
@@ -62,6 +65,8 @@ TransportUDP::TransportUDP(PollSet* poll_set, int flags, int max_datagram_size)
 , expecting_read_(false)
 , expecting_write_(false)
 , is_server_(false)
+, server_address_{}
+, local_address_{}
 , server_port_(-1)
 , local_port_(-1)
 , poll_set_(poll_set)
@@ -157,7 +162,7 @@ bool TransportUDP::connect(const std::string& host, int port, int connection_id)
     return false;
   }
 
-  sockaddr_in sin;
+  sockaddr_in sin = {};
   sin.sin_family = AF_INET;
   if (inet_addr(host.c_str()) == INADDR_NONE)
   {
@@ -293,7 +298,7 @@ bool TransportUDP::initializeSocket()
   ROS_ASSERT(poll_set_ || (flags_ & SYNCHRONOUS));
   if (poll_set_)
   {
-    poll_set_->addSocket(sock_, boost::bind(&TransportUDP::socketUpdate, this, _1), shared_from_this());
+    poll_set_->addSocket(sock_, boost::bind(&TransportUDP::socketUpdate, this, boost::placeholders::_1), shared_from_this());
   }
 
   return true;

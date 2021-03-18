@@ -42,7 +42,9 @@ calculation based on ROS environment variables.
 The common entry point for most libraries is the L{XmlRpcNode} class.
 """
 
+import errno
 import logging
+import platform
 import select
 import socket
 
@@ -75,7 +77,33 @@ def isstring(s):
     except NameError:
         return isinstance(s, str)
 
+
+def _support_http_1_1():
+    """
+    Determine whether HTTP 1.1 should be enabled for XMLRPC communications.
+
+    This will be true on non-Linux systems, and on Linux kernels at least as
+    new as 4.16. Linux kernels 4.15 and older cause significant performance
+    degradation in the roscore when using HTTP 1.1
+    """
+    if platform.system() != 'Linux':
+        return True
+    minimum_supported_major, minimum_supported_minor = (4, 16)
+    release = platform.release().split('.')
+    platform_major = int(release[0])
+    platform_minor = int(release[1])
+    if platform_major < minimum_supported_major:
+        return False
+    if (platform_major == minimum_supported_major and
+        platform_minor < minimum_supported_minor):
+        return False
+    return True
+
+
 class SilenceableXMLRPCRequestHandler(SimpleXMLRPCRequestHandler):
+    if _support_http_1_1():
+        protocol_version = 'HTTP/1.1'
+
     def log_message(self, format, *args):
         if 0:
             SimpleXMLRPCRequestHandler.log_message(self, format, *args)
@@ -85,6 +113,10 @@ class ThreadingXMLRPCServer(socketserver.ThreadingMixIn, SimpleXMLRPCServer):
     Adds ThreadingMixin to SimpleXMLRPCServer to support multiple concurrent
     requests via threading. Also makes logging toggleable.
     """
+
+    if _support_http_1_1():
+        daemon_threads = True
+
     def __init__(self, addr, log_requests=1):
         """
         Overrides SimpleXMLRPCServer to set option to allow_reuse_address.
@@ -122,14 +154,17 @@ class ThreadingXMLRPCServer(socketserver.ThreadingMixIn, SimpleXMLRPCServer):
             logger = logging.getLogger('xmlrpc')
             if logger:
                 logger.error(traceback.format_exc())
-    
-class ForkingXMLRPCServer(socketserver.ForkingMixIn, SimpleXMLRPCServer):
-    """
-    Adds ThreadingMixin to SimpleXMLRPCServer to support multiple concurrent
-    requests via forking. Also makes logging toggleable.      
-    """
-    def __init__(self, addr, request_handler=SilenceableXMLRPCRequestHandler, log_requests=1):
-        SimpleXMLRPCServer.__init__(self, addr, request_handler, log_requests)
+
+
+# ForkingMixIn and the Forking classes mentioned below are only available on POSIX platforms.
+if hasattr(socketserver, "ForkingMixIn"):
+    class ForkingXMLRPCServer(socketserver.ForkingMixIn, SimpleXMLRPCServer):
+        """
+        Adds ThreadingMixin to SimpleXMLRPCServer to support multiple concurrent
+        requests via forking. Also makes logging toggleable.      
+        """
+        def __init__(self, addr, request_handler=SilenceableXMLRPCRequestHandler, log_requests=1):
+            SimpleXMLRPCServer.__init__(self, addr, request_handler, log_requests)
     
 
 class XmlRpcHandler(object):
@@ -263,7 +298,7 @@ class XmlRpcNode(object):
             self.server.register_instance(self.handler)
 
         except socket.error as e:
-            if e.errno == 98:
+            if e.errno == errno.EADDRINUSE:
                 msg = "ERROR: Unable to start XML-RPC server, port %s is already in use"%self.port
             else:
                 msg = "ERROR: Unable to start XML-RPC server: %s" % e.strerror
@@ -291,7 +326,7 @@ class XmlRpcNode(object):
                 # exceptions break _run.
                 if self.is_shutdown:
                     pass
-                elif e.errno != 4:
+                elif e.errno != errno.EINTR:
                     self.is_shutdown = True
                     logging.getLogger('xmlrpc').error("serve forever IOError: %s, %s"%(e.errno, e.strerror))
                     

@@ -45,6 +45,11 @@ import rosunit
 
 import rosgraph
 
+try:
+    from importlib import reload
+except ImportError:
+    pass
+
 XML_OUTPUT_FLAG = '--gtest_output=xml:' #use gtest-compatible flag
 
 _GLOBAL_CALLER_ID = '/script'
@@ -160,7 +165,7 @@ run = rosrun
 import warnings
 def deprecated(func):
     """This is a decorator which can be used to mark functions
-    as deprecated. It will result in a warning being emmitted
+    as deprecated. It will result in a warning being emitted
     when the function is used."""
     def newFunc(*args, **kwargs):
         warnings.warn("Call to deprecated function %s." % func.__name__,

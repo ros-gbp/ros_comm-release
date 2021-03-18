@@ -33,6 +33,7 @@
 #include "ros/message.h"
 #include "ros/serialization.h"
 #include <boost/bind.hpp>
+#include <boost/thread/mutex.hpp>
 
 namespace ros
 {
@@ -50,6 +51,7 @@ namespace ros
     Publisher() {}
     Publisher(const Publisher& rhs);
     ~Publisher();
+    Publisher& operator=(const Publisher& other) = default;
 
     /**
      * \brief Publish a message on the topic associated with this Publisher.
@@ -75,11 +77,14 @@ namespace ros
           ROS_ASSERT_MSG(false, "Call to publish() on an invalid Publisher (topic [%s])", impl_->topic_.c_str());
           return;
         }
-
-      ROS_ASSERT_MSG(impl_->md5sum_ == "*" || std::string(mt::md5sum<M>(*message)) == "*" || impl_->md5sum_ == mt::md5sum<M>(*message),
-                     "Trying to publish message of type [%s/%s] on a publisher with type [%s/%s]",
-                     mt::datatype<M>(*message), mt::md5sum<M>(*message),
-                     impl_->datatype_.c_str(), impl_->md5sum_.c_str());
+        if (impl_->md5sum_ == "*" ||
+            std::string(mt::md5sum<M>(*message)) == "*" ||
+            impl_->md5sum_ == mt::md5sum<M>(*message)) {
+          ROS_DEBUG_ONCE("Trying to publish message of type [%s/%s] on a "
+                    "publisher with type [%s/%s]",
+                    mt::datatype<M>(*message), mt::md5sum<M>(*message),
+                    impl_->datatype_.c_str(), impl_->md5sum_.c_str());
+        }
 
       SerializedMessage m;
       m.type_info = &typeid(M);
@@ -108,11 +113,14 @@ namespace ros
           ROS_ASSERT_MSG(false, "Call to publish() on an invalid Publisher (topic [%s])", impl_->topic_.c_str());
           return;
         }
-
-      ROS_ASSERT_MSG(impl_->md5sum_ == "*" || std::string(mt::md5sum<M>(message)) == "*" || impl_->md5sum_ == mt::md5sum<M>(message),
-                     "Trying to publish message of type [%s/%s] on a publisher with type [%s/%s]",
-                     mt::datatype<M>(message), mt::md5sum<M>(message),
-                     impl_->datatype_.c_str(), impl_->md5sum_.c_str());
+        if (impl_->md5sum_ == "*" ||
+            std::string(mt::md5sum<M>(message)) == "*" ||
+            impl_->md5sum_ == mt::md5sum<M>(message)) {
+          ROS_DEBUG_ONCE("Trying to publish message of type [%s/%s] on a "
+                    "publisher with type [%s/%s]",
+                    mt::datatype<M>(message), mt::md5sum<M>(message),
+                    impl_->datatype_.c_str(), impl_->md5sum_.c_str());
+        }
 
       SerializedMessage m;
       publish(boost::bind(serializeMessage<M>, boost::ref(message)), m);
@@ -162,10 +170,14 @@ namespace ros
       return impl_ != rhs.impl_;
     }
 
+    boost::function<void(const SubscriberLinkPtr &)> getLastMessageCallback() {
+      return boost::bind(&Impl::pushLastMessage, impl_.get(), boost::placeholders::_1);
+    }
+
   private:
 
     Publisher(const std::string& topic, const std::string& md5sum, 
-              const std::string& datatype, const NodeHandle& node_handle, 
+              const std::string& datatype, bool latch, const NodeHandle& node_handle,
               const SubscriberCallbacksPtr& callbacks);
 
     void publish(const boost::function<SerializedMessage(void)>& serfunc, SerializedMessage& m) const;
@@ -179,6 +191,7 @@ namespace ros
 
       void unadvertise();
       bool isValid() const;
+      void pushLastMessage(const SubscriberLinkPtr &sub_link);
 
       std::string topic_;
       std::string md5sum_;
@@ -186,6 +199,9 @@ namespace ros
       NodeHandlePtr node_handle_;
       SubscriberCallbacksPtr callbacks_;
       bool unadvertised_;
+      bool latch_;
+      SerializedMessage last_message_;
+      boost::mutex last_message_mutex_;
     };
     typedef boost::shared_ptr<Impl> ImplPtr;
     typedef boost::weak_ptr<Impl> ImplWPtr;

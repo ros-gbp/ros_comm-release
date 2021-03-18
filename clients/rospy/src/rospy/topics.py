@@ -192,7 +192,13 @@ class Poller(object):
     on multiple platforms.  NOT thread-safe.
     """
     def __init__(self):
-        if hasattr(select, 'epoll'):
+        if hasattr(select, 'kqueue'):
+            self.poller = select.kqueue()
+            self.add_fd = self.add_kqueue
+            self.remove_fd = self.remove_kqueue
+            self.error_iter = self.error_kqueue_iter
+            self.kevents = []
+        elif hasattr(select, 'epoll'):
             self.poller = select.epoll()
             self.add_fd = self.add_epoll
             self.remove_fd = self.remove_epoll
@@ -202,12 +208,6 @@ class Poller(object):
             self.add_fd = self.add_poll
             self.remove_fd = self.remove_poll
             self.error_iter = self.error_poll_iter
-        elif hasattr(select, 'kqueue'):
-            self.poller = select.kqueue()
-            self.add_fd = self.add_kqueue
-            self.remove_fd = self.remove_kqueue
-            self.error_iter = self.error_kqueue_iter
-            self.kevents = []
         else:
             #TODO: non-Noop impl for Windows
             self.poller = self.noop
@@ -420,7 +420,7 @@ class _TopicImpl(object):
             # implementation) would be to start a thread that
             # regularly polls all fds, but that would create a lot of
             # synchronization events and also have a separate thread
-            # to manage.  It would be desireable to move to this, but
+            # to manage.  It would be desirable to move to this, but
             # this change is less impactful and keeps the codebase
             # more stable as we move towards an entirely different
             # event loop for rospy -- the heart of the problem is that
@@ -599,7 +599,7 @@ class Subscriber(Topic):
 
 class _SubscriberImpl(_TopicImpl):
     """
-    Underyling L{_TopicImpl} implementation for subscriptions.
+    Underlying L{_TopicImpl} implementation for subscriptions.
     """
     def __init__(self, name, data_class):
         """
@@ -889,7 +889,7 @@ class Publisher(Topic):
 
 class _PublisherImpl(_TopicImpl):
     """
-    Underyling L{_TopicImpl} implementation for publishers.
+    Underlying L{_TopicImpl} implementation for publishers.
     """
     
     def __init__(self, name, data_class):
@@ -1055,7 +1055,7 @@ class _PublisherImpl(_TopicImpl):
         else:
             conns = [connection_override]
 
-        # #2128 test our buffer. I don't now how this got closed in
+        # #2128 test our buffer. I don't know how this got closed in
         # that case, but we can at least diagnose the problem.
         b = self.buff
         try:

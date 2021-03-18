@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 
 project(test_roscpp)
 
@@ -11,9 +11,13 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 if(CATKIN_ENABLE_TESTING)
-  find_package(Boost REQUIRED COMPONENTS signals filesystem system)
+  find_package(Boost REQUIRED COMPONENTS filesystem system)
 
   include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+
+  if(WIN32)
+    add_definitions(-DNOGDI)
+  endif()
 
   # Testing message and service files.  See comment below about subdirectory support.
   add_message_files(

@@ -111,7 +111,7 @@ TEST_F(Subscriptions, subPub)
   ros::NodeHandle nh;
   ros::Subscriber sub = nh.subscribe("roscpp/pubsub_test", 0, &Subscriptions::messageCallback, (Subscriptions*)this);
   ASSERT_TRUE(sub);
-  pub_ = nh.advertise<test_roscpp::TestArray>("roscpp/subpub_test", 0, boost::bind(&Subscriptions::subscriberCallback, this, _1));
+  pub_ = nh.advertise<test_roscpp::TestArray>("roscpp/subpub_test", 0, boost::bind(&Subscriptions::subscriberCallback, this, boost::placeholders::_1));
   ASSERT_TRUE(pub_);
   ros::Time t1(ros::Time::now()+g_dt);
 
@@ -120,10 +120,13 @@ TEST_F(Subscriptions, subPub)
     ros::getGlobalCallbackQueue()->callAvailable(ros::WallDuration(0.1));
   }
 
-  if(success)
+  if(success) {
     SUCCEED();
-  else
-    FAIL();
+  } else if (ros::Time::now() >= t1) {
+    FAIL() << "timed out after receiving " << msg_i << " of " << g_msg_count << " messages";
+  } else {
+    FAIL() << "message counter did not match";
+  }
 }
 
 #define USAGE "USAGE: sub_pub <count> <time>"

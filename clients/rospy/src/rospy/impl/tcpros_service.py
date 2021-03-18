@@ -83,12 +83,13 @@ def wait_for_service(service, timeout=None):
     service already running.
     @param service: name of service
     @type  service: str
-    @param timeout: timeout time in seconds, None for no
+    @param timeout: timeout time in seconds or Duration, None for no
     timeout. NOTE: timeout=0 is invalid as wait_for_service actually
     contacts the service, so non-blocking behavior is not
     possible. For timeout=0 uses cases, just call the service without
     waiting.
-    @type  timeout: double
+    @type  timeout: double|rospy.Duration
+    @note  roscpp waitForService() has timeout specified in millisecs.
     @raise ROSException: if specified timeout is exceeded
     @raise ROSInterruptException: if shutdown interrupts wait
     """
@@ -114,28 +115,32 @@ def wait_for_service(service, timeout=None):
                   'callerid' : rospy.core.get_caller_id(),
                   'service': resolved_name }
             rosgraph.network.write_ros_handshake_header(s, h)
-            return True
+            return uri
         finally:
             if s is not None:
                 s.close()
+    if timeout is not None and isinstance(timeout, rospy.Duration):
+        timeout = timeout.to_sec()
     if timeout == 0.:
         raise ValueError("timeout must be non-zero")
     resolved_name = rospy.names.resolve_name(service)
-    first = False
+    contact_failed = False
     if timeout:
         timeout_t = time.time() + timeout
         while not rospy.core.is_shutdown() and time.time() < timeout_t:
             try:
-                if contact_service(resolved_name, timeout_t-time.time()):
+                uri = contact_service(resolved_name, timeout_t - time.time())
+                if uri:
+                    if contact_failed:
+                        rospy.core.loginfo("wait_for_service(%s): finally were able to contact [%s]"%(resolved_name, uri))
                     return
             except KeyboardInterrupt:
                 # re-raise
                 rospy.core.logdebug("wait_for_service: received keyboard interrupt, assuming signals disabled and re-raising")
                 raise 
             except: # service not actually up
-                if first:
-                    first = False
-                    rospy.core.logerr("wait_for_service(%s): failed to contact, will keep trying"%(resolved_name))
+                contact_failed = True
+                rospy.core.logwarn_throttle(10, "wait_for_service(%s): failed to contact, will keep trying"%resolved_name)
             time.sleep(0.3)
         if rospy.core.is_shutdown():
             raise ROSInterruptException("rospy shutdown")
@@ -144,16 +149,18 @@ def wait_for_service(service, timeout=None):
     else:
         while not rospy.core.is_shutdown():
             try:
-                if contact_service(resolved_name):
+                uri = contact_service(resolved_name)
+                if uri:
+                    if contact_failed:
+                        rospy.core.loginfo("wait_for_service(%s): finally were able to contact [%s]"%(resolved_name, uri))
                     return
             except KeyboardInterrupt:
                 # re-raise
                 rospy.core.logdebug("wait_for_service: received keyboard interrupt, assuming signals disabled and re-raising")
                 raise 
             except: # service not actually up
-                if first:
-                    first = False
-                    rospy.core.logerr("wait_for_service(%s): failed to contact, will keep trying"%(resolved_name))
+                contact_failed = True
+                rospy.core.logwarn_throttle(10, "wait_for_service(%s): failed to contact, will keep trying"%resolved_name)
             time.sleep(0.3)
         if rospy.core.is_shutdown():
             raise ROSInterruptException("rospy shutdown")
@@ -245,7 +252,7 @@ def service_connection_handler(sock, client_addr, header):
             # using threadpool reduced performance by an order of
             # magnitude, need to investigate better
             t = threading.Thread(target=service.handle, args=(transport, header))
-            t.setDaemon(True)
+            t.daemon = True
             t.start()
                 
         
@@ -340,7 +347,7 @@ class TCPROSServiceClient(TCPROSTransportProtocol):
         
     def read_messages(self, b, msg_queue, sock):
         """
-        In service implementation, reads in OK byte that preceeds each
+        In service implementation, reads in OK byte that precedes each
         response. The OK byte allows for the passing of error messages
         instead of a response message
         @param b: buffer
@@ -396,7 +403,7 @@ class ServiceProxy(_Service):
         @param persistent: (optional) if True, proxy maintains a persistent
         connection to service. While this results in better call
         performance, persistent connections are discouraged as they are
-        less resistent to network issues and service restarts.
+        less resistant to network issues and service restarts.
         @type  persistent: bool
         @param headers: (optional) arbitrary headers 
         @type  headers: dict

@@ -83,18 +83,13 @@ def parse_http_host_and_port(url):
     :returns: hostname and port number in URL or 80 (default), ``(str, int)``
     :raises: :exc:`ValueError` If the url does not validate
     """
-    # can't use p.port because that's only available in Python 2.5
     if not url:
         raise ValueError('not a valid URL')        
     p = urlparse.urlparse(url)
-    if not p[0] or not p[1]: #protocol and host
+    if not p.scheme or not p.hostname:
         raise ValueError('not a valid URL')
-    if ':' in p[1]:
-        hostname, port = p[1].split(':')
-        port = int(port)
-    else: 
-        hostname, port = p[1], 80
-    return hostname, port
+    port = p.port if p.port else 80
+    return p.hostname, port
     
 def _is_unix_like_platform():
     """
@@ -180,7 +175,7 @@ def is_local_address(hostname):
     
 def get_local_address():
     """
-    :returns: default local IP address (e.g. eth0). May be overriden by ROS_IP/ROS_HOSTNAME/__ip/__hostname, ``str``
+    :returns: default local IP address (e.g. eth0). May be overridden by ROS_IP/ROS_HOSTNAME/__ip/__hostname, ``str``
     """
     override = get_address_override()
     if override:
@@ -312,7 +307,7 @@ def decode_ros_handshake_header(header_str):
     Decode serialized ROS handshake header into a Python dictionary
 
     header is a list of string key=value pairs, each prefixed by a
-    4-byte length field. It is preceeded by a 4-byte length field for
+    4-byte length field. It is preceded by a 4-byte length field for
     the entire header.
     
     :param header_str: encoded header string. May contain extra data at the end, ``str``

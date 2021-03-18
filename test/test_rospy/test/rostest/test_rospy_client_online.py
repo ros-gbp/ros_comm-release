@@ -37,6 +37,13 @@ import struct
 import unittest
 import time
 import random
+import logging
+import rosgraph.roslogging
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 import rosunit
 
@@ -68,90 +75,257 @@ class TestRospyClientOnline(unittest.TestCase):
         rospy.init_node('test_rospy_online')
 
     def test_log(self):
-        # we can't do anything fancy here like capture stdout as rospy
-        # grabs the streams before we do. Instead, just make sure the
-        # routines don't crash.
-        
-        real_stdout = sys.stdout
-        real_stderr = sys.stderr
+        rosout_logger = logging.getLogger('rosout')
+        import rospy
+
+        self.assertTrue(len(rosout_logger.handlers) == 2)
+        self.assertTrue(rosout_logger.handlers[0], rosgraph.roslogging.RosStreamHandler)
+        self.assertTrue(rosout_logger.handlers[1], rospy.impl.rosout.RosOutHandler)
+
+        default_ros_handler = rosout_logger.handlers[0]
+
+        # Remap stdout for testing
+        lout = StringIO()
+        lerr = StringIO()
+        test_ros_handler = rosgraph.roslogging.RosStreamHandler(colorize=False, stdout=lout, stderr=lerr)
 
         try:
-            try:
-                from cStringIO import StringIO
-            except ImportError:
-                from io import StringIO
-            sys.stdout = StringIO()
-            sys.stderr = StringIO()
+            # hack to replace the stream handler with a debug version
+            rosout_logger.removeHandler(default_ros_handler)
+            rosout_logger.addHandler(test_ros_handler)
 
             import rospy
             rospy.loginfo("test 1")
-            self.assert_("test 1" in sys.stdout.getvalue())
+            lout_last = lout.getvalue().splitlines()[-1]
+            self.assert_("test 1" in lout_last)
             
-            rospy.logwarn("test 2")            
-            self.assert_("[WARN]" in sys.stderr.getvalue())
-            self.assert_("test 2" in sys.stderr.getvalue())
+            rospy.logwarn("test 2")
+            lerr_last = lerr.getvalue().splitlines()[-1]
+            self.assert_("[WARN]" in lerr_last)
+            self.assert_("test 2" in lerr_last)
 
-            sys.stderr = StringIO()
-            rospy.logerr("test 3")            
-            self.assert_("[ERROR]" in sys.stderr.getvalue())
-            self.assert_("test 3" in sys.stderr.getvalue())
-            
-            sys.stderr = StringIO()
-            rospy.logfatal("test 4")            
-            self.assert_("[FATAL]" in sys.stderr.getvalue())            
-            self.assert_("test 4" in sys.stderr.getvalue())            
+            rospy.logerr("test 3")
+            lerr_last = lerr.getvalue().splitlines()[-1]
+            self.assert_("[ERROR]" in lerr_last)
+            self.assert_("test 3" in lerr_last)
+
+            rospy.logfatal("test 4")
+            lerr_last = lerr.getvalue().splitlines()[-1]
+            self.assert_("[FATAL]" in lerr_last)
+            self.assert_("test 4" in lerr_last)
+
+            # logXXX_once
+            lout_len = -1
+            for i in range(3):
+                rospy.loginfo_once("test 1")
+                lout_last = lout.getvalue().splitlines()[-1]
+                if i == 0:
+                    self.assert_("test 1" in lout_last)
+                    lout_len = len(lout.getvalue())
+                else:  # making sure the length of lout doesnt change
+                    self.assert_(lout_len == len(lout.getvalue()))
+
+            lerr_len = -1
+            for i in range(3):
+                rospy.logwarn_once("test 2")
+                lerr_last = lerr.getvalue().splitlines()[-1]
+                if i == 0:
+                    self.assert_("test 2" in lerr_last)
+                    lerr_len = len(lerr.getvalue())
+                else:  # making sure the length of lerr doesnt change
+                    self.assert_(lerr_len == len(lerr.getvalue()))
+
+            lerr_len = -1
+            for i in range(3):
+                rospy.logerr_once("test 3")
+                lerr_last = lerr.getvalue().splitlines()[-1]
+                if i == 0:
+                    self.assert_("test 3" in lerr_last)
+                    lerr_len = len(lerr.getvalue())
+                else:  # making sure the length of lerr doesnt change
+                    self.assert_(lerr_len == len(lerr.getvalue()))
+
+            lerr_len = -1
+            for i in range(3):
+                rospy.logfatal_once("test 4")
+                lerr_last = lerr.getvalue().splitlines()[-1]
+                if i == 0:
+                    self.assert_("test 4" in lerr_last)
+                    lerr_len = len(lerr.getvalue())
+                else:  # making sure the length of lerr doesnt change
+                    self.assert_(lerr_len == len(lerr.getvalue()))
 
             # logXXX_throttle
+            lout_len = -1
             for i in range(3):
-                sys.stdout = StringIO()
                 rospy.loginfo_throttle(3, "test 1")
+                lout_last = lout.getvalue().splitlines()[-1]
                 if i == 0:
-                    self.assert_("test 1" in sys.stdout.getvalue())
+                    self.assert_("test 1" in lout_last)
+                    lout_len = len(lout.getvalue())
                     rospy.sleep(rospy.Duration(1))
-                elif i == 1:
-                    self.assert_("" == sys.stdout.getvalue())
+                elif i == 1:  # making sure the length of lout doesnt change
+                    self.assert_(lout_len == len(lout.getvalue()))
                     rospy.sleep(rospy.Duration(2))
                 else:
-                    self.assert_("test 1" in sys.stdout.getvalue())
+                    self.assert_("test 1" in lout_last)
 
+            lerr_len = -1
             for i in range(3):
-                sys.stderr = StringIO()
                 rospy.logwarn_throttle(3, "test 2")
+                lerr_last = lerr.getvalue().splitlines()[-1]
                 if i == 0:
-                    self.assert_("test 2" in sys.stderr.getvalue())
+                    self.assert_("test 2" in lerr_last)
+                    lerr_len = len(lerr.getvalue())
                     rospy.sleep(rospy.Duration(1))
-                elif i == 1:
-                    self.assert_("" == sys.stderr.getvalue())
+                elif i == 1:  # making sure the length of lerr doesnt change
+                    self.assert_(lerr_len == len(lerr.getvalue()))
                     rospy.sleep(rospy.Duration(2))
                 else:
-                    self.assert_("test 2" in sys.stderr.getvalue())
+                    self.assert_("test 2" in lerr_last)
 
+            lerr_len = -1
             for i in range(3):
-                sys.stderr = StringIO()
                 rospy.logerr_throttle(3, "test 3")
+                lerr_last = lerr.getvalue().splitlines()[-1]
                 if i == 0:
-                    self.assert_("test 3" in sys.stderr.getvalue())
+                    self.assert_("test 3" in lerr_last)
+                    lerr_len = len(lerr.getvalue())
                     rospy.sleep(rospy.Duration(1))
-                elif i == 1:
-                    self.assert_("" == sys.stderr.getvalue())
+                elif i == 1:  # making sure the length of lerr doesnt change
+                    self.assert_(lerr_len == len(lerr.getvalue()))
                     rospy.sleep(rospy.Duration(2))
                 else:
-                    self.assert_("test 3" in sys.stderr.getvalue())
+                    self.assert_("test 3" in lerr_last)
 
+            lerr_len = -1
             for i in range(3):
-                sys.stderr = StringIO()
                 rospy.logfatal_throttle(3, "test 4")
+                lerr_last = lerr.getvalue().splitlines()[-1]
                 if i == 0:
-                    self.assert_("test 4" in sys.stderr.getvalue())
+                    self.assert_("test 4" in lerr_last)
+                    lerr_len = len(lerr.getvalue())
                     rospy.sleep(rospy.Duration(1))
-                elif i == 1:
-                    self.assert_("" == sys.stderr.getvalue())
+                elif i == 1:  # making sure the length of lerr doesnt change
+                    self.assert_(lerr_len == len(lerr.getvalue()))
                     rospy.sleep(rospy.Duration(2))
                 else:
-                    self.assert_("test 4" in sys.stderr.getvalue())
+                    self.assert_("test 4" in lerr_last)
+
+            # logXXX_throttle_identical
+            lout_len = -1
+            for i in range(5):
+                if i < 2:
+                    test_text = "test 1"
+                else:
+                    test_text = "test 1a"
+                rospy.loginfo_throttle_identical(2, test_text)
+                lout_last = lout.getvalue().splitlines()[-1]
+                if i == 0:  # Confirm test text was logged
+                    self.assert_(test_text in lout_last)
+                    lout_len = len(lout.getvalue())
+                elif i == 1:  # Confirm the length of lout hasn't changed
+                    self.assert_(lout_len == len(lout.getvalue()))
+                elif i == 2:  # Confirm the new message was logged correctly
+                    self.assert_(test_text in lout_last)
+                    lout_len = len(lout.getvalue())
+                    rospy.sleep(rospy.Duration(2))
+                elif i == 3:  # Confirm the length of lout has changed
+                    self.assert_(lout_len != len(lout.getvalue()))
+                else:  # Confirm new test text is in last log
+                    self.assert_(test_text in lout_last)
+
+            lerr_len = -1
+            for i in range(5):
+                if i < 2:
+                    test_text = "test 2"
+                else:
+                    test_text = "test 2a"
+                rospy.logwarn_throttle_identical(2, test_text)
+                lerr_last = lerr.getvalue().splitlines()[-1]
+                if i == 0:  # Confirm test text was logged
+                    self.assert_(test_text in lerr_last)
+                    lerr_len = len(lerr.getvalue())
+                elif i == 1:  # Confirm the length of lerr hasn't changed
+                    self.assert_(lerr_len == len(lerr.getvalue()))
+                elif i == 2:  # Confirm the new message was logged correctly
+                    self.assert_(test_text in lerr_last)
+                    lerr_len = len(lerr.getvalue())
+                    rospy.sleep(rospy.Duration(2))
+                elif i == 3:  # Confirm the length of lerr has incremented
+                    self.assert_(lerr_len != len(lerr.getvalue()))
+                else:  # Confirm new test text is in last log
+                    self.assert_(test_text in lerr_last)
+
+            lerr_len = -1
+            for i in range(5):
+                if i < 2:
+                    test_text = "test 3"
+                else:
+                    test_text = "test 3a"
+                rospy.logerr_throttle_identical(2, test_text)
+                lerr_last = lerr.getvalue().splitlines()[-1]
+                if i == 0:  # Confirm test text was logged
+                    self.assert_(test_text in lerr_last)
+                    lerr_len = len(lerr.getvalue())
+                elif i == 1:  # Confirm the length of lerr hasn't changed
+                    self.assert_(lerr_len == len(lerr.getvalue()))
+                elif i == 2:  # Confirm the new message was logged correctly
+                    self.assert_(test_text in lerr_last)
+                    lerr_len = len(lerr.getvalue())
+                    rospy.sleep(rospy.Duration(2))
+                elif i == 3:  # Confirm the length of lerr has incremented
+                    self.assert_(lerr_len != len(lerr.getvalue()))
+                else:  # Confirm new test text is in last log
+                    self.assert_(test_text in lerr_last)
+
+            lerr_len = -1
+            for i in range(5):
+                if i < 2:
+                    test_text = "test 4"
+                else:
+                    test_text = "test 4a"
+                rospy.logfatal_throttle_identical(2, test_text)
+                lerr_last = lerr.getvalue().splitlines()[-1]
+                if i == 0:  # Confirm test text was logged
+                    self.assert_(test_text in lerr_last)
+                    lerr_len = len(lerr.getvalue())
+                elif i == 1:  # Confirm the length of lerr hasn't changed
+                    self.assert_(lerr_len == len(lerr.getvalue()))
+                elif i == 2:  # Confirm the new message was logged correctly
+                    self.assert_(test_text in lerr_last)
+                    lerr_len = len(lerr.getvalue())
+                    rospy.sleep(rospy.Duration(2))
+                elif i == 3:  # Confirm the length of lerr has incremented
+                    self.assert_(lerr_len != len(lerr.getvalue()))
+                else:  # Confirm new test text is in last log
+                    self.assert_(test_text in lerr_last)
+
+            rospy.loginfo("test child logger 1", logger_name="log1")
+            lout_last = lout.getvalue().splitlines()[-1]
+            self.assert_("test child logger 1" in lout_last)
+            
+            rospy.logwarn("test child logger 2", logger_name="log2")
+            lerr_last = lerr.getvalue().splitlines()[-1]
+            self.assert_("[WARN]" in lerr_last)
+            self.assert_("test child logger 2" in lerr_last)
+
+            rospy.logerr("test child logger 3", logger_name="log3")
+            lerr_last = lerr.getvalue().splitlines()[-1]
+            self.assert_("[ERROR]" in lerr_last)
+            self.assert_("test child logger 3" in lerr_last)
+
+            rospy.logfatal("test child logger 4", logger_name="log4")
+            lerr_last = lerr.getvalue().splitlines()[-1]
+            self.assert_("[FATAL]" in lerr_last)
+            self.assert_("test child logger 4" in lerr_last)
+
         finally:
-            sys.stdout = real_stdout
-            sys.stderr = real_stderr
+            # restoring default ros handler
+            rosout_logger.removeHandler(test_ros_handler)
+            lout.close()
+            lerr.close()
+            rosout_logger.addHandler(default_ros_handler)
         
     def test_wait_for_service(self):
         # lazy-import for coverage
@@ -184,6 +358,35 @@ class TestRospyClientOnline(unittest.TestCase):
             rospy.wait_for_service('fake_service', timeout=0.3)
         timeout_t = time.time() + 2.        
         t3 = TestTask(task3)        
+        t3.start()
+        while not t3.done and time.time() < timeout_t:
+            time.sleep(0.5)
+        self.assert_(t3.done)
+        self.failIf(t3.success)
+
+    def test_wait_for_service_duration(self):
+        # lazy-import for coverage
+        import rospy
+        import time
+
+        # test wait for service with timeout in success case
+        def task2():
+            rospy.wait_for_service('add_two_ints',
+                                   timeout=rospy.Duration.from_sec(1.0))
+        timeout_t = time.time() + 5.
+        t2 = TestTask(task2)
+        t2.start()
+        while not t2.done and time.time() < timeout_t:
+            time.sleep(0.5)
+        self.assert_(t2.success)
+
+        # test wait for service in failure case
+        def task3():
+            # #2842 raising bounds from .1 to .3 for amazon VM
+            rospy.wait_for_service('fake_service',
+                                   timeout=rospy.Duration.from_sec(0.3))
+        timeout_t = time.time() + 2.
+        t3 = TestTask(task3)
         t3.start()
         while not t3.done and time.time() < timeout_t:
             time.sleep(0.5)
@@ -229,6 +432,45 @@ class TestRospyClientOnline(unittest.TestCase):
         fake_proxy = rospy.ServiceProxy('fake_service', test_rosmaster.srv.AddTwoInts)
         timeout_t = time.time() + 2.        
         t3 = TestTask(ProxyTask(fake_proxy, timeout=0.1))        
+        t3.start()
+        while not t3.done and time.time() < timeout_t:
+            time.sleep(0.5)
+        self.assert_(t3.done)
+        self.failIf(t3.success)
+
+    def test_ServiceProxy_wait_for_service_duration(self):
+        """
+        Test ServiceProxy.wait_for_service
+        """
+        # lazy-import for coverage
+        import rospy
+        import time
+        import test_rosmaster.srv
+
+        # test wait for service in success case
+        proxy = rospy.ServiceProxy('add_two_ints', test_rosmaster.srv.AddTwoInts)
+        class ProxyTask(object):
+            def __init__(self, proxy, timeout=None):
+                self.proxy = proxy
+                self.timeout = timeout
+            def __call__(self):
+                if self.timeout is None:
+                    self.proxy.wait_for_service()
+                else:
+                    self.proxy.wait_for_service(timeout=self.timeout)
+
+        # test wait for service with timeout in success case
+        timeout_t = time.time() + 5.
+        t2 = TestTask(ProxyTask(proxy, timeout=rospy.Duration.from_sec(1.)))
+        t2.start()
+        while not t2.done and time.time() < timeout_t:
+            time.sleep(0.5)
+        self.assert_(t2.success)
+
+        # test wait for service in failure case
+        fake_proxy = rospy.ServiceProxy('fake_service', test_rosmaster.srv.AddTwoInts)
+        timeout_t = time.time() + 2.
+        t3 = TestTask(ProxyTask(fake_proxy, timeout=rospy.Duration.from_sec(0.1)))
         t3.start()
         while not t3.done and time.time() < timeout_t:
             time.sleep(0.5)
@@ -344,6 +586,38 @@ class TestRospyClientOnline(unittest.TestCase):
             return rospy.wait_for_message('fake_topic', std_msgs.msg.String, timeout=.3)
         timeout_t = time.time() + 2.        
         t3 = TestTask(task3)        
+        t3.start()
+        while not t3.done and time.time() < timeout_t:
+            time.sleep(0.5)
+        self.failIf(t3.success)
+        self.assert_(t3.done)
+        self.assert_(t3.value is None)
+
+    def test_wait_for_message_duration(self):
+        # lazy-import for coverage
+        import rospy
+        import std_msgs.msg
+        import time
+
+        # test wait for message with timeout
+        def task2():
+            return rospy.wait_for_message('chatter', std_msgs.msg.String,
+                                          timeout=rospy.Duration.from_sec(2.))
+        timeout_t = time.time() + 5.
+        t2 = TestTask(task2)
+        t2.start()
+        while not t2.done and time.time() < timeout_t:
+            time.sleep(0.5)
+        self.assert_(t2.success)
+        self.assert_('hello' in t2.value.data)
+
+        # test wait for message with timeout FAILURE
+        def task3():
+            # #2842 raising bounds from .1 to .3 for amazon VM
+            return rospy.wait_for_message('fake_topic', std_msgs.msg.String,
+                                          timeout=rospy.Duration.from_sec(.3))
+        timeout_t = time.time() + 2.
+        t3 = TestTask(task3)
         t3.start()
         while not t3.done and time.time() < timeout_t:
             time.sleep(0.5)

@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(rostest)
 
 find_package(catkin COMPONENTS rosunit)
-find_package(Boost COMPONENTS system thread)
+find_package(Boost COMPONENTS thread)
 
 include_directories(include ${Boost_INCLUDE_DIRS})
 
@@ -13,7 +13,7 @@ catkin_package(DEPENDS Boost
 catkin_python_setup()
 
 catkin_install_python(
-  PROGRAMS nodes/hztest nodes/paramtest nodes/publishtest
+  PROGRAMS nodes/advertisetest nodes/hztest nodes/paramtest nodes/publishtest
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/nodes)
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
@@ -33,4 +33,5 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest(test/clean_master.test)
   add_rostest(test/distro_version.test)
   add_rostest(test/param.test)
+  add_rostest(test/advertisetest.test)
 endif()

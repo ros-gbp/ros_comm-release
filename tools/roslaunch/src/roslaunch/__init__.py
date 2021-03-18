@@ -36,6 +36,7 @@ from __future__ import print_function
 
 import os
 import logging
+import rospkg
 import sys
 import traceback
 
@@ -67,6 +68,7 @@ except:
     DEFAULT_MASTER_PORT = 11311
 
 from rosmaster.master_api import NUM_WORKERS
+from roslaunch.nodeprocess import DEFAULT_TIMEOUT_SIGINT, DEFAULT_TIMEOUT_SIGTERM
 
 NAME = 'roslaunch'
 
@@ -139,6 +141,12 @@ def _get_optparse():
     parser.add_option("--screen",
                       dest="force_screen", default=False, action="store_true",
                       help="Force output of all local nodes to screen")
+    parser.add_option("--required",
+                      dest="force_required", default=False, action="store_true",
+                      help="Force all nodes to be required")
+    parser.add_option("--log",
+                      dest="force_log", default=False, action="store_true",
+                      help="Force output of all local nodes to log")
     parser.add_option("-u", "--server_uri",
                       dest="server_uri", default=None,
                       help="URI of server. Required with -c", metavar="URI")
@@ -161,6 +169,9 @@ def _get_optparse():
     parser.add_option("-v", action="store_true",
                       dest="verbose", default=False,
                       help="verbose printing")
+    parser.add_option("--no-summary", action="store_true",
+                      dest="no_summary", default=False,
+                      help="hide summary printing")
     # 2685 - Dump parameters of launch files
     parser.add_option("--dump-params", default=False, action="store_true",
                       dest="dump_params",
@@ -180,6 +191,19 @@ def _get_optparse():
     parser.add_option("-t", "--timeout",
                       dest="timeout",
                       help="override the socket connection timeout (in seconds). Only valid for core services.", metavar="TIMEOUT")
+    parser.add_option("--master-logger-level",
+                      dest="master_logger_level", default=False, type=str,
+                      help="set rosmaster.master logger level ('debug', 'info', 'warn', 'error', 'fatal')")
+    parser.add_option("--sigint-timeout",
+                      dest="sigint_timeout",
+                      default=DEFAULT_TIMEOUT_SIGINT, type=float,
+                      help="the SIGINT timeout used when killing nodes (in seconds).",
+                      metavar="SIGINT_TIMEOUT")
+    parser.add_option("--sigterm-timeout",
+                      dest="sigterm_timeout",
+                      default=DEFAULT_TIMEOUT_SIGTERM, type=float,
+                      help="the SIGTERM timeout used when killing nodes if SIGINT does not stop the node (in seconds).",
+                      metavar="SIGTERM_TIMEOUT")
 
     return parser
     
@@ -216,6 +240,13 @@ def _validate_args(parser, options, args):
     if len([x for x in [options.node_list, options.find_node, options.node_args, options.ros_args] if x]) > 1:
         parser.error("only one of [--nodes, --find-node, --args --ros-args] may be specified")
     
+def handle_exception(roslaunch_core, logger, msg, e):
+    roslaunch_core.printerrlog(msg + str(e))
+    roslaunch_core.printerrlog('The traceback for the exception was written to the log file')
+    if logger:
+        logger.error(traceback.format_exc())
+    sys.exit(1)
+
 def main(argv=sys.argv):
     options = None
     logger = None
@@ -243,7 +274,7 @@ def main(argv=sys.argv):
             elif options.file_list:
                 rlutil.print_file_list(args)
             elif options.ros_args:
-                import arg_dump as roslaunch_arg_dump
+                from . import arg_dump as roslaunch_arg_dump
                 roslaunch_arg_dump.dump_args(args)
             else:
                 node_args.print_node_list(args)
@@ -278,7 +309,9 @@ def main(argv=sys.argv):
             # client spins up an XML-RPC server that waits for
             # commands and configuration from the server.
             from . import child as roslaunch_child
-            c = roslaunch_child.ROSLaunchChild(uuid, options.child_name, options.server_uri)
+            c = roslaunch_child.ROSLaunchChild(uuid, options.child_name, options.server_uri,
+                                               sigint_timeout=options.sigint_timeout,
+                                               sigterm_timeout=options.sigterm_timeout)
             c.run()
         else:
             logger.info('starting in server mode')
@@ -304,23 +337,23 @@ def main(argv=sys.argv):
             p = roslaunch_parent.ROSLaunchParent(uuid, args, roslaunch_strs=roslaunch_strs,
                     is_core=options.core, port=options.port, local_only=options.local_only,
                     verbose=options.verbose, force_screen=options.force_screen,
-                    num_workers=options.num_workers, timeout=options.timeout)
+                    force_log=options.force_log,
+                    num_workers=options.num_workers, timeout=options.timeout,
+                    master_logger_level=options.master_logger_level,
+                    show_summary=not options.no_summary,
+                    force_required=options.force_required,
+                    sigint_timeout=options.sigint_timeout,
+                    sigterm_timeout=options.sigterm_timeout)
             p.start()
             p.spin()
 
     except RLException as e:
-        roslaunch_core.printerrlog(str(e))
-        roslaunch_core.printerrlog('The traceback for the exception was written to the log file')
-        if logger:
-            logger.error(traceback.format_exc())
-        sys.exit(1)
+        handle_exception(roslaunch_core, logger, "RLException: ", e)
     except ValueError as e:
         # TODO: need to trap better than this high-level trap
-        roslaunch_core.printerrlog(str(e))
-        roslaunch_core.printerrlog('The traceback for the exception was written to the log file')
-        if logger:
-            logger.error(traceback.format_exc())
-        sys.exit(1)
+        handle_exception(roslaunch_core, logger, "Value error: ", e)
+    except rospkg.ResourceNotFound as e:
+        handle_exception(roslaunch_core, logger, "Resource not found: ", e)
     except Exception as e:
         traceback.print_exc()
         sys.exit(1)

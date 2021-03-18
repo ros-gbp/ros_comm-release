@@ -82,7 +82,7 @@ def myargv(argv=None):
     """
     if argv is None:
         argv = sys.argv
-    return [a for a in argv if not rosgraph.names.REMAP in a]
+    return [a for a in argv if not rosgraph.names.is_legal_remap(a)]
 
 def load_command_line_node_params(argv):
     """
@@ -97,11 +97,11 @@ def load_command_line_node_params(argv):
     try:
         mappings = {}
         for arg in argv:
-            if rosgraph.names.REMAP in arg:
+            if rosgraph.names.is_legal_remap(arg):
                 src, dst = [x.strip() for x in arg.split(rosgraph.names.REMAP)]
                 if src and dst:
                     if len(src) > 1 and src[0] == '_' and src[1] != '_':
-                        mappings[src[1:]] = yaml.load(dst)
+                        mappings[src[1:]] = yaml.safe_load(dst)
         return mappings
     except Exception as e:
         raise rospy.exceptions.ROSInitException("invalid command-line parameters: %s"%(str(e)))
@@ -398,8 +398,8 @@ def wait_for_message(topic, topic_type, timeout=None):
     @type  topic: str
     @param topic_type: topic type
     @type  topic_type: L{rospy.Message} class
-    @param timeout: timeout time in seconds
-    @type  timeout: double
+    @param timeout: timeout time in seconds or ROS Duration
+    @type  timeout: double|rospy.Duration
     @return: Message
     @rtype: L{rospy.Message}
     @raise ROSException: if specified timeout is exceeded
@@ -410,6 +410,8 @@ def wait_for_message(topic, topic_type, timeout=None):
     try:
         s = rospy.topics.Subscriber(topic, topic_type, wfm.cb)
         if timeout is not None:
+            if isinstance(timeout, rospy.Duration):
+                timeout = timeout.to_sec()
             timeout_t = time.time() + timeout
             while not rospy.core.is_shutdown() and wfm.msg is None:
                 rospy.rostime.wallsleep(0.01)
@@ -463,6 +465,29 @@ def get_param(param_name, default=_unspecified):
     try:
         _init_param_server()
         return _param_server[param_name] #MasterProxy does all the magic for us
+    except KeyError:
+        if default != _unspecified:
+            return default
+        else:
+            raise
+
+
+def get_param_cached(param_name, default=_unspecified):
+    """
+    Retrieve a parameter from the param server with local caching
+
+    NOTE: this method is thread-safe.
+
+    @param default: (optional) default value to return if key is not set
+    @type  default: any
+    @return: parameter value
+    @rtype: XmlRpcLegalValue
+    @raise ROSException: if parameter server reports an error
+    @raise KeyError: if value not set and default is not given
+    """
+    try:
+        _init_param_server()
+        return _param_server.get_param_cached(param_name)
     except KeyError:
         if default != _unspecified:
             return default

@@ -54,7 +54,12 @@ class ProcessMonitorMock(object):
         self.alive = False
         self.is_shutdown = False
         
+    # The preferred method is 'is_alive'
+    # Keep this method around for backwards compatibility
     def isAlive(self):
+        return self.alive
+
+    def is_alive(self):
         return self.alive
 
     def join(self, *args):
@@ -302,9 +307,9 @@ class TestRoslaunchPmon(unittest.TestCase):
         
         # Test with a real process monitor
         pmon = roslaunch.pmon.start_process_monitor()
-        self.assert_(pmon.isAlive())
+        self.assert_(pmon.is_alive())
         self.assert_(roslaunch.pmon.shutdown_process_monitor(pmon))
-        self.failIf(pmon.isAlive())
+        self.failIf(pmon.is_alive())
 
         # fiddle around with some state that would shouldn't be
         roslaunch.pmon._shutting_down = True
@@ -321,13 +326,13 @@ class TestRoslaunchPmon(unittest.TestCase):
         # pmon_shutdown
         pmon1 = roslaunch.pmon.start_process_monitor()
         pmon2 = roslaunch.pmon.start_process_monitor()
-        self.assert_(pmon1.isAlive())
-        self.assert_(pmon2.isAlive())        
+        self.assert_(pmon1.is_alive())
+        self.assert_(pmon2.is_alive())
 
         roslaunch.pmon.pmon_shutdown()
         
-        self.failIf(pmon1.isAlive())
-        self.failIf(pmon2.isAlive())        
+        self.failIf(pmon1.is_alive())
+        self.failIf(pmon2.is_alive())
         
     def test_add_process_listener(self):
         # coverage test, not a functionality test as that would be much more difficult to simulate
@@ -399,7 +404,7 @@ class TestRoslaunchPmon(unittest.TestCase):
         # and run it -- but setup a safety timer to kill it if it doesn't exit
         marker = Marker()
         t = threading.Thread(target=kill_pmon, args=(pmon, marker, 10.))
-        t.setDaemon(True)
+        t.daemon = True
         t.start()
         
         pmon.run()
@@ -455,7 +460,7 @@ class TestRoslaunchPmon(unittest.TestCase):
         # and run it -- but setup a safety timer to kill it if it doesn't exit
         marker = Marker()
         t = threading.Thread(target=kill_pmon, args=(self.pmon, marker, 10.))
-        t.setDaemon(True)
+        t.daemon = True
         t.start()
         
         pmon.run()
@@ -565,7 +570,7 @@ class TestRoslaunchPmon(unittest.TestCase):
         # can't test actual spin as that would go forever
         self.pmon.done = False
         t = threading.Thread(target=kill_pmon, args=(self.pmon, Marker()))
-        t.setDaemon(True)
+        t.daemon = True
         t.start()
         self.pmon.mainthread_spin()
 

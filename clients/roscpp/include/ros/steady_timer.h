@@ -49,6 +49,7 @@ public:
   SteadyTimer() {}
   SteadyTimer(const SteadyTimer& rhs);
   ~SteadyTimer();
+  SteadyTimer& operator=(const SteadyTimer& other) = default;
 
   /**
    * \brief Start the timer.  Does nothing if the timer is already started.
@@ -67,9 +68,11 @@ public:
 
   /**
    * \brief Set the period of this timer
+   * \param reset Whether to reset the timer. If true, timer ignores elapsed time and next cb occurs at now()+period
    */
   void setPeriod(const WallDuration& period, bool reset=true);
 
+  bool hasStarted() const { return impl_ && impl_->hasStarted(); }
   bool isValid() { return impl_ && impl_->isValid(); }
   operator void*() { return isValid() ? (void *) 1 : (void *) 0; }
 
@@ -97,6 +100,7 @@ private:
     Impl();
     ~Impl();
 
+    bool hasStarted() const;
     bool isValid();
     bool hasPending();
     void setPeriod(const WallDuration &period, bool reset=true);

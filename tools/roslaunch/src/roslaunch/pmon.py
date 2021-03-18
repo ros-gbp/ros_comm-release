@@ -113,7 +113,7 @@ def shutdown_process_monitor(process_monitor):
         process_monitor.shutdown()
         #logger.debug("shutdown_process_monitor: joining ProcessMonitor")
         process_monitor.join(20.0)
-        if process_monitor.isAlive():
+        if process_monitor.is_alive():
             logger.error("shutdown_process_monitor: ProcessMonitor shutdown failed!")
             return False
         else:
@@ -313,7 +313,7 @@ class ProcessMonitor(Thread):
         self.plock = RLock()
         self.is_shutdown = False
         self.done = False        
-        self.setDaemon(True)
+        self.daemon = True
         self.reacquire_signals = set()
         self.listeners = []
         self.dead_list = []

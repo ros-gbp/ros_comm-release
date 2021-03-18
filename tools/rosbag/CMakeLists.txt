@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(rosbag)
 
 if(NOT WIN32)
@@ -6,7 +6,7 @@ if(NOT WIN32)
 endif()
 
 find_package(catkin REQUIRED COMPONENTS rosbag_storage rosconsole roscpp std_srvs topic_tools xmlrpcpp)
-find_package(Boost REQUIRED COMPONENTS date_time regex program_options filesystem)
+find_package(Boost REQUIRED COMPONENTS date_time filesystem program_options regex thread)
 find_package(BZip2 REQUIRED)
 
 catkin_python_setup()
@@ -38,6 +38,11 @@ target_link_libraries(record rosbag)
 add_executable(play src/play.cpp)
 target_link_libraries(play rosbag)
 
+if(NOT WIN32)
+  add_executable(encrypt src/encrypt.cpp)
+  target_link_libraries(encrypt ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+endif()
+
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   FILES_MATCHING PATTERN "*.h")
@@ -49,6 +54,12 @@ install(TARGETS record play
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+if(NOT WIN32)
+  install(TARGETS encrypt
+    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+endif()
 catkin_install_python(PROGRAMS
   scripts/bag2png.py
   scripts/bagsort.py
