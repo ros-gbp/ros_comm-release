@@ -143,7 +143,7 @@ def rospyerr(msg, *args, **kwargs):
     _rospy_logger.error(msg, *args, **kwargs)
 def rospywarn(msg, *args, **kwargs):
     """Internal rospy client library warn logging"""
-    _rospy_logger.warn(msg, *args, **kwargs)
+    _rospy_logger.warning(msg, *args, **kwargs)
 
 
 def _frame_to_caller_id(frame):
@@ -190,7 +190,7 @@ def loginfo(msg, *args, **kwargs):
     _base_logger(msg, args, kwargs, level='info')
 
 def logwarn(msg, *args, **kwargs):
-    _base_logger(msg, args, kwargs, level='warn')
+    _base_logger(msg, args, kwargs, level='warning')
 
 def logerr(msg, *args, **kwargs):
     _base_logger(msg, args, kwargs, level='error')
@@ -509,7 +509,7 @@ def _add_shutdown_thread(t):
         # last thread may not get reaped until shutdown, but this is
         # relatively minor
         for other in _shutdown_threads[:]:
-            if not other.isAlive():
+            if not other.is_alive():
                 _shutdown_threads.remove(other)
         _shutdown_threads.append(t)
 
@@ -595,7 +595,7 @@ def signal_shutdown(reason):
         threads = _shutdown_threads[:]
 
     for t in threads:
-        if t.isAlive():
+        if t.is_alive():
             t.join(_TIMEOUT_SHUTDOWN_JOIN)
     del _shutdown_threads[:]
     try:
