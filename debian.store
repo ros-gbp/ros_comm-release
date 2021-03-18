@@ -1,1 +1,1 @@
-{"trim": "", "base": "f43277c370", "trimbase": "", "parent": "debian/noetic/rosbag_storage", "previous": "8410fdc82b"}
+{"base": "6ca0528c3d", "parent": "debian/noetic/rosbag_storage", "previous": "247c47bcfd", "trim": "", "trimbase": ""}
