@@ -2,50 +2,34 @@
 Changelog for package xmlrpcpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.15.11 (2021-04-06)
---------------------
-
-1.15.10 (2021-03-18)
+1.14.11 (2021-04-26)
 --------------------
 * Portable fix to recent Windows build breaks (`#2110 <https://github.com/ros/ros_comm/issues/2110>`_)
 * Contributors: Sean Yen
 
-1.15.9 (2020-10-16)
--------------------
+1.14.10 (2020-10-16)
+--------------------
 * Update maintainers (`#2075 <https://github.com/ros/ros_comm/issues/2075>`_)
-* Fix to address CVE-2020-16124 (`#2065 <https://github.com/ros/ros_comm/issues/2065>`_)
+* Trap for overly large input to XmlRPCPP (`#2065 <https://github.com/ros/ros_comm/issues/2065>`_)
 * Fix spelling (`#2066 <https://github.com/ros/ros_comm/issues/2066>`_)
-* Fix XmlRpcValue::_doubleFormat being unused (`#2003 <https://github.com/ros/ros_comm/issues/2003>`_)
-* Contributors: Shane Loretz, Sid Faber, tomoya
+* XmlRpcValue::_doubleFormat should be used during write (`#2003 <https://github.com/ros/ros_comm/issues/2003>`_)
+* Contributors: Jacob Perron, Shane Loretz, Sid Faber, tomoya
 
-1.15.8 (2020-07-23)
+1.14.9 (2020-08-20)
+-------------------
+
+1.14.8 (2020-08-12)
+-------------------
+
+1.14.7 (2020-07-31)
 -------------------
 * add const versions of XmlRpcValue converting operators (`#1978 <https://github.com/ros/ros_comm/issues/1978>`_)
 
-1.15.7 (2020-05-28)
--------------------
-
-1.15.6 (2020-05-21)
--------------------
-
-1.15.5 (2020-05-15)
+1.14.6 (2020-05-29)
 -------------------
 * check if enough FDs are free, instead counting the total free FDs (`#1929 <https://github.com/ros/ros_comm/issues/1929>`_)
 
-1.15.4 (2020-03-19)
--------------------
-* restrict boost dependencies to components used (`#1871 <https://github.com/ros/ros_comm/issues/1871>`_)
-
-1.15.3 (2020-02-28)
--------------------
-
-1.15.2 (2020-02-25)
--------------------
-
-1.15.1 (2020-02-24)
--------------------
-
-1.15.0 (2020-02-21)
+1.14.5 (2020-03-19)
 -------------------
 
 1.14.4 (2020-02-20)

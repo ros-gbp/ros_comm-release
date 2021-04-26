@@ -2,55 +2,39 @@
 Changelog for package rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.15.11 (2021-04-06)
---------------------
-
-1.15.10 (2021-03-18)
+1.14.11 (2021-04-26)
 --------------------
 * Fix "TypeError: not enough arguments for format string" (`#2127 <https://github.com/ros/ros_comm/issues/2127>`_)
-* Use Logger.warning() instead of the deprecated warn() (`#2120 <https://github.com/ros/ros_comm/issues/2120>`_)
 * Fix AttributeError isAlive (`#2092 <https://github.com/ros/ros_comm/issues/2092>`_)
-* Contributors: Brutus The Tschiepel, mikolajz, 金梦磊
+* Contributors: Brutus The Tschiepel, 金梦磊
 
-1.15.9 (2020-10-16)
--------------------
+1.14.10 (2020-10-16)
+--------------------
 * Update maintainers (`#2075 <https://github.com/ros/ros_comm/issues/2075>`_)
 * Fix spelling (`#2066 <https://github.com/ros/ros_comm/issues/2066>`_)
-* Fix error handling with Python 3 (`#2050 <https://github.com/ros/ros_comm/issues/2050>`_)
-* Contributors: Markus Grimm, Sean Yen, Shane Loretz, larslue, salihmarangoz, tomoya
+* Fix log*_throttle with sim time (`#2044 <https://github.com/ros/ros_comm/issues/2044>`_)
+* Fix issue with rospy.set_param('') (`#2024 <https://github.com/ros/ros_comm/issues/2024>`_)
+* Update local parameter cache on set_param (`#2021 <https://github.com/ros/ros_comm/issues/2021>`_)
+* Contributors: Jacob Perron, Markus Grimm, Shane Loretz, larslue, salihmarangoz, tomoya
 
-1.15.8 (2020-07-23)
+1.14.9 (2020-08-20)
+-------------------
+
+1.14.8 (2020-08-12)
+-------------------
+
+1.14.7 (2020-07-31)
 -------------------
 * remove not existing NodeProxy from rospy __all_\_ (`#2007 <https://github.com/ros/ros_comm/issues/2007>`_)
-* fix typo in topics.py (`#1977 <https://github.com/ros/ros_comm/issues/1977>`_)
 
-1.15.7 (2020-05-28)
+1.14.6 (2020-05-29)
 -------------------
 
-1.15.6 (2020-05-21)
--------------------
-
-1.15.5 (2020-05-15)
--------------------
-
-1.15.4 (2020-03-19)
+1.14.5 (2020-03-19)
 -------------------
 * add exception for ConnectionAbortedError (`#1908 <https://github.com/ros/ros_comm/issues/1908>`_)
 * fix mac trying to use epoll instead of kqueue (`#1907 <https://github.com/ros/ros_comm/issues/1907>`_)
-* fix AttributeError: __exit_\_ (`#1915 <https://github.com/ros/ros_comm/issues/1915>`_, regression from 1.14.4)
-
-1.15.3 (2020-02-28)
--------------------
-
-1.15.2 (2020-02-25)
--------------------
-
-1.15.1 (2020-02-24)
--------------------
-* use setuptools instead of distutils (`#1870 <https://github.com/ros/ros_comm/issues/1870>`_)
-
-1.15.0 (2020-02-21)
--------------------
+* fix AttributeError: __exit_\_ (`#1915 <https://github.com/ros/ros_comm/issues/1915>`_)
 * fix dictionary changed size during iteration (`#1894 <https://github.com/ros/ros_comm/issues/1894>`_)
 
 1.14.4 (2020-02-20)

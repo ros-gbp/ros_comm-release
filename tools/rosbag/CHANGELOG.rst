@@ -2,58 +2,35 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.15.11 (2021-04-06)
+1.14.11 (2021-04-26)
 --------------------
 * Handle SIGINT in rosbag play (`#2150 <https://github.com/ros/ros_comm/issues/2150>`_)
 * Catch all exceptions in record thread (`#2151 <https://github.com/ros/ros_comm/issues/2151>`_)
-* raw_input does not exist in python 3 (`#2143 <https://github.com/ros/ros_comm/issues/2143>`_)
-* Contributors: Martin Pecka, Sebastian Scherer, pseyfert
-
-1.15.10 (2021-03-18)
---------------------
 * Add missing Boost (`#2108 <https://github.com/ros/ros_comm/issues/2108>`_)
 * Start player in paused state (`#2086 <https://github.com/ros/ros_comm/issues/2086>`_)
-* Contributors: Francisco Vina, Timo Röhling
+* Contributors: Francisco Vina, Martin Pecka, Timo Röhling, pseyfert
 
-1.15.9 (2020-10-16)
--------------------
+1.14.10 (2020-10-16)
+--------------------
 * Update maintainers (`#2075 <https://github.com/ros/ros_comm/issues/2075>`_)
 * Fix spelling (`#2066 <https://github.com/ros/ros_comm/issues/2066>`_)
 * Gracefully stop recording upon SIGTERM and SIGINT (`#2038 <https://github.com/ros/ros_comm/issues/2038>`_)
-* Fix compatibility issue with boost 1.73 and above (`#2023 <https://github.com/ros/ros_comm/issues/2023>`_)
-* Use heapq.merge instead of custom merge sort code (`#2017 <https://github.com/ros/ros_comm/issues/2017>`_)
-* Contributors: Devin Bonnie, Florian Friesdorf, Sean Yen, Shane Loretz, tomoya
+* Contributors: Devin Bonnie, Jacob Perron, Shane Loretz, tomoya
 
-1.15.8 (2020-07-23)
+1.14.9 (2020-08-20)
 -------------------
 
-1.15.7 (2020-05-28)
+1.14.8 (2020-08-12)
 -------------------
 
-1.15.6 (2020-05-21)
+1.14.7 (2020-07-31)
 -------------------
 
-1.15.5 (2020-05-15)
+1.14.6 (2020-05-29)
 -------------------
-* add option to repeat latched messages at the start of bag splits (`#1850 <https://github.com/ros/ros_comm/issues/1850>`_)
 * fix bag migration failures caused by typo in connection_header assignment (`#1952 <https://github.com/ros/ros_comm/issues/1952>`_)
 
-1.15.4 (2020-03-19)
--------------------
-* restrict boost dependencies to components used (`#1871 <https://github.com/ros/ros_comm/issues/1871>`_)
-
-1.15.3 (2020-02-28)
--------------------
-* remove Boost version check since Noetic only targets platforms with 1.67+ (`#1903 <https://github.com/ros/ros_comm/issues/1903>`_)
-
-1.15.2 (2020-02-25)
--------------------
-
-1.15.1 (2020-02-24)
--------------------
-* use setuptools instead of distutils (`#1870 <https://github.com/ros/ros_comm/issues/1870>`_)
-
-1.15.0 (2020-02-21)
+1.14.5 (2020-03-19)
 -------------------
 
 1.14.4 (2020-02-20)

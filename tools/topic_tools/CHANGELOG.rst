@@ -2,47 +2,29 @@
 Changelog for package topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.15.11 (2021-04-06)
+1.14.11 (2021-04-26)
 --------------------
 
-1.15.10 (2021-03-18)
+1.14.10 (2020-10-16)
 --------------------
-
-1.15.9 (2020-10-16)
--------------------
 * Update maintainers (`#2075 <https://github.com/ros/ros_comm/issues/2075>`_)
-* Fix compatibility issue with boost 1.73 and above (`#2023 <https://github.com/ros/ros_comm/issues/2023>`_)
-* Contributors: Sean Yen, Shane Loretz
+* Contributors: Jacob Perron, Shane Loretz
 
-1.15.8 (2020-07-23)
+1.14.9 (2020-08-20)
+-------------------
+
+1.14.8 (2020-08-12)
+-------------------
+
+1.14.7 (2020-07-31)
 -------------------
 * add latch param to throttle (`#1944 <https://github.com/ros/ros_comm/issues/1944>`_)
 
-1.15.7 (2020-05-28)
--------------------
-
-1.15.6 (2020-05-21)
--------------------
-
-1.15.5 (2020-05-15)
+1.14.6 (2020-05-29)
 -------------------
 * avoid infinite recursion in rosrun tab completion when rosbash is not installed (`#1948 <https://github.com/ros/ros_comm/issues/1948>`_)
-* fix bare pointer in topic_tools::ShapeShifter (`#1722 <https://github.com/ros/ros_comm/issues/1722>`_)
 
-1.15.4 (2020-03-19)
--------------------
-
-1.15.3 (2020-02-28)
--------------------
-
-1.15.2 (2020-02-25)
--------------------
-
-1.15.1 (2020-02-24)
--------------------
-* use setuptools instead of distutils (`#1870 <https://github.com/ros/ros_comm/issues/1870>`_)
-
-1.15.0 (2020-02-21)
+1.14.5 (2020-03-19)
 -------------------
 * fix flakyness of transform test (`#1890 <https://github.com/ros/ros_comm/issues/1890>`_)
 

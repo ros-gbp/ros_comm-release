@@ -102,7 +102,6 @@ def record_cmd(argv):
     parser.add_option("--lz4",                 dest="compression",                  action="store_const", const='lz4', help="use LZ4 compression")
     parser.add_option("--tcpnodelay",          dest="tcpnodelay",                   action="store_true",          help="Use the TCP_NODELAY transport hint when subscribing to topics.")
     parser.add_option("--udp",                 dest="udp",                          action="store_true",          help="Use the UDP transport hint when subscribing to topics.")
-    parser.add_option("--repeat-latched",      dest="repeat_latched",               action="store_true",          help="Repeat latched msgs at the start of each new bag file.")
 
     (options, args) = parser.parse_args(argv)
 
@@ -141,7 +140,6 @@ def record_cmd(argv):
         cmd.extend(["--node", options.node])
     if options.tcpnodelay:  cmd.extend(["--tcpnodelay"])
     if options.udp:         cmd.extend(["--udp"])
-    if options.repeat_latched:  cmd.extend(["--repeat-latched"])
 
     cmd.extend(args)
 
@@ -557,11 +555,11 @@ def check_cmd(argv):
         for r in rules_left:
             if r.new_class is None:
                 print('The message type %s appears to have moved.  Please enter the type to migrate it to.' % r.old_class._type)
-                new_type = input('>')
+                new_type = raw_input('>')
                 new_class = roslib.message.get_message_class(new_type)
                 while new_class is None:
                     print("\'%s\' could not be found in your system.  Please make sure it is built." % new_type)
-                    new_type = input('>')
+                    new_type = raw_input('>')
                     new_class = roslib.message.get_message_class(new_type)
                 new_rule = mm.make_update_rule(r.old_class, new_class)
                 R = new_rule(mm, 'GENERATED.' + new_rule.__name__)

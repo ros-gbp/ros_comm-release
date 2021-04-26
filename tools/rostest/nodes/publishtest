@@ -58,6 +58,7 @@ import time
 import unittest
 
 import rospy
+import rostopic
 
 
 PKG = 'rostest'
