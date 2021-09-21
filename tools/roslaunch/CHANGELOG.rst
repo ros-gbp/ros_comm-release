@@ -2,38 +2,58 @@
 Changelog for package roslaunch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.14.12 (2021-09-21)
+1.15.12 (2021-09-21)
 --------------------
 
-1.14.11 (2021-04-26)
+1.15.11 (2021-04-06)
+--------------------
+
+1.15.10 (2021-03-18)
 --------------------
 * Fix AttributeError isAlive (`#2092 <https://github.com/ros/ros_comm/issues/2092>`_)
 * Contributors: Brutus The Tschiepel
 
-1.14.10 (2020-10-16)
---------------------
+1.15.9 (2020-10-16)
+-------------------
 * Update maintainers (`#2075 <https://github.com/ros/ros_comm/issues/2075>`_)
-* [Windows] Single quote string fix-up (`#2051 <https://github.com/ros/ros_comm/issues/2051>`_)
+* Fix handling of single quotes in command arguments on Windows (`#2051 <https://github.com/ros/ros_comm/issues/2051>`_)
 * Fix spelling (`#2066 <https://github.com/ros/ros_comm/issues/2066>`_)
-* Change error message (`#2035 <https://github.com/ros/ros_comm/issues/2035>`_)
-* Contributors: Andreas Vinter-Hviid, Jacob Perron, Sean Yen, Shane Loretz, tomoya
+* Clearer error message (`#2035 <https://github.com/ros/ros_comm/issues/2035>`_)
+* Ignore underscores when parsing literal numeric values for Python 3 compatibility (`#2022 <https://github.com/ros/ros_comm/issues/2022>`_)
+* Contributors: Andreas Vinter-Hviid, Jochen Sprickerhof, Sean Yen, Shane Loretz, tomoya
 
-1.14.9 (2020-08-20)
+1.15.8 (2020-07-23)
 -------------------
+* fix bad relative import (still Python 2 style) (`#1973 <https://github.com/ros/ros_comm/issues/1973>`_)
 
-1.14.8 (2020-08-12)
--------------------
-
-1.14.7 (2020-07-31)
--------------------
-
-1.14.6 (2020-05-29)
+1.15.7 (2020-05-28)
 -------------------
 * fix NameError in launch error handling (`#1965 <https://github.com/ros/ros_comm/issues/1965>`_)
+
+1.15.6 (2020-05-21)
+-------------------
+
+1.15.5 (2020-05-15)
+-------------------
+* add --sigint-timeout and --sigterm-timeout parameters (`#1937 <https://github.com/ros/ros_comm/issues/1937>`_)
+* roslaunch-check: search dir recursively (`#1914 <https://github.com/ros/ros_comm/issues/1914>`_)
 * sort printed nodes by namespace alphabetically (`#1934 <https://github.com/ros/ros_comm/issues/1934>`_)
 * remove pycrypto import (not used) (`#1922 <https://github.com/ros/ros_comm/issues/1922>`_)
 
-1.14.5 (2020-03-19)
+1.15.4 (2020-03-19)
+-------------------
+
+1.15.3 (2020-02-28)
+-------------------
+
+1.15.2 (2020-02-25)
+-------------------
+
+1.15.1 (2020-02-24)
+-------------------
+* use setuptools instead of distutils (`#1870 <https://github.com/ros/ros_comm/issues/1870>`_)
+
+1.15.0 (2020-02-21)
 -------------------
 * update test to pass with old and new yaml (`#1893 <https://github.com/ros/ros_comm/issues/1893>`_)
 

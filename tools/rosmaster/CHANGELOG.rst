@@ -2,33 +2,49 @@
 Changelog for package rosmaster
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.14.12 (2021-09-21)
+1.15.12 (2021-09-21)
 --------------------
 
-1.14.11 (2021-04-26)
+1.15.11 (2021-04-06)
 --------------------
 
-1.14.10 (2020-10-16)
+1.15.10 (2021-03-18)
 --------------------
+
+1.15.9 (2020-10-16)
+-------------------
 * Update maintainers (`#2075 <https://github.com/ros/ros_comm/issues/2075>`_)
-* Cached parameter should be unsubscribed (`#2068 <https://github.com/ros/ros_comm/issues/2068>`_)
+* Fix case where accessing cached parameters shuts down another node (`#2068 <https://github.com/ros/ros_comm/issues/2068>`_)
 * Fix spelling (`#2066 <https://github.com/ros/ros_comm/issues/2066>`_)
-* Contributors: Jacob Perron, Shane Loretz, Tomoya Fujita
+* Contributors: Shane Loretz, tomoya
 
-1.14.9 (2020-08-20)
+1.15.8 (2020-07-23)
+-------------------
+* improve shutdown message with duplicate node name (`#1992 <https://github.com/ros/ros_comm/issues/1992>`_)
+
+1.15.7 (2020-05-28)
 -------------------
 
-1.14.8 (2020-08-12)
+1.15.6 (2020-05-21)
 -------------------
 
-1.14.7 (2020-07-31)
--------------------
-* add node name to shutdown message for duplicate nodes (`#1992 <https://github.com/ros/ros_comm/issues/1992>`_)
-
-1.14.6 (2020-05-29)
+1.15.5 (2020-05-15)
 -------------------
 
-1.14.5 (2020-03-19)
+1.15.4 (2020-03-19)
+-------------------
+
+1.15.3 (2020-02-28)
+-------------------
+
+1.15.2 (2020-02-25)
+-------------------
+
+1.15.1 (2020-02-24)
+-------------------
+* use setuptools instead of distutils (`#1870 <https://github.com/ros/ros_comm/issues/1870>`_)
+
+1.15.0 (2020-02-21)
 -------------------
 
 1.14.4 (2020-02-20)

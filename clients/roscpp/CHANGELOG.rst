@@ -2,45 +2,69 @@
 Changelog for package roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1.14.12 (2021-09-21)
+1.15.12 (2021-09-21)
+--------------------
+* Fix warning related to Boost bind placeholders declared in global namespace (`#2169 <https://github.com/ros/ros_comm/issues/2169>`_)
+* Contributors: Elvis Dowson
+
+1.15.11 (2021-04-06)
 --------------------
 
-1.14.11 (2021-04-26)
+1.15.10 (2021-03-18)
 --------------------
-* Fix for deadlock issue 1980 (`#2121 <https://github.com/ros/ros_comm/issues/2121>`_)
+* Fix for deadlock issue related to timers (`#2121 <https://github.com/ros/ros_comm/issues/2121>`_)
 * Fix getNumPublishers() to only count fully connected (`#2107 <https://github.com/ros/ros_comm/issues/2107>`_)
 * Replace message assertion with logging in order to have release modes to fail in compilation when msg type mismatches occur (`#2096 <https://github.com/ros/ros_comm/issues/2096>`_)
 * Contributors: C. Andy Martin, Ivor Wanders, Tahsincan Köse
 
-1.14.10 (2020-10-16)
---------------------
-* Set call_finished\_ with true for each call inside callFinished (`#2074 <https://github.com/ros/ros_comm/issues/2074>`_)
+1.15.9 (2020-10-16)
+-------------------
+* Fix deadlock when service connection is dropped (`#2074 <https://github.com/ros/ros_comm/issues/2074>`_)
 * Update maintainers (`#2075 <https://github.com/ros/ros_comm/issues/2075>`_)
-* Cached parameter should be unsubscribed (`#2068 <https://github.com/ros/ros_comm/issues/2068>`_)
+* Fix case where accessing cached parameters shuts down another node (`#2068 <https://github.com/ros/ros_comm/issues/2068>`_)
 * Fix spelling (`#2066 <https://github.com/ros/ros_comm/issues/2066>`_)
 * Fix Lost Wake Bug in ROSOutAppender (`#2033 <https://github.com/ros/ros_comm/issues/2033>`_)
-* Contributors: Adel Fakih, Chen Lihui, Jacob Perron, Shane Loretz, tomoya
+* Fix compatibility issue with boost 1.73 and above (`#2023 <https://github.com/ros/ros_comm/issues/2023>`_)
+* Contributors: Adel Fakih, Chen Lihui, Sean Yen, Shane Loretz, tomoya
 
-1.14.9 (2020-08-20)
+1.15.8 (2020-07-23)
 -------------------
-* use fully qualified ceil() in condition_variable.h (`#2025 <https://github.com/ros/ros_comm/issues/2025>`_)
+* change is_async_connected to use epoll when available (`#1983 <https://github.com/ros/ros_comm/issues/1983>`_)
+* allow mixing latched and unlatched publishers (`#1991 <https://github.com/ros/ros_comm/issues/1991>`_)
 
-1.14.8 (2020-08-12)
+1.15.7 (2020-05-28)
 -------------------
-* remove 'using namespace' from condition_variable.h (`#2020 <https://github.com/ros/ros_comm/issues/2020>`_)
-* support boost 1.66 (`#2016 <https://github.com/ros/ros_comm/issues/2016>`_)
+* fix Windows build break (`#1961 <https://github.com/ros/ros_comm/issues/1961>`_) (regression from 1.15.5)
 
-1.14.7 (2020-07-31)
--------------------
-* fix subscription busy wait melodic (`#1684 <https://github.com/ros/ros_comm/issues/1684>`_, `#2014 <https://github.com/ros/ros_comm/issues/2014>`_)
-* use an internal implementation of boost::condition_variable with monotonic clock (`#1932 <https://github.com/ros/ros_comm/issues/1932>`_)
-
-1.14.6 (2020-05-29)
+1.15.6 (2020-05-21)
 -------------------
 * fix a bug that using a destroyed connection object (`#1950 <https://github.com/ros/ros_comm/issues/1950>`_)
-* remove extra n in ROS_DEBUG (`#1925 <https://github.com/ros/ros_comm/issues/1925>`_)
 
-1.14.5 (2020-03-19)
+1.15.5 (2020-05-15)
+-------------------
+* check if async socket connect is success or failure before TransportTCP::read() and TransportTCP::write() (`#1954 <https://github.com/ros/ros_comm/issues/1954>`_)
+* fix bug that connection drop signal related funtion throw a bad_weak exception (`#1940 <https://github.com/ros/ros_comm/issues/1940>`_)
+* multiple latched publishers per process on the same topic (`#1544 <https://github.com/ros/ros_comm/issues/1544>`_)
+* fix negative numbers in ros statistics (`#1531 <https://github.com/ros/ros_comm/issues/1531>`_)
+* remove extra \n in ROS_DEBUG (`#1925 <https://github.com/ros/ros_comm/issues/1925>`_)
+
+1.15.4 (2020-03-19)
+-------------------
+* restrict boost dependencies to components used (`#1871 <https://github.com/ros/ros_comm/issues/1871>`_)
+
+1.15.3 (2020-02-28)
+-------------------
+* remove Boost version check since Noetic only targets platforms with 1.67+ (`#1903 <https://github.com/ros/ros_comm/issues/1903>`_)
+
+1.15.2 (2020-02-25)
+-------------------
+* export missing Boost dependency (`#1898 <https://github.com/ros/ros_comm/issues/1898>`_)
+
+1.15.1 (2020-02-24)
+-------------------
+* fix missing boost dependencies (`#1895 <https://github.com/ros/ros_comm/issues/1895>`_)
+
+1.15.0 (2020-02-21)
 -------------------
 
 1.14.4 (2020-02-20)
