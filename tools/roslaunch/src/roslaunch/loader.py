@@ -74,9 +74,7 @@ def convert_value(value, type_):
         try:
             if '.' in value:
                 return float(value)
-            # Python 3 ignores/drops underscores in number literals (due to PEP515).
-            # Here, we want to handle literals with underscores as plain strings.
-            if '_' not in value:
+            else:
                 return int(value)
         except ValueError as e:
             pass

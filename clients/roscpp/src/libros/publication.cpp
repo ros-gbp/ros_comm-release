@@ -78,7 +78,7 @@ Publication::Publication(const std::string &name,
                          const std::string &_md5sum,
                          const std::string& message_definition,
                          size_t max_queue,
-                         bool /* unused */,
+                         bool latch,
                          bool has_header)
 : name_(name),
   datatype_(datatype),
@@ -87,7 +87,7 @@ Publication::Publication(const std::string &name,
   max_queue_(max_queue),
   seq_(0),
   dropped_(false),
-  latch_(false),
+  latch_(latch),
   has_header_(has_header),
   intraprocess_subscriber_count_(0)
 {
@@ -117,12 +117,6 @@ void Publication::addCallbacks(const SubscriberCallbacksPtr& callbacks)
       callbacks->callback_queue_->addCallback(cb, (uint64_t)callbacks.get());
     }
   }
-
-  // Publication singleton is latched if any of its callbacks have a latched message handler.
-  if (callbacks->push_latched_message_)
-  {
-    latch_ = true;
-  }
 }
 
 void Publication::removeCallbacks(const SubscriberCallbacksPtr& callbacks)
@@ -138,22 +132,6 @@ void Publication::removeCallbacks(const SubscriberCallbacksPtr& callbacks)
       cb->callback_queue_->removeByID((uint64_t)cb.get());
     }
     callbacks_.erase(it);
-  }
-
-  // IF the removed callbacks was latched, check for remaining latched callbacks,
-  // and if none remain, clear the latch status on the publication singleton.
-  if (callbacks->push_latched_message_)
-  {
-    V_Callback::iterator it = callbacks_.begin();
-    V_Callback::iterator end = callbacks_.end();
-    for (; it != end; ++it)
-    {
-      if ((*it)->push_latched_message_)
-      {
-        return;
-      }
-    }
-    latch_ = false;
   }
 }
 
@@ -207,6 +185,11 @@ bool Publication::enqueueMessage(const SerializedMessage& m)
     sub_link->enqueueMessage(m, true, false);
   }
 
+  if (latch_)
+  {
+    last_message_ = m;
+  }
+
   return true;
 }
 
@@ -226,6 +209,11 @@ void Publication::addSubscriberLink(const SubscriberLinkPtr& sub_link)
     {
       ++intraprocess_subscriber_count_;
     }
+  }
+
+  if (latch_ && last_message_.buf)
+  {
+    sub_link->enqueueMessage(last_message_, true, true);
   }
 
   // This call invokes the subscribe callback if there is one.
@@ -343,10 +331,6 @@ void Publication::peerConnect(const SubscriberLinkPtr& sub_link)
   for (; it != end; ++it)
   {
     const SubscriberCallbacksPtr& cbs = *it;
-    if (cbs->push_latched_message_)
-    {
-      cbs->push_latched_message_(sub_link);
-    }
     if (cbs->connect_ && cbs->callback_queue_)
     {
       CallbackInterfacePtr cb(boost::make_shared<PeerConnDisconnCallback>(cbs->connect_, sub_link, cbs->has_tracked_object_, cbs->tracked_object_));
@@ -391,12 +375,6 @@ uint32_t Publication::getNumSubscribers()
 {
   boost::mutex::scoped_lock lock(subscriber_links_mutex_);
   return (uint32_t)subscriber_links_.size();
-}
-
-bool Publication::isLatched()
-{
-  boost::mutex::scoped_lock lock(callbacks_mutex_);
-  return latch_;
 }
 
 void Publication::getPublishTypes(bool& serialize, bool& nocopy, const std::type_info& ti)

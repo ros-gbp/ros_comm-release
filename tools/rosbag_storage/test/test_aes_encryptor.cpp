@@ -34,8 +34,6 @@
 
 #include <cstdio>
 
-#include <boost/filesystem.hpp>
-
 #include <gtest/gtest.h>
 
 #include <gpgme.h>

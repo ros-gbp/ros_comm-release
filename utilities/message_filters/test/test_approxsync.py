@@ -63,7 +63,6 @@ class TestApproxSync(unittest.TestCase):
         self.collector.append((msg1, msg2))
 
     def test_approx(self):
-        rospy.rostime.set_rostime_initialized(True)
         m0 = MockFilter()
         m1 = MockFilter()
         ts = ApproximateTimeSynchronizer([m0, m1], 1, 0.1)

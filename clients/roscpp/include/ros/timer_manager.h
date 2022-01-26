@@ -32,13 +32,13 @@
 #include "ros/time.h"
 #include "ros/file_log.h"
 
-#include <boost/thread/condition_variable.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 
 #include "ros/assert.h"
 #include "ros/callback_queue_interface.h"
+#include "ros/internal/condition_variable.h"
 
 #include <vector>
 #include <list>
@@ -130,7 +130,7 @@ private:
 
   V_TimerInfo timers_;
   boost::mutex timers_mutex_;
-  boost::condition_variable timers_cond_;
+  ros::internal::condition_variable_monotonic timers_cond_;
   volatile bool new_timer_;
 
   boost::mutex waiting_mutex_;
@@ -233,15 +233,7 @@ private:
 template<class T, class D, class E>
 TimerManager<T, D, E>::TimerManager() :
   new_timer_(false), id_counter_(0), thread_started_(false), quit_(false)
-{
-#if !defined(BOOST_THREAD_HAS_CONDATTR_SET_CLOCK_MONOTONIC) && !defined(BOOST_THREAD_INTERNAL_CLOCK_IS_MONO)
-  ROS_ASSERT_MSG(false,
-                 "ros::TimerManager was instantiated by package " ROS_PACKAGE_NAME ", but "
-                 "neither BOOST_THREAD_HAS_CONDATTR_SET_CLOCK_MONOTONIC nor BOOST_THREAD_INTERNAL_CLOCK_IS_MONO is defined! "
-                 "Be aware that timers might misbehave when system time jumps, "
-                 "e.g. due to network time corrections.");
-#endif
-}
+{}
 
 template<class T, class D, class E>
 TimerManager<T, D, E>::~TimerManager()
@@ -349,7 +341,7 @@ int32_t TimerManager<T, D, E>::add(const D& period, const boost::function<void(c
     {
       boost::mutex::scoped_lock lock(waiting_mutex_);
       waiting_.push_back(info->handle);
-      waiting_.sort(boost::bind(&TimerManager::waitingCompare, this, boost::placeholders::_1, boost::placeholders::_2));
+      waiting_.sort(boost::bind(&TimerManager::waitingCompare, this, _1, _2));
     }
 
     new_timer_ = true;
@@ -416,7 +408,7 @@ void TimerManager<T, D, E>::schedule(const TimerInfoPtr& info)
 
     waiting_.push_back(info->handle);
     // waitingCompare requires a lock on the timers_mutex_
-    waiting_.sort(boost::bind(&TimerManager::waitingCompare, this, boost::placeholders::_1, boost::placeholders::_2));
+    waiting_.sort(boost::bind(&TimerManager::waitingCompare, this, _1, _2));
   }
 
   new_timer_ = true;
@@ -490,7 +482,7 @@ void TimerManager<T, D, E>::setPeriod(int32_t handle, const D& period, bool rese
     // In this case, let next_expected be updated only in updateNext
     
     info->period = period;
-    waiting_.sort(boost::bind(&TimerManager::waitingCompare, this, boost::placeholders::_1, boost::placeholders::_2));
+    waiting_.sort(boost::bind(&TimerManager::waitingCompare, this, _1, _2));
   }
 
   new_timer_ = true;
