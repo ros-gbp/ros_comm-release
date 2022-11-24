@@ -31,41 +31,12 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from rostest import rostestmain
+## Simple auxiliary node that publishes a std_msgs/Bool message once
 
-import os
-import sys
-import tempfile
+import rospy
+from std_msgs.msg import Bool
 
-
-class PythonPathOverride:
-    """Replace python so test scripts with unmodified shebangs use correct Python version."""
-
-    def _skip(self):
-        # skip this hack on windows
-        if 'nt' == os.name:
-            return True
-        try:
-            # skip pre Python 3.2
-            tempfile.TemporaryDirectory
-        except AttributeError:
-            return True
-        return False
-
-    def __enter__(self):
-        if self._skip():
-            return
-
-        self.dir = tempfile.TemporaryDirectory(prefix='rostest_bin_hook')
-        os.symlink(sys.executable, os.path.join(self.dir.name, 'python'))
-        os.environ['PATH'] = self.dir.name + os.pathsep + os.environ['PATH']
-
-    def __exit__(self, t, v, tb):
-        if self._skip():
-            return
-
-        self.dir.cleanup()
-
-
-with PythonPathOverride():
-    rostestmain()
+rospy.init_node('publish_once', anonymous=True)
+pub = rospy.Publisher('once_topic', Bool, queue_size=1, latch=True)
+pub.publish(Bool(data=False))
+rospy.sleep(rospy.Duration(3))
