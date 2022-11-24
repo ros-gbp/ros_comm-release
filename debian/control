@@ -1,0 +1,13 @@
+Source: ros-noetic-rosmsg
+Section: misc
+Priority: optional
+Maintainer: Michael Carroll <michael@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), ros-noetic-catkin, ros-noetic-diagnostic-msgs, ros-noetic-rostest, ros-noetic-std-msgs, ros-noetic-std-srvs
+Homepage: http://wiki.ros.org/rosmsg
+Standards-Version: 3.9.2
+
+Package: ros-noetic-rosmsg
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3-rospkg, ros-noetic-catkin (>= 0.6.4), ros-noetic-genmsg, ros-noetic-genpy (>= 0.6.5), ros-noetic-rosbag, ros-noetic-roslib
+Description: rosmsg contains two command-line tools: rosmsg and rossrv.
+ rosmsg is a command-line tool for displaying information about ROS Message types. rossrv is a command-line tool for displaying information about ROS Service types.
