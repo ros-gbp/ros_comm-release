@@ -1,0 +1,13 @@
+Source: ros-noetic-rosgraph
+Section: misc
+Priority: optional
+Maintainer: Michael Carroll <michael@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), python3-mock, ros-noetic-catkin (>= 0.5.78)
+Homepage: http://wiki.ros.org/rosgraph
+Standards-Version: 3.9.2
+
+Package: ros-noetic-rosgraph
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3-netifaces, python3-rospkg, python3-yaml
+Description: rosgraph contains the rosgraph command-line tool, which prints information about the ROS Computation Graph.
+ It also provides an internal library that can be used by graphical tools.
