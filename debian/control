@@ -1,0 +1,13 @@
+Source: ros-noetic-topic-tools
+Section: misc
+Priority: optional
+Maintainer: Michael Carroll <michael@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), ros-noetic-catkin (>= 0.5.78), ros-noetic-cpp-common, ros-noetic-message-generation, ros-noetic-rosbash, ros-noetic-rosconsole, ros-noetic-roscpp, ros-noetic-rostest, ros-noetic-rostime, ros-noetic-rosunit, ros-noetic-std-msgs, ros-noetic-xmlrpcpp
+Homepage: http://ros.org/wiki/topic_tools
+Standards-Version: 3.9.2
+
+Package: ros-noetic-topic-tools
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-noetic-message-runtime, ros-noetic-rosconsole, ros-noetic-roscpp, ros-noetic-rostime, ros-noetic-std-msgs, ros-noetic-xmlrpcpp
+Description: Tools for directing, throttling, selecting, and otherwise messing with ROS topics at a meta level.
+ None of the programs in this package actually know about the topics whose streams they are altering; instead, these tools deal with messages as generic binary blobs. This means they can be applied to any ROS topic.
