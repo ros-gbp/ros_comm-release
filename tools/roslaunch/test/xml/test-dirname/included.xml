@@ -1,6 +1,0 @@
-<launch>
-  <arg name="baz" />
-  <param name="base" value="$(arg base)" />
-  <param name="bar" value="$(dirname)/baz" />
-  <param name="baz" value="$(arg baz)" />
-</launch>
