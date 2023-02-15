@@ -1,0 +1,13 @@
+Source: ros-noetic-rosservice
+Section: misc
+Priority: optional
+Maintainer: Michael Carroll <michael@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), ros-noetic-catkin (>= 0.5.78)
+Homepage: http://ros.org/wiki/rosservice
+Standards-Version: 3.9.2
+
+Package: ros-noetic-rosservice
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-noetic-genpy, ros-noetic-rosgraph, ros-noetic-roslib, ros-noetic-rosmsg, ros-noetic-rospy
+Description: rosservice contains the rosservice command-line tool for listing and querying ROS Services.
+ It also contains a Python library for retrieving information about Services and dynamically invoking them. The Python library is experimental and is for internal-use only.
