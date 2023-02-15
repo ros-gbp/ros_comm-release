@@ -1,0 +1,13 @@
+Source: ros-noetic-roscpp
+Section: misc
+Priority: optional
+Maintainer: Michael Carroll <michael@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), libboost-chrono-dev, libboost-filesystem-dev, libboost-system-dev, pkg-config, ros-noetic-catkin (>= 0.5.78), ros-noetic-cpp-common (>= 0.3.17), ros-noetic-message-generation, ros-noetic-rosconsole, ros-noetic-roscpp-serialization, ros-noetic-roscpp-traits (>= 0.3.17), ros-noetic-rosgraph-msgs (>= 1.10.3), ros-noetic-roslang, ros-noetic-rostime (>= 0.6.4), ros-noetic-std-msgs, ros-noetic-xmlrpcpp
+Homepage: http://ros.org/wiki/roscpp
+Standards-Version: 3.9.2
+
+Package: ros-noetic-roscpp
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-chrono-dev, libboost-filesystem-dev, libboost-system-dev, ros-noetic-cpp-common (>= 0.3.17), ros-noetic-message-runtime, ros-noetic-rosconsole, ros-noetic-roscpp-serialization, ros-noetic-roscpp-traits (>= 0.3.17), ros-noetic-rosgraph-msgs (>= 1.10.3), ros-noetic-rostime (>= 0.6.4), ros-noetic-std-msgs, ros-noetic-xmlrpcpp
+Description: roscpp is a C++ implementation of ROS.
+ It provides a client library that enables C++ programmers to quickly interface with ROS Topics, Services, and Parameters. roscpp is the most widely used ROS client library and is designed to be the high-performance library for ROS.
