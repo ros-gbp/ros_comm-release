@@ -2,6 +2,11 @@
 Changelog for package rosnode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.0 (2024-09-13)
+-------------------
+* Enable rosrun & roslaunch to find rosnode script (`#2262 <https://github.com/ros/ros_comm/issues/2262>`_)
+* Contributors: G.A. vd. Hoorn
+
 1.16.0 (2023-02-15)
 -------------------
 
