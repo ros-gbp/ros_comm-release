@@ -2,6 +2,13 @@
 Changelog for package rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.0 (2024-09-13)
+-------------------
+* Stop using deprecated logger.warn (`#2191 <https://github.com/ros/ros_comm/issues/2191>`_)
+* Expose is_shutdown_requested in rospy module. (`#2267 <https://github.com/ros/ros_comm/issues/2267>`_)
+* Fix error "s is not defined" (`#2328 <https://github.com/ros/ros_comm/issues/2328>`_)
+* Contributors: Guglielmo Gemignani, Michael Grupp, vineet131
+
 1.16.0 (2023-02-15)
 -------------------
 
