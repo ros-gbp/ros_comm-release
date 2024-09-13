@@ -2,6 +2,13 @@
 Changelog for package rostest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.0 (2024-09-13)
+-------------------
+* Add new rostest utility subscribetest (`#2184 <https://github.com/ros/ros_comm/issues/2184>`_)
+* Fix use of undelcared variable t_start (`#2183 <https://github.com/ros/ros_comm/issues/2183>`_)
+* Fix rostest target names when build directory is inside source directory (`#2361 <https://github.com/ros/ros_comm/issues/2361>`_)
+* Contributors: Kei Okada, Michael Görner
+
 1.16.0 (2023-02-15)
 -------------------
 
