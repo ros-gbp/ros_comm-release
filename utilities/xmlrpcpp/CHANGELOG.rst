@@ -2,6 +2,12 @@
 Changelog for package xmlrpcpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.0 (2024-09-13)
+-------------------
+* Fix printing XmlRpcValue with GTest (`#2224 <https://github.com/ros/ros_comm/issues/2224>`_)
+* Fix EINTR handling in XmlRpcDispatch::work (`#2278 <https://github.com/ros/ros_comm/issues/2278>`_)
+* Contributors: Hugal31, Martin Pecka
+
 1.16.0 (2023-02-15)
 -------------------
 

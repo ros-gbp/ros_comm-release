@@ -47,6 +47,7 @@ endif()
 
 add_rostest(launch/real_time_test.xml)
 add_rostest(launch/sim_time_test.xml)
+add_rostest(launch/init_no_sim_time.xml DEPENDENCIES ${PROJECT_NAME}-init_no_sim_time_test)
 
 # Publish one message
 add_rostest(launch/pubsub_once.xml)
@@ -91,6 +92,10 @@ add_rostest(launch/service_call_zombie.xml)
 
 # Repeatedly call ros::init() and ros::fini()
 add_rostest(launch/multiple_init_fini.xml)
+
+# Check that ros::shutdown is automatically called
+# if ros::start has been called explcitly
+add_rostest(launch/missing_call_to_shutdown.xml)
 
 # Test node inspection functionality
 add_rostest(launch/inspection.xml)
