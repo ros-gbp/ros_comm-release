@@ -1,0 +1,12 @@
+Source: ros-noetic-rosbag-storage
+Section: misc
+Priority: optional
+Maintainer: Michael Carroll <michael@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), libboost-filesystem-dev, libbz2-dev, libconsole-bridge-dev, libgpgme-dev, libssl-dev, ros-noetic-catkin, ros-noetic-cpp-common (>= 0.3.17), ros-noetic-pluginlib, ros-noetic-roscpp-serialization, ros-noetic-roscpp-traits (>= 0.3.17), ros-noetic-roslz4, ros-noetic-rostest, ros-noetic-rostime, ros-noetic-std-msgs
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-noetic-rosbag-storage
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-filesystem-dev, libbz2-dev, libconsole-bridge-dev, libgpgme-dev, libssl-dev, ros-noetic-cpp-common (>= 0.3.17), ros-noetic-pluginlib, ros-noetic-roscpp-serialization, ros-noetic-roscpp-traits (>= 0.3.17), ros-noetic-roslz4, ros-noetic-rostime
+Description: This is a set of tools for recording from and playing back ROS message without relying on the ROS client library.
