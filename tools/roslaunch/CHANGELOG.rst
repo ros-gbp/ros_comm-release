@@ -2,6 +2,12 @@
 Changelog for package roslaunch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.0 (2024-09-13)
+-------------------
+* Check if ignore_unset_args is set in xmlloader (`#2217 <https://github.com/ros/ros_comm/issues/2217>`_)
+* Remove Python 2 on Windows workaround (`#2364 <https://github.com/ros/ros_comm/issues/2364>`_)
+* Contributors: Griffin Tabor, Shingo Kitagawa
+
 1.16.0 (2023-02-15)
 -------------------
 

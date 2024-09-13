@@ -2,6 +2,13 @@
 Changelog for package roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.0 (2024-09-13)
+-------------------
+* Make build compatible with boost 1.73 (`#2348 <https://github.com/ros/ros_comm/issues/2348>`_)
+* Added init_options::NoSimTime which disables subscribing to /clock (`#2342 <https://github.com/ros/ros_comm/issues/2342>`_)
+* Fix crash during shutdown when explicitly calling ros::start but not ros::shutdown (`#2355 <https://github.com/ros/ros_comm/issues/2355>`_)
+* Contributors: David Gossow, Martin Pecka, Robert Haschke
+
 1.16.0 (2023-02-15)
 -------------------
 
