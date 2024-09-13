@@ -2,6 +2,11 @@
 Changelog for package message_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.0 (2024-09-13)
+-------------------
+* Enable building with boost 1.73 (`#2348 <https://github.com/ros/ros_comm/issues/2348>`_)
+* Contributors: Robert Haschke
+
 1.16.0 (2023-02-15)
 -------------------
 
