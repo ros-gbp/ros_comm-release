@@ -2,6 +2,11 @@
 Changelog for package rosservice
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.0 (2024-09-13)
+-------------------
+* Fixed uninitialized Time usage in rosservice call (`#2369 <https://github.com/ros/ros_comm/issues/2369>`_)
+* Contributors: Martin Pecka
+
 1.16.0 (2023-02-15)
 -------------------
 * --noarr and --nostr option in rosservice call (`#2307 <https://github.com/ros/ros_comm/issues/2307>`_)
