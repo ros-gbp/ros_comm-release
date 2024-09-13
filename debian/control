@@ -1,0 +1,13 @@
+Source: ros-noetic-rospy
+Section: misc
+Priority: optional
+Maintainer: Michael Carroll <michael@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), ros-noetic-catkin (>= 0.5.78)
+Homepage: http://wiki.ros.org/rospy
+Standards-Version: 3.9.2
+
+Package: ros-noetic-rospy
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3-numpy, python3-rospkg, python3-yaml, ros-noetic-genpy, ros-noetic-roscpp, ros-noetic-rosgraph, ros-noetic-rosgraph-msgs (>= 1.10.3), ros-noetic-roslib, ros-noetic-std-msgs
+Description: rospy is a pure Python client library for ROS.
+ The rospy client API enables Python programmers to quickly interface with ROS Topics, Services, and Parameters. The design of rospy favors implementation speed (i.e. developer time) over runtime performance so that algorithms can be quickly prototyped and tested within ROS. It is also ideal for non-critical-path code, such as configuration and initialization code. Many of the ROS tools are written in rospy to take advantage of the type introspection capabilities. Many of the ROS tools, such as rostopic and rosservice, are built on top of rospy.
