@@ -2,6 +2,11 @@
 Changelog for package rosgraph
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.0 (2024-09-13)
+-------------------
+* Fixed ROSCONSOLE_FORMAT with microseconds (`#2370 <https://github.com/ros/ros_comm/issues/2370>`_)
+* Contributors: Martin Pecka
+
 1.16.0 (2023-02-15)
 -------------------
 * Fix determining supported kernel version for HTTP 1.1 (`#2202 <https://github.com/ros/ros_comm/issues/2202>`_)
