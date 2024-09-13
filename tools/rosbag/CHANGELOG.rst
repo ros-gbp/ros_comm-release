@@ -2,6 +2,15 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.0 (2024-09-13)
+-------------------
+* Exposed record snapshot feature to command line. (`#2254 <https://github.com/ros/ros_comm/issues/2254>`_)
+* Fix rosbag calling uncallable signal handler object (`#2236 <https://github.com/ros/ros_comm/issues/2236>`_)
+* Add --min-space option to the python cli of rosbag record (`#2298 <https://github.com/ros/ros_comm/issues/2298>`_)
+* Fix latched topic not latched in splitted rosbags (`#2351 <https://github.com/ros/ros_comm/issues/2351>`_)
+* Enable building with boost 1.83.0 (`#2354 <https://github.com/ros/ros_comm/issues/2354>`_)
+* Contributors: Blake Anderson, Hugal31, Yannik Nager, Zijun Xu, daizhirui
+
 1.16.0 (2023-02-15)
 -------------------
 * add missing repeat_latched initialization (`#2314 <https://github.com/ros/ros_comm/issues/2314>`_)
