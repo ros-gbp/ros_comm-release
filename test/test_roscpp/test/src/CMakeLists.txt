@@ -61,6 +61,9 @@ add_executable(${PROJECT_NAME}-sim_time_test EXCLUDE_FROM_ALL sim_time_test.cpp)
 target_link_libraries(${PROJECT_NAME}-sim_time_test ${GTEST_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME}-sim_time_test ${rosgraph_msgs_EXPORTED_TARGETS})
 
+add_executable(${PROJECT_NAME}-init_no_sim_time_test EXCLUDE_FROM_ALL init_no_sim_time_test.cpp)
+target_link_libraries(${PROJECT_NAME}-init_no_sim_time_test ${GTEST_LIBRARIES} ${catkin_LIBRARIES})
+
 # Call a service
 add_executable(${PROJECT_NAME}-service_adv EXCLUDE_FROM_ALL service_adv.cpp)
 target_link_libraries(${PROJECT_NAME}-service_adv ${catkin_LIBRARIES})
@@ -88,6 +91,12 @@ add_dependencies(${PROJECT_NAME}-service_exception ${std_srvs_EXPORTED_TARGETS})
 # Repeatedly call ros::init()
 add_executable(${PROJECT_NAME}-multiple_init_fini EXCLUDE_FROM_ALL multiple_init_fini.cpp)
 target_link_libraries(${PROJECT_NAME}-multiple_init_fini ${GTEST_LIBRARIES} ${catkin_LIBRARIES})
+
+add_executable(${PROJECT_NAME}-missing_call_to_shutdown_impl EXCLUDE_FROM_ALL missing_call_to_shutdown_impl.cpp)
+target_link_libraries(${PROJECT_NAME}-missing_call_to_shutdown_impl ${catkin_LIBRARIES})
+
+add_executable(${PROJECT_NAME}-missing_call_to_shutdown EXCLUDE_FROM_ALL missing_call_to_shutdown.cpp)
+target_link_libraries(${PROJECT_NAME}-missing_call_to_shutdown ${GTEST_LIBRARIES} ${catkin_LIBRARIES})
 
 # Test node inspection functionality
 add_executable(${PROJECT_NAME}-inspection EXCLUDE_FROM_ALL inspection.cpp)
@@ -256,6 +265,8 @@ if(TARGET tests)
     ${PROJECT_NAME}-service_exception
     ${PROJECT_NAME}-service_call_repeatedly
     ${PROJECT_NAME}-multiple_init_fini
+    ${PROJECT_NAME}-missing_call_to_shutdown
+    ${PROJECT_NAME}-missing_call_to_shutdown_impl
     ${PROJECT_NAME}-inspection
     ${PROJECT_NAME}-service_adv_multiple
     ${PROJECT_NAME}-service_adv_a
@@ -324,6 +335,8 @@ add_dependencies(${PROJECT_NAME}-service_deadlock ${${PROJECT_NAME}_EXPORTED_TAR
 add_dependencies(${PROJECT_NAME}-service_exception ${${PROJECT_NAME}_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}-service_call_repeatedly ${${PROJECT_NAME}_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}-multiple_init_fini ${${PROJECT_NAME}_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}-missing_call_to_shutdown ${${PROJECT_NAME}_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}-missing_call_to_shutdown_impl ${${PROJECT_NAME}_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}-inspection ${${PROJECT_NAME}_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}-service_adv_multiple ${${PROJECT_NAME}_EXPORTED_TARGETS})
 add_dependencies(${PROJECT_NAME}-service_adv_a ${${PROJECT_NAME}_EXPORTED_TARGETS})
