@@ -2,6 +2,12 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.1 (2025-04-26)
+-------------------
+* Sort connection indices (`#2089 <https://github.com/ros/ros_comm/issues/2089>`_)
+* Ensure latched messages are updated on every split (`#2261 <https://github.com/ros/ros_comm/issues/2261>`_)
+* Contributors: Gal Gorjup, Marko Durkovic
+
 1.17.0 (2024-09-13)
 -------------------
 * Exposed record snapshot feature to command line. (`#2254 <https://github.com/ros/ros_comm/issues/2254>`_)
