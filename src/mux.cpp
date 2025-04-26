@@ -32,6 +32,7 @@
 #include <cstdio>
 #include <vector>
 #include <list>
+#include <thread>
 #include "ros/console.h"
 #include "std_msgs/String.h"
 #include "topic_tools/MuxSelect.h"
@@ -157,7 +158,7 @@ void in_cb(const boost::shared_ptr<ShapeShifter const>& msg,
     // we need sleep for publisher initialization
     // otherwise the first topic will drop.
     if (g_wait_pub_init) {
-      usleep(g_wait_second * 1000000);
+      std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(g_wait_second * 1000000)));
     }
     g_advertised = true;
     
