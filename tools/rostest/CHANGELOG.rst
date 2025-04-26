@@ -2,6 +2,9 @@
 Changelog for package rostest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.1 (2025-04-26)
+-------------------
+
 1.17.0 (2024-09-13)
 -------------------
 * Add new rostest utility subscribetest (`#2184 <https://github.com/ros/ros_comm/issues/2184>`_)
