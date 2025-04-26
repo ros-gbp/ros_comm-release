@@ -2,6 +2,9 @@
 Changelog for package rosbag_storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.1 (2025-04-26)
+-------------------
+
 1.17.0 (2024-09-13)
 -------------------
 * Fix segfault with default-constructed rosbag::ChunkedFile::swap (`#2363 <https://github.com/ros/ros_comm/issues/2363>`_)
