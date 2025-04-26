@@ -2,6 +2,9 @@
 Changelog for package rosgraph
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.1 (2025-04-26)
+-------------------
+
 1.17.0 (2024-09-13)
 -------------------
 * Fixed ROSCONSOLE_FORMAT with microseconds (`#2370 <https://github.com/ros/ros_comm/issues/2370>`_)
