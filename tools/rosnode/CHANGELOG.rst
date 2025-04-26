@@ -2,6 +2,11 @@
 Changelog for package rosnode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.1 (2025-04-26)
+-------------------
+* Make rosnode info show topic types of unconnected subscribers (`#2366 <https://github.com/ros/ros_comm/issues/2366>`_)
+* Contributors: Sanoronas
+
 1.17.0 (2024-09-13)
 -------------------
 * Enable rosrun & roslaunch to find rosnode script (`#2262 <https://github.com/ros/ros_comm/issues/2262>`_)
