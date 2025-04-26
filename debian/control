@@ -1,0 +1,12 @@
+Source: ros-noetic-rosout
+Section: misc
+Priority: optional
+Maintainer: Michael Carroll <michael@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), ros-noetic-catkin, ros-noetic-roscpp, ros-noetic-rosgraph-msgs
+Homepage: http://ros.org/wiki/rosout
+Standards-Version: 3.9.2
+
+Package: ros-noetic-rosout
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-noetic-roscpp, ros-noetic-rosgraph-msgs
+Description: System-wide logging mechanism for messages sent to the /rosout topic.
