@@ -2,6 +2,12 @@
 Changelog for package topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.1 (2025-04-26)
+-------------------
+* Update topic_tools relay_field to Python 3 (`#2253 <https://github.com/ros/ros_comm/issues/2253>`_)
+* Fix error C3861: 'usleep': identifier not found on Windows (`#2383 <https://github.com/ros/ros_comm/issues/2383>`_)
+* Contributors: RyanDMott, Tobias Fischer
+
 1.17.0 (2024-09-13)
 -------------------
 * Add wait_publisher_initialization option in topic_tools mux (`#2305 <https://github.com/ros/ros_comm/issues/2305>`_)
