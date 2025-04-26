@@ -1,0 +1,12 @@
+Source: ros-noetic-ros-comm
+Section: misc
+Priority: optional
+Maintainer: Michael Carroll <michael@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), ros-noetic-catkin
+Homepage: http://wiki.ros.org/ros_comm
+Standards-Version: 3.9.2
+
+Package: ros-noetic-ros-comm
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-noetic-message-filters, ros-noetic-ros, ros-noetic-rosbag, ros-noetic-rosconsole, ros-noetic-roscpp, ros-noetic-rosgraph, ros-noetic-rosgraph-msgs, ros-noetic-roslaunch, ros-noetic-roslisp, ros-noetic-rosmaster, ros-noetic-rosmsg, ros-noetic-rosnode, ros-noetic-rosout, ros-noetic-rosparam, ros-noetic-rospy, ros-noetic-rosservice, ros-noetic-rostest, ros-noetic-rostopic, ros-noetic-roswtf, ros-noetic-std-srvs, ros-noetic-topic-tools, ros-noetic-xmlrpcpp
+Description: ROS communications-related packages, including core client libraries (roscpp, rospy) and graph introspection tools (rostopic, rosnode, rosservice, rosparam).
