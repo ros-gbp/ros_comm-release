@@ -2,6 +2,9 @@
 Changelog for package topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.2 (2025-05-02)
+-------------------
+
 1.17.1 (2025-04-26)
 -------------------
 * Update topic_tools relay_field to Python 3 (`#2253 <https://github.com/ros/ros_comm/issues/2253>`_)
