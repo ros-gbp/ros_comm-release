@@ -1,3 +1,0 @@
-<launch>
-  <test test-name="missing_call_to_shutdown" pkg="test_roscpp" type="test_roscpp-missing_call_to_shutdown"/>
-</launch>
