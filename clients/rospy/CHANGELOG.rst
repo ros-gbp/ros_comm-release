@@ -2,6 +2,9 @@
 Changelog for package rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.2 (2025-05-02)
+-------------------
+
 1.17.1 (2025-04-26)
 -------------------
 * wait_for_topic support topic remapping (`#2159 <https://github.com/ros/ros_comm/issues/2159>`_)
