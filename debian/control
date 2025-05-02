@@ -1,0 +1,12 @@
+Source: ros-noetic-message-filters
+Section: misc
+Priority: optional
+Maintainer: Michael Carroll <michael@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), libboost-thread-dev, ros-noetic-catkin (>= 0.5.68), ros-noetic-rosconsole, ros-noetic-roscpp, ros-noetic-rostest, ros-noetic-rosunit
+Homepage: http://ros.org/wiki/message_filters
+Standards-Version: 3.9.2
+
+Package: ros-noetic-message-filters
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-thread-dev, ros-noetic-rosconsole, ros-noetic-roscpp
+Description: A set of message filters which take in messages and may output those messages at a later time, based on the conditions that filter needs met.
