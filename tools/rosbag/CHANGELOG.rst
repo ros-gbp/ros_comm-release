@@ -2,6 +2,9 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.2 (2025-05-02)
+-------------------
+
 1.17.1 (2025-04-26)
 -------------------
 * Sort connection indices (`#2089 <https://github.com/ros/ros_comm/issues/2089>`_)
