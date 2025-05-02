@@ -2,6 +2,9 @@
 Changelog for package roslaunch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.2 (2025-05-02)
+-------------------
+
 1.17.1 (2025-04-26)
 -------------------
 * [roslaunch] raise `ArgException` in `_arg_tag` to avoid unexpected error in `roslaunch.config.load_config_default` (`#2371 <https://github.com/ros/ros_comm/issues/2371>`_)
