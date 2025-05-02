@@ -359,6 +359,7 @@ def rosnode_ping(node_name, max_count=None, verbose=False, skip_cache=False):
                             if verbose:
                                 print("node url has changed from [%s] to [%s], retrying to ping"%(node_api, new_node_api))
                             node_api = new_node_api
+                            node.__exit__()
                             node = ServerProxy(node_api)
                             continue
                         print("ERROR: connection refused to [%s]"%(node_api), file=sys.stderr)
@@ -373,7 +374,9 @@ def rosnode_ping(node_name, max_count=None, verbose=False, skip_cache=False):
             time.sleep(1.0)
     except KeyboardInterrupt:
         pass
-            
+    finally:
+        node.__exit__()
+
     if verbose and count > 1:
         print("ping average: %fms"%(acc/count))
     return True
