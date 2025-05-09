@@ -2,6 +2,11 @@
 Changelog for package roslaunch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.3 (2025-05-09)
+-------------------
+* Fixes for Python 3.12 (`#2388 <https://github.com/ros/ros_comm/pull/2388>`_)
+* Contributors: Matthias Klose
+
 1.17.2 (2025-05-02)
 -------------------
 
