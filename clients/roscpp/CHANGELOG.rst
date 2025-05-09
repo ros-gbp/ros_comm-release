@@ -2,6 +2,12 @@
 Changelog for package roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.3 (2025-05-09)
+-------------------
+* adding boost/bind/bind.hpp includes to files missing them (`#2388 <https://github.com/ros/ros_comm/pull/2388>`_)
+* Fix "roscpp multithreaded spinners eat up CPU when callbacks take too long" (`#2377 <https://github.com/ros/ros_comm/issues/2377>`_) (`#2388 <https://github.com/ros/ros_comm/pull/2388>`_)
+* Contributors: Johannes Meyer, Lucas Walter
+
 1.17.2 (2025-05-02)
 -------------------
 
