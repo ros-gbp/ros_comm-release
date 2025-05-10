@@ -2,6 +2,11 @@
 Changelog for package roslz4
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.3 (2025-05-09)
+-------------------
+* add missing python dependency (`#2388 <https://github.com/ros/ros_comm/pull/2388>`_)
+* Contributors: v4hn
+
 1.17.2 (2025-05-02)
 -------------------
 
