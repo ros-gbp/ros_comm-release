@@ -1,0 +1,12 @@
+Source: ros-noetic-rostest
+Section: misc
+Priority: optional
+Maintainer: Michael Carroll <michael@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), libboost-thread-dev, ros-noetic-catkin (>= 0.7.9), ros-noetic-rosunit
+Homepage: http://ros.org/wiki/rostest
+Standards-Version: 3.9.2
+
+Package: ros-noetic-rostest
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-thread-dev, ros-noetic-rosgraph, ros-noetic-roslaunch, ros-noetic-rosmaster, ros-noetic-rospy, ros-noetic-rosunit
+Description: Integration test suite based on roslaunch that is compatible with xUnit frameworks.
