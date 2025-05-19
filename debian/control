@@ -1,0 +1,13 @@
+Source: ros-noetic-rosparam
+Section: misc
+Priority: optional
+Maintainer: Michael Carroll <michael@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), ros-noetic-catkin
+Homepage: http://wiki.ros.org/rosparam
+Standards-Version: 3.9.2
+
+Package: ros-noetic-rosparam
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3-yaml, ros-noetic-rosgraph
+Description: rosparam contains the rosparam command-line tool for getting and setting ROS Parameters on the Parameter Server using YAML-encoded files.
+ It also contains an experimental library for using YAML with the Parameter Server. This library is intended for internal use only. rosparam can be invoked within a roslaunch file.
