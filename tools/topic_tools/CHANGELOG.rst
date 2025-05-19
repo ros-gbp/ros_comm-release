@@ -2,6 +2,9 @@
 Changelog for package topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.4 (2025-05-19)
+-------------------
+
 1.17.3 (2025-05-09)
 -------------------
 * Fixes for Python 3.12 (`#2388 <https://github.com/ros/ros_comm/pull/2388>`_)
