@@ -2,6 +2,11 @@
 Changelog for package xmlrpcpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.4 (2025-05-19)
+-------------------
+* Revert "Maintain constness of accessed XmlRpcValue struct (`#2315 <https://github.com/ros/ros_comm/issues/2315>`_)" (`#2391 <https://github.com/ros/ros_comm/issues/2391>`_)
+* Contributors: Shane Loretz
+
 1.17.3 (2025-05-09)
 -------------------
 * Disable XmlRpcServer::enoughFreeFDs (`#2388 <https://github.com/ros/ros_comm/pull/2388>`_)
